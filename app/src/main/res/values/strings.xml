@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ClickDevice</string>
+    <string name="accessibility_desc">使用连点器必须打开该功能</string>
+</resources>

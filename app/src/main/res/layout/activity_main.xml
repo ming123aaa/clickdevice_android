@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btn_main_open_Accessibility"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="开启辅助功能"
+        android:onClick="openAccessibility"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="启动辅助功能服务"
+        android:onClick="startService"/>
+    <Button
+        android:id="@+id/btn_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="startClickDevice"
+        android:text="打开连点器" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal">
+
+        <TextView
+
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:gravity="right|center"
+            android:text="时间间隔（单位ms 最小值为100）:" />
+
+        <EditText
+            android:id="@+id/edit_time"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:inputType="number"
+            android:maxLength="6"
+            android:text="1000" />
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:gravity="right|center"
+            android:text="次数:" />
+
+        <EditText
+            android:id="@+id/edit_number"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:inputType="number"
+            android:maxLength="6"
+            android:text="1" />
+    </LinearLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="脚本"
+        android:onClick="startScriptAc"/>
+
+</LinearLayout>
