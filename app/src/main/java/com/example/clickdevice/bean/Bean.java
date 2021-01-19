@@ -1,4 +1,4 @@
-package com.example.clickdevice;
+package com.example.clickdevice.bean;
 
 public class Bean {
     private int x;

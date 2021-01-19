@@ -1,4 +1,4 @@
-package com.example.clickdevice;
+package com.example.clickdevice.bean;
 
 public class ScriptCmdBean {
     public static int ACTION_DELAYED=1;
@@ -39,7 +39,7 @@ public class ScriptCmdBean {
         scriptCmdBean.setX1(x1);
         scriptCmdBean.setY1(y1);
         scriptCmdBean.setDuration(duration);
-        scriptCmdBean.setContent("滑动手势从("+x0+","+y0+")到("+x1+","+y1+")执行时长"+duration+"ms");
+        scriptCmdBean.setContent("滑动手势从坐标("+x0+","+y0+")到("+x1+","+y1+")执行时长"+duration+"ms");
         return scriptCmdBean;
     }
 

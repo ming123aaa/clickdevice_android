@@ -1,5 +1,7 @@
 package com.example.clickdevice;
 
+import com.example.clickdevice.bean.ScriptCmdBean;
+
 public class ScriptExecutor {
     private ScriptInterFace scriptInterFace;
 

@@ -36,6 +36,10 @@ public class ScriptDataBean {
         this.id = id;
     }
 
+    public String getStringId(){
+        return id+"";
+    }
+
     public String getName() {
         return name;
     }

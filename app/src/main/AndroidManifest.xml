@@ -10,18 +10,21 @@
     <uses-permission android:name="androd.permission.DISABLE_KEYGUARD" />
 
     <application
+        android:name=".MyApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/icon_app"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name="com.example.clickdevice.AC.ScriptActivity"/>
-        <activity android:name="com.example.clickdevice.AC.MainActivity">
+        <activity android:name=".AC.ScriptEditActivity"></activity>
+        <activity android:name=".AC.ScriptListActivity" />
+        <activity android:name=".AC.ScriptActivity" />
+        <activity android:name=".AC.MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
@@ -33,12 +36,11 @@
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_config" />
         </service>
-
-
     </application>
 
 </manifest>

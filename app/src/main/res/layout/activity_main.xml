@@ -7,24 +7,29 @@
     android:orientation="vertical">
 
     <Button
+        android:layout_marginTop="20dp"
         android:id="@+id/btn_main_open_Accessibility"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="开启辅助功能"
+        android:text="开启(无障碍)辅助功能"
+        android:textColor="@color/blackLine"
+        android:forceDarkAllowed="false"
+        android:background="@drawable/btn_background"
         android:onClick="openAccessibility"/>
+
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="启动辅助功能服务"
-        android:onClick="startService"/>
-    <Button
+        android:layout_marginTop="10dp"
         android:id="@+id/btn_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/blackLine"
+        android:forceDarkAllowed="false"
+        android:background="@drawable/btn_background"
         android:onClick="startClickDevice"
         android:text="打开连点器" />
 
     <LinearLayout
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:orientation="horizontal">
@@ -42,6 +47,9 @@
             android:layout_height="match_parent"
             android:inputType="number"
             android:maxLength="6"
+            android:theme="@style/MyEditText"
+            android:textColor="@color/blackLine"
+            android:forceDarkAllowed="false"
             android:text="1000" />
 
         <TextView
@@ -56,12 +64,19 @@
             android:layout_height="match_parent"
             android:inputType="number"
             android:maxLength="6"
+            android:theme="@style/MyEditText"
+            android:textColor="@color/blackLine"
+            android:forceDarkAllowed="false"
             android:text="1" />
     </LinearLayout>
     <Button
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="脚本"
+        android:text="脚本模式"
+        android:textColor="@color/blackLine"
+        android:forceDarkAllowed="false"
+        android:background="@drawable/btn_background"
         android:onClick="startScriptAc"/>
 
 </LinearLayout>

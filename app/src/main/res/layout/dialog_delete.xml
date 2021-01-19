@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center|top"
+    android:orientation="vertical"
+
+    >
+    <TextView
+        android:id="@+id/txt_title_dialog_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="退出当前账号"
+        android:textColor="#000000"
+        android:textSize="50px" />
+
+    <TextView
+        android:id="@+id/txt_content_dialog_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="50dp"
+        android:paddingTop="10dp"
+        android:paddingRight="50dp"
+        android:paddingBottom="10dp"
+        android:text="你是否确定要退出账号？"
+        android:textColor="#000000"
+        android:textSize="35px" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="#000000" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/dialog_btn_delete_no"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_ok_dialog_sign"
+            android:text="取消" />
+
+        <Button
+            android:id="@+id/dialog_btn_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_ok_dialog_sign"
+            android:textColor="#ff2222"
+            android:text="删除" />
+    </LinearLayout>
+</LinearLayout>

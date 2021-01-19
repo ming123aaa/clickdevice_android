@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,15 +22,21 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.Observer;
 
+import com.Ohuang.ilivedata.LiveDataBus;
 import com.example.clickdevice.MyService;
-import com.example.clickdevice.ScriptCmdBean;
+import com.example.clickdevice.bean.ScriptCmdBean;
 import com.example.clickdevice.ScriptExecutor;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import com.example.clickdevice.R;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.ScriptInterFace {
     private int OVERLAY_PERMISSION_REQ_CODE = 2;
@@ -43,7 +51,7 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what == 0) {
-                boolean unused = ScriptActivity.this.isRun = false;
+                ScriptActivity.this.isRun = false;
                 ScriptActivity.this.tv_bw.setText("开始");
             }
         }
@@ -97,6 +105,9 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
     /* access modifiers changed from: private */
     public TextView tv_bw;
     private WindowManager wm;
+    private TextView textView;
+    private String json;
+    private Button btn_script_openScript;
 
     /* access modifiers changed from: protected */
     @Override
@@ -106,53 +117,84 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
         initSmallViewLayout();
         this.editText_num = (EditText) findViewById(R.id.edit_script_number);
         this.editText_time = (EditText) findViewById(R.id.edit_script_time);
-        this.mData = new ArrayList();
+        btn_script_openScript=findViewById(R.id.btn_script_openScript);
+        textView = findViewById(R.id.tv_script_code);
         this.singleThreadExecutor = Executors.newSingleThreadExecutor();
         if (this.btn_windowView != null) {
             initBtnWindowsView();
         }
         this.scriptExecutor = new ScriptExecutor(this);
+        initEvent();
+    }
+
+    private void initEvent() {
+        LiveDataBus.get().with("json", String.class).observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                json = s;
+                textView.setText(json);
+                Gson gson = new Gson();
+                List<ScriptCmdBean> list = gson.fromJson(json, new TypeToken<List<ScriptCmdBean>>() {
+                }.getType());
+                if (list == null || list.size() == 0){
+                    Toast.makeText(ScriptActivity.this,"脚本为空或json格式有问题",Toast.LENGTH_SHORT).show();
+                }
+                mData=list;
+            }
+        });
     }
 
     public void startScriptWindow(View view) {
+
         if (!this.isShow) {
-            alertWindow();
-            this.isShow = true;
-            return;
+            showFloatWindows(btn_script_openScript);
+        } else {
+            hideFloatWindows(btn_script_openScript);
         }
+
+    }
+
+    private void showFloatWindows(Button button){
+        alertWindow();
+        this.isShow = true;
+        button.setText("关闭悬浮窗");
+    }
+
+    private void hideFloatWindows(Button button){
         this.isShow = false;
+        button.setText("打开脚本");
         dismissWindow();
     }
 
     public void selectScript(View view) {
-        this.mData.add(ScriptCmdBean.BuildClickCMD(100, 500, 0));
-        this.mData.add(ScriptCmdBean.BuildDelayedCMD(1000));
-        this.mData.add(ScriptCmdBean.BuildGestureCMD(200, 200, 1000, 1000, 2000));
-        this.mData.add(ScriptCmdBean.BuildGestureCMD(1000, 200, 200, 1000, 2000));
+        startActivity(new Intent(this, ScriptListActivity.class));
+       hideFloatWindows(btn_script_openScript);
     }
 
+    @SuppressLint("WrongConstant")
     private void initBtnWindowsView() {
         TextView textView = (TextView) this.btn_windowView.findViewById(R.id.tv_win_b);
         this.tv_bw = textView;
-        textView.setOnClickListener(v->  {
-                if (isRun) {
-                    isRun = false;
-                    handler.sendEmptyMessage(0);
-                } else if (!MyService.isStart()) {
-                    Toast.makeText(ScriptActivity.this, "请打开辅助功能", 0).show();
-                } else if (mData == null) {
-                    Toast.makeText(ScriptActivity.this, "请选择要执行的脚本", 0).show();
-                } else {
-                    time = Integer.parseInt(editText_time.getText().toString());
-                    num = Integer.parseInt(editText_num.getText().toString());
-                    tv_bw.setText("停止");
-                    isRun = true;
-                    singleThreadExecutor.execute(runnable);
+        textView.setOnClickListener(v -> {
+                    if (isRun) {
+                        isRun = false;
+                        handler.sendEmptyMessage(0);
+                    } else if (!MyService.isStart()) {
+                        Toast.makeText(ScriptActivity.this, "请手动开启辅助功能，若已开启请重启应用再试一次。", Toast.LENGTH_LONG).show();
+                    } else if (mData == null) {
+                        Toast.makeText(ScriptActivity.this, "请选择要执行的脚本", 0).show();
+                    } else {
+                        String s1 = editText_time.getText().toString();
+                        String s2 = editText_num.getText().toString();
+                        time = Integer.parseInt(TextUtils.isEmpty(s1) ? "1000" : s1);
+                        num = Integer.parseInt(TextUtils.isEmpty(s2) ? "0" : s2);
+                        tv_bw.setText("停止");
+                        isRun = true;
+                        singleThreadExecutor.execute(runnable);
+                    }
                 }
-            }
         );
     }
-
 
 
     public void alertWindow() {
@@ -175,7 +217,7 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
             return;
         }
         showWindow();
-        Toast.makeText(this, "权限已经授予", 0).show();
+
     }
 
     public void showWindow() {
@@ -218,19 +260,15 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
             if (myService2 == null) {
                 return;
             }
-            if (duration < 50) {
+            if (duration < 150) {
                 myService2.dispatchGestureClick((float) x0, (float) y0);
-                Thread.sleep(50);
+                Thread.sleep(150);
             } else if (duration < 30000) {
                 myService2.dispatchGestureClick((float) x0, (float) y0, duration);
-                for (int i = 0; i < duration / 100; i++) {
-                    Thread.sleep(100);
-                }
+                Thread.sleep(duration);
             } else {
                 myService2.dispatchGestureClick((float) x0, (float) y0, 30000);
-                for (int i2 = 0; i2 < 300; i2++) {
-                    Thread.sleep(100);
-                }
+                Thread.sleep(30000);
             }
         }
     }
@@ -248,22 +286,23 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
             }
             if (duration > 30000) {
                 myService2.dispatchGesture((float) x0, (float) y0, (float) x1, (float) y1, 30000);
-                for (int i = 0; i < 300; i++) {
-                    Thread.sleep(100);
-                }
+                Thread.sleep(30000);
+                return;
+            }
+            if (duration<200){
+                myService2.dispatchGesture((float) x0, (float) y0, (float) x1, (float) y1, 200);
+                Thread.sleep(200);
                 return;
             }
             myService2.dispatchGesture((float) x0, (float) y0, (float) x1, (float) y1, duration);
-            for (int i2 = 0; i2 < duration / 100; i2++) {
-                Thread.sleep(100);
-            }
+           Thread.sleep(duration);
         }
     }
 
     /* access modifiers changed from: protected */
     @Override
     public void onDestroy() {
-        dismissWindow();
+        hideFloatWindows(btn_script_openScript);
         super.onDestroy();
     }
 }

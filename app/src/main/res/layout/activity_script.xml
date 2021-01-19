@@ -7,18 +7,27 @@
     android:orientation="vertical"
     >
     <Button
+        android:layout_marginTop="20dp"
         android:id="@+id/btn_script_openScript"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="打开脚本"
+        android:textColor="@color/blackLine"
+        android:forceDarkAllowed="false"
+        android:background="@drawable/btn_background"
         android:onClick="startScriptWindow"/>
     <Button
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="选择脚本"
+        android:textColor="@color/blackLine"
+        android:forceDarkAllowed="false"
+        android:background="@drawable/btn_background"
         android:onClick="selectScript"
         />
     <LinearLayout
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:orientation="horizontal">
@@ -36,6 +45,9 @@
             android:layout_height="match_parent"
             android:inputType="number"
             android:maxLength="6"
+            android:theme="@style/MyEditText"
+            android:textColor="@color/blackLine"
+            android:forceDarkAllowed="false"
             android:text="1000" />
 
         <TextView
@@ -49,6 +61,9 @@
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:maxLength="6"
+            android:theme="@style/MyEditText"
+            android:textColor="@color/blackLine"
+            android:forceDarkAllowed="false"
             android:inputType="number"
             android:text="1" />
     </LinearLayout>

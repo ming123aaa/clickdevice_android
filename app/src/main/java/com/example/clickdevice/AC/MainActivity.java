@@ -8,11 +8,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,14 +24,18 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.example.clickdevice.Bean;
+import com.example.clickdevice.bean.Bean;
 import com.example.clickdevice.MyService;
 import com.example.clickdevice.SmallWindowView;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import com.example.clickdevice.R;
 import com.example.clickdevice.Util;
+import com.example.clickdevice.dialog.DialogHelper;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -44,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean isRun = false;
     private boolean isShow = false;
     private WindowManager.LayoutParams mLayoutParams;
+    private Button btn_main;
     /* access modifiers changed from: private */
     @SuppressLint("HandlerLeak")
     public Handler myHandler = new Handler() {
@@ -80,10 +87,23 @@ public class MainActivity extends AppCompatActivity {
         initSmallViewLayout();
         this.editText_time = (EditText) findViewById(R.id.edit_time);
         this.editText_number = (EditText) findViewById(R.id.edit_number);
+        btn_main=findViewById(R.id.btn_main);
         this.singleThreadExecutor = Executors.newSingleThreadExecutor();
         if (this.btn_windowView != null) {
             initBtnWindowsView();
         }
+        DialogHelper.showMessagePositiveDialog(this, "辅助功能", "使用连点器需要开启(无障碍)辅助功能，是否现在去开启？"
+                , new QMUIDialogAction.ActionListener() {
+                    @Override
+                    public void onClick(QMUIDialog dialog, int index) {
+                        try {
+                            startActivity(new Intent("android.settings.ACCESSIBILITY_SETTINGS"));
+                        } catch (Exception e) {
+                            startActivity(new Intent("android.settings.SETTINGS"));
+                            e.printStackTrace();
+                        }
+                    }
+                });
     }
 
     private void initBtnWindowsView() {
@@ -104,14 +124,16 @@ public class MainActivity extends AppCompatActivity {
                     int x = MainActivity.this.windowView.getActionUpX();
                     int y = MainActivity.this.windowView.getActionUpY();
                     if (((x < 0) | (x > Math.max(screenHeight, screenWidth)) | (y < 0)) || (y > Math.max(screenHeight, screenWidth))) {
-                         MainActivity.this.isRun = false;
+                        MainActivity.this.isRun = false;
                     } else if (!MyService.isStart()) {
-                         MainActivity.this.isRun = false;
-                        Toast.makeText(MainActivity.this, "请手动开启辅助功能", 1).show();
+                        MainActivity.this.isRun = false;
+                        Toast.makeText(MainActivity.this, "请手动开启辅助功能，若已开启请重启应用再试一次。", Toast.LENGTH_LONG).show();
                     } else {
                         MainActivity.this.textView.setText("停止");
-                        int num2 = Integer.parseInt(MainActivity.this.editText_number.getText().toString());
-                        int time2 = Integer.parseInt(MainActivity.this.editText_time.getText().toString());
+                        String s1=editText_number.getText().toString();
+                        String s2=editText_time.getText().toString();
+                        int num2 = Integer.parseInt(TextUtils.isEmpty(s1)?"0":s1);
+                        int time2 = Integer.parseInt(TextUtils.isEmpty(s2)?"1000":s2);
                         if (num2 < 0) {
                             num = 0;
                         } else {
@@ -128,39 +150,39 @@ public class MainActivity extends AppCompatActivity {
                         DisplayMetrics displayMetrics = dm;
 
                         final int x2 = x;
-                        final int y2=y;
+                        final int y2 = y;
                         int i3 = screenHeight;
                         windowView.setwmParamsFlags(24);
 
                         singleThreadExecutor.execute(new Runnable() {
-                          @Override
-                          public void run() {
-                              try {
-                                  Thread.sleep(100);
-                              } catch (InterruptedException e) {
-                                  e.printStackTrace();
-                              }
-                              for (int i = 0; i < finalNum&& MainActivity.this.isRun; i++) {
-                                      Message message = new Message();
-                                      message.obj = new Bean(x2, y2);
-                                      message.what = 1;
-                                      MainActivity.this.myHandler.sendMessage(message);
-                                  for (int t=0;t<time/10&& MainActivity.this.isRun;t++) {
-                                      try {
-                                          Thread.sleep(10);
-                                      } catch (InterruptedException e2) {
-                                          e2.printStackTrace();
-                                      }
-                                  }
-                                  try {
-                                      Thread.sleep(time%10);
-                                  } catch (InterruptedException e) {
-                                      e.printStackTrace();
-                                  }
-                              }
-                              MainActivity.this.myHandler.sendEmptyMessageDelayed(0, 200);
-                          }
-                      });
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(100);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                for (int i = 0; i < finalNum && MainActivity.this.isRun; i++) {
+                                    Message message = new Message();
+                                    message.obj = new Bean(x2, y2);
+                                    message.what = 1;
+                                    MainActivity.this.myHandler.sendMessage(message);
+                                    for (int t = 0; t < time / 10 && MainActivity.this.isRun; t++) {
+                                        try {
+                                            Thread.sleep(10);
+                                        } catch (InterruptedException e2) {
+                                            e2.printStackTrace();
+                                        }
+                                    }
+                                    try {
+                                        Thread.sleep(time % 10);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                MainActivity.this.myHandler.sendEmptyMessageDelayed(0, 200);
+                            }
+                        });
 
                     }
                 } else {
@@ -233,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         showWindow();
-        Toast.makeText(this, "权限已经授予", 0).show();
+
     }
 
     /* access modifiers changed from: protected */
@@ -253,12 +275,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startClickDevice(View view) {
+
         if (!this.isShow) {
-            alertWindow();
-            this.isShow = true;
-            return;
+            showFloatWindows(btn_main);
+        } else {
+            hideFloatWindows(btn_main);
         }
+    }
+
+    private void showFloatWindows(Button button){
+        alertWindow();
+        this.isShow = true;
+        button.setText("隐藏悬浮窗");
+    }
+
+    private void hideFloatWindows(Button button){
         this.isShow = false;
+        button.setText("打开连点器");
         dismissWindow();
     }
 
@@ -273,11 +306,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void startScriptAc(View view) {
         startActivity(new Intent(this, ScriptActivity.class));
-        this.isShow = false;
-        dismissWindow();
+        hideFloatWindows(btn_main);
     }
 
-    public void startService(View view) {
-        startService(new Intent(this,MyService.class));
-    }
+
 }
