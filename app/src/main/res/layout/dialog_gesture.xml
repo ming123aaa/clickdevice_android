@@ -3,13 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     android:orientation="vertical">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="滑屏命令"
+
         android:gravity="center"
-        android:textColor="#000"
+        android:textColor="@color/blackLine"
         android:textSize="20sp"/>
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,6 +21,7 @@
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:textColor="@color/blackLine"
             android:text="起点坐标"/>
 
         <Button
@@ -26,6 +29,7 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="坐标获取"
+            android:textColor="@color/blackLine"
             android:gravity="center"
             android:background="@drawable/btn_ok_dialog_sign"/>
     </LinearLayout>
@@ -36,6 +40,7 @@
         <TextView
             android:layout_marginLeft="10dp"
             android:layout_width="50dp"
+            android:textColor="@color/blackLine"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="X:"/>
@@ -46,13 +51,14 @@
             android:maxLength="6"
             android:theme="@style/MyEditText"
             android:textColor="@color/blackLine"
-            android:forceDarkAllowed="false"
+
             android:inputType="number"
             android:text="0" />
 
         <TextView
             android:layout_marginLeft="10dp"
             android:layout_width="50dp"
+            android:textColor="@color/blackLine"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="Y:"/>
@@ -63,7 +69,6 @@
             android:maxLength="6"
             android:theme="@style/MyEditText"
             android:textColor="@color/blackLine"
-            android:forceDarkAllowed="false"
             android:inputType="number"
             android:text="0" />
     </LinearLayout>
@@ -75,6 +80,7 @@
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:textColor="@color/blackLine"
             android:text="终点坐标"/>
 
         <Button
@@ -82,6 +88,7 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="坐标获取"
+            android:textColor="@color/blackLine"
             android:gravity="center"
             android:background="@drawable/btn_ok_dialog_sign"/>
     </LinearLayout>
@@ -94,6 +101,7 @@
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:textColor="@color/blackLine"
             android:text="X:"/>
         <EditText
             android:id="@+id/edit_X2"
@@ -102,11 +110,11 @@
             android:maxLength="6"
             android:theme="@style/MyEditText"
             android:textColor="@color/blackLine"
-            android:forceDarkAllowed="false"
             android:inputType="number"
             android:text="0" />
 
         <TextView
+            android:textColor="@color/blackLine"
             android:layout_marginLeft="10dp"
             android:layout_width="50dp"
             android:layout_height="match_parent"
@@ -119,7 +127,7 @@
             android:maxLength="6"
             android:theme="@style/MyEditText"
             android:textColor="@color/blackLine"
-            android:forceDarkAllowed="false"
+
             android:inputType="number"
             android:text="0" />
     </LinearLayout>
@@ -128,6 +136,7 @@
         android:layout_height="40dp"
         android:orientation="horizontal">
         <TextView
+            android:textColor="@color/blackLine"
             android:layout_marginLeft="10dp"
             android:layout_width="80dp"
             android:layout_height="match_parent"
@@ -140,7 +149,7 @@
             android:maxLength="6"
             android:theme="@style/MyEditText"
             android:textColor="@color/blackLine"
-            android:forceDarkAllowed="false"
+
             android:inputType="number"
             android:text="1000" />
     </LinearLayout>
@@ -155,6 +164,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="@color/blackLine"
             android:background="@drawable/btn_ok_dialog_sign"
             android:text="取消" />
 

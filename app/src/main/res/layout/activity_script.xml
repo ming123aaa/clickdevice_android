@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/background"
     >
     <Button
         android:layout_marginTop="20dp"
@@ -13,7 +14,7 @@
         android:layout_height="wrap_content"
         android:text="打开脚本"
         android:textColor="@color/blackLine"
-        android:forceDarkAllowed="false"
+
         android:background="@drawable/btn_background"
         android:onClick="startScriptWindow"/>
     <Button
@@ -22,7 +23,7 @@
         android:layout_height="wrap_content"
         android:text="选择脚本"
         android:textColor="@color/blackLine"
-        android:forceDarkAllowed="false"
+
         android:background="@drawable/btn_background"
         android:onClick="selectScript"
         />
@@ -37,6 +38,7 @@
             android:layout_width="120dp"
             android:layout_height="match_parent"
             android:gravity="right|center"
+            android:textColor="@color/blackLine"
             android:text="时间间隔（单位ms 最小值为100）:" />
 
         <EditText
@@ -47,13 +49,14 @@
             android:maxLength="6"
             android:theme="@style/MyEditText"
             android:textColor="@color/blackLine"
-            android:forceDarkAllowed="false"
+
             android:text="1000" />
 
         <TextView
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:gravity="right|center"
+            android:textColor="@color/blackLine"
             android:text="次数:" />
 
         <EditText
@@ -63,13 +66,14 @@
             android:maxLength="6"
             android:theme="@style/MyEditText"
             android:textColor="@color/blackLine"
-            android:forceDarkAllowed="false"
+
             android:inputType="number"
             android:text="1" />
     </LinearLayout>
     <TextView
         android:id="@+id/tv_script_code"
         android:layout_width="match_parent"
+        android:textColor="@color/blackLine"
         android:layout_height="match_parent"/>
 
 </LinearLayout>

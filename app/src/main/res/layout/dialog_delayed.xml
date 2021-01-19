@@ -2,13 +2,15 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     android:orientation="vertical">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="延时命令"
+
         android:gravity="center"
-        android:textColor="#000"
+        android:textColor="@color/blackLine"
         android:textSize="20sp"/>
 
     <LinearLayout
@@ -20,6 +22,7 @@
             android:layout_width="160dp"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:textColor="@color/blackLine"
             android:text="延时时长(单位ms):"/>
         <EditText
             android:id="@+id/edit_delayed"
@@ -28,7 +31,7 @@
             android:maxLength="6"
             android:theme="@style/MyEditText"
             android:textColor="@color/blackLine"
-            android:forceDarkAllowed="false"
+
             android:inputType="number"
             android:text="0" />
     </LinearLayout>
@@ -43,6 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/btn_ok_dialog_sign"
+            android:textColor="@color/blackLine"
             android:text="取消" />
 
         <Button

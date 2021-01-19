@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     android:orientation="vertical">
 
     <Button
@@ -13,7 +14,6 @@
         android:onClick="createNewScript"
         android:text="创建新的脚本"
         android:textColor="@color/blackLine"
-        android:forceDarkAllowed="false"
         android:background="@drawable/btn_background"/>
 
     <androidx.recyclerview.widget.RecyclerView

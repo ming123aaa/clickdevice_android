@@ -19,6 +19,7 @@
             android:gravity="center"
             android:text="id:"
             android:layout_marginTop="10dp"
+            android:textColor="@color/blackLine"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"/>
         <TextView
@@ -26,6 +27,7 @@
             android:layout_height="20dp"
             android:gravity="center_vertical"
             android:text="@{ScriptData.stringId}"
+            android:textColor="@color/blackLine"
             app:layout_constraintTop_toTopOf="@id/tv_id"
             app:layout_constraintLeft_toRightOf="@id/tv_id"
             />
@@ -35,12 +37,14 @@
             android:layout_height="20dp"
             android:gravity="center"
             android:text="name:"
+            android:textColor="@color/blackLine"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_id"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:gravity="center_vertical"
+            android:textColor="@color/blackLine"
             app:layout_constraintTop_toTopOf="@id/tv_name"
             app:layout_constraintLeft_toRightOf="@id/tv_name"
             android:text="@{ScriptData.name}"/>
@@ -50,12 +54,14 @@
             android:layout_height="20dp"
             android:gravity="center"
             android:text="创建时间："
+            android:textColor="@color/blackLine"
             app:layout_constraintTop_toBottomOf="@id/tv_name"
             app:layout_constraintLeft_toLeftOf="parent"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:gravity="center_vertical"
+            android:textColor="@color/blackLine"
             app:layout_constraintTop_toTopOf="@id/tv_createtime"
             app:layout_constraintLeft_toRightOf="@id/tv_createtime"
             android:text="@{ScriptData.createTime}"/>
@@ -65,12 +71,14 @@
             android:layout_height="20dp"
             android:gravity="center"
             android:text="更新时间："
+            android:textColor="@color/blackLine"
             app:layout_constraintTop_toBottomOf="@id/tv_createtime"
             app:layout_constraintLeft_toLeftOf="parent"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:gravity="center_vertical"
+            android:textColor="@color/blackLine"
             app:layout_constraintTop_toTopOf="@id/tv_updatetime"
             app:layout_constraintLeft_toRightOf="@id/tv_updatetime"
             android:text="@{ScriptData.updateTime}"/>
@@ -110,7 +118,7 @@
             android:layout_height="1dp"
             android:background="@color/blackLine"
             android:layout_marginTop="5dp"
-            android:forceDarkAllowed="false"
+
             app:layout_constraintTop_toBottomOf="@id/btn_delete"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -3,13 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     android:orientation="vertical">
 <TextView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:text="点击命令"
     android:gravity="center"
-    android:textColor="#000"
+    android:textColor="@color/blackLine"
     android:textSize="20sp"/>
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,6 +20,7 @@
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:textColor="@color/blackLine"
             android:text="坐标"/>
 
         <Button
@@ -26,6 +28,7 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="坐标获取"
+            android:textColor="@color/blackLine"
             android:gravity="center"
             android:background="@drawable/btn_ok_dialog_sign"/>
     </LinearLayout>
@@ -38,6 +41,7 @@
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:textColor="@color/blackLine"
             android:text="X:"/>
         <EditText
             android:id="@+id/edit_X"
@@ -47,7 +51,6 @@
             android:inputType="number"
             android:theme="@style/MyEditText"
             android:textColor="@color/blackLine"
-            android:forceDarkAllowed="false"
             android:text="0" />
     </LinearLayout>
     <LinearLayout
@@ -59,6 +62,7 @@
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:textColor="@color/blackLine"
             android:text="Y:"/>
         <EditText
             android:id="@+id/edit_Y"
@@ -68,7 +72,7 @@
             android:inputType="number"
             android:theme="@style/MyEditText"
             android:textColor="@color/blackLine"
-            android:forceDarkAllowed="false"
+
             android:text="0" />
     </LinearLayout>
     <LinearLayout
@@ -80,6 +84,7 @@
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:textColor="@color/blackLine"
             android:text="执行时长:"/>
         <EditText
             android:id="@+id/edit_duration"
@@ -88,7 +93,7 @@
             android:maxLength="6"
             android:theme="@style/MyEditText"
             android:textColor="@color/blackLine"
-            android:forceDarkAllowed="false"
+
             android:inputType="number"
             android:text="0" />
     </LinearLayout>
@@ -103,6 +108,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="@color/blackLine"
             android:background="@drawable/btn_ok_dialog_sign"
             android:text="取消" />
 

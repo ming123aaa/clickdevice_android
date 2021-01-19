@@ -20,6 +20,7 @@
             android:id="@+id/tv_content"
             android:layout_width="match_parent"
             android:layout_height="80dp"
+            android:textColor="@color/blackLine"
             android:gravity="center_vertical" />
     </LinearLayout>
 
@@ -36,7 +37,8 @@
             android:background="@drawable/btn_ok_dialog_sign"
             android:gravity="center"
             android:text="编辑"
-            android:textColor="#000" />
+
+            android:textColor="@color/blackLine" />
 
         <Button
             android:id="@+id/btn_insert"
@@ -54,6 +56,5 @@
         android:layout_height="1dp"
         android:layout_marginTop="10dp"
         android:background="@color/blackLine"
-
-        android:forceDarkAllowed="false"/>
+/>
 </LinearLayout>
