@@ -51,6 +51,7 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what == 0) {
+
                 ScriptActivity.this.isRun = false;
                 ScriptActivity.this.tv_bw.setText("开始");
             }
@@ -171,19 +172,24 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
        hideFloatWindows(btn_script_openScript);
     }
 
+    private Long stopTime;
     @SuppressLint("WrongConstant")
     private void initBtnWindowsView() {
         TextView textView = (TextView) this.btn_windowView.findViewById(R.id.tv_win_b);
         this.tv_bw = textView;
         textView.setOnClickListener(v -> {
                     if (isRun) {
+                        stopTime=System.currentTimeMillis();
                         isRun = false;
                         handler.sendEmptyMessage(0);
+
                     } else if (!MyService.isStart()) {
                         Toast.makeText(ScriptActivity.this, "请手动开启辅助功能，若已开启请重启应用再试一次。", Toast.LENGTH_LONG).show();
                     } else if (mData == null) {
                         Toast.makeText(ScriptActivity.this, "请选择要执行的脚本", 0).show();
-                    } else {
+                    } else if(stopTime+2000>System.currentTimeMillis()){
+                        Toast.makeText(ScriptActivity.this,"点太快了,休息一下吧",Toast.LENGTH_SHORT).show();
+                    }else {
                         String s1 = editText_time.getText().toString();
                         String s2 = editText_num.getText().toString();
                         time = Integer.parseInt(TextUtils.isEmpty(s1) ? "1000" : s1);

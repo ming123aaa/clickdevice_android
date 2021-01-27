@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
     /* access modifiers changed from: private */
     public SmallWindowView windowView;
     private WindowManager wm;
+    private long stopTime;
 
     /* access modifiers changed from: protected */
     @Override
@@ -116,6 +117,10 @@ public class MainActivity extends AppCompatActivity {
                 int num;
                 int time;
                 if (!MainActivity.this.isRun) {
+                    if (stopTime+2000>System.currentTimeMillis()){
+                        Toast.makeText(MainActivity.this,"点太快了,休息一下吧",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     MainActivity.this.isRun = true;
                     DisplayMetrics dm = MainActivity.this.getResources().getDisplayMetrics();
                     int screenHeight = dm.heightPixels;
@@ -186,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 } else {
+                    stopTime=System.currentTimeMillis();
                     MainActivity.this.isRun = false;
                 }
             }
