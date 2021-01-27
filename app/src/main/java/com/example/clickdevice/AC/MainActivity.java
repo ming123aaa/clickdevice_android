@@ -10,6 +10,7 @@ import android.os.Message;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.example.clickdevice.PowerKeyObserver;
 import com.example.clickdevice.bean.Bean;
 import com.example.clickdevice.MyService;
 import com.example.clickdevice.SmallWindowView;
@@ -62,12 +64,17 @@ public class MainActivity extends AppCompatActivity {
             int i = msg.what;
             if (i == 0) {
                 windowView.setwmParamsFlags(8);
-
                 MainActivity.this.textView.setText("开始");
                 MainActivity.this.isRun = false;
             } else if (i == 1) {
                 Bean bean = (Bean) msg.obj;
                 MainActivity.this.setMouseClick(bean.getX(), bean.getY());
+            }else if (i==2){
+                if (isShow){
+                    windowView.setwmParamsFlags(8);
+                }
+                MainActivity.this.textView.setText("开始");
+                MainActivity.this.isRun = false;
             }
         }
     };
@@ -78,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
     /* access modifiers changed from: private */
     public SmallWindowView windowView;
     private WindowManager wm;
-    private long stopTime;
+    private long stopTime=0;
+    private PowerKeyObserver powerKeyObserver;//检测电源键是否被按下
 
     /* access modifiers changed from: protected */
     @Override
@@ -105,6 +113,15 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+        powerKeyObserver=new PowerKeyObserver(this);
+        powerKeyObserver.startListen();//开始注册广播
+        powerKeyObserver.setHomeKeyListener(new PowerKeyObserver.OnPowerKeyListener() {
+            @Override
+            public void onPowerKeyPressed() {
+                myHandler.sendEmptyMessage(2);
+            }
+        });
     }
 
     private void initBtnWindowsView() {

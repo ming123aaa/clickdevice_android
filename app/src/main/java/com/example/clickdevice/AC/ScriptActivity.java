@@ -26,6 +26,7 @@ import androidx.lifecycle.Observer;
 
 import com.Ohuang.ilivedata.LiveDataBus;
 import com.example.clickdevice.MyService;
+import com.example.clickdevice.PowerKeyObserver;
 import com.example.clickdevice.bean.ScriptCmdBean;
 import com.example.clickdevice.ScriptExecutor;
 
@@ -51,7 +52,6 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what == 0) {
-
                 ScriptActivity.this.isRun = false;
                 ScriptActivity.this.tv_bw.setText("开始");
             }
@@ -109,7 +109,7 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
     private TextView textView;
     private String json;
     private Button btn_script_openScript;
-
+    private PowerKeyObserver powerKeyObserver;//检测电源键是否被按下
     /* access modifiers changed from: protected */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -126,6 +126,15 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
         }
         this.scriptExecutor = new ScriptExecutor(this);
         initEvent();
+
+        powerKeyObserver=new PowerKeyObserver(this);
+        powerKeyObserver.startListen();//h开始注册广播
+        powerKeyObserver.setHomeKeyListener(new PowerKeyObserver.OnPowerKeyListener() {
+            @Override
+            public void onPowerKeyPressed() {
+                handler.sendEmptyMessage(0);
+            }
+        });
     }
 
     private void initEvent() {
@@ -172,7 +181,7 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
        hideFloatWindows(btn_script_openScript);
     }
 
-    private Long stopTime;
+    private long stopTime=0;
     @SuppressLint("WrongConstant")
     private void initBtnWindowsView() {
         TextView textView = (TextView) this.btn_windowView.findViewById(R.id.tv_win_b);
