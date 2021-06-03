@@ -39,7 +39,7 @@
             android:layout_height="match_parent"
             android:gravity="right|center"
             android:textColor="@color/blackLine"
-            android:text="时间间隔（单位ms 最小值为100）:" />
+            android:text="时间间隔（单位ms 最小值为30）:" />
 
         <EditText
             android:id="@+id/edit_time"

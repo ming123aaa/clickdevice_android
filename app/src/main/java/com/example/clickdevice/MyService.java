@@ -42,7 +42,7 @@ public class MyService extends AccessibilityService {
         path.moveTo(x,y);
         path.lineTo(x + 1, y + 1);
         dispatchGesture(new GestureDescription.Builder().addStroke(new GestureDescription.StrokeDescription
-                (path, 0, 50)).build(), null, null);
+                (path, 0, 20)).build(), null, null);
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void dispatchGestureClick(float x, float y,int duration){

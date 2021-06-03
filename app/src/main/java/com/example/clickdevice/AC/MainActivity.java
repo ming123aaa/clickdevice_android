@@ -161,8 +161,8 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             num = num2;
                         }
-                        if (time2 < 100) {
-                            time = 100;
+                        if (time2 < 30) {
+                            time = 30;
                         } else {
                             time = time2;
                         }
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 try {
-                                    Thread.sleep(100);
+                                    Thread.sleep(50);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
