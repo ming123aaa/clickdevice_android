@@ -58,7 +58,7 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
         }
     };
     /* access modifiers changed from: private */
-    public boolean isRun = false;
+    public  boolean  isRun = false;
     private boolean isShow = false;
     /* access modifiers changed from: private */
     public List<ScriptCmdBean> mData;
@@ -69,13 +69,9 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
         @Override
         public void run() {
             for (int j = 0; j < ScriptActivity.this.num; j++) {
-                for (int i = 0; i < ScriptActivity.this.mData.size(); i++) {
-                    try {
-                        ScriptActivity.this.scriptExecutor.Run((ScriptCmdBean) ScriptActivity.this.mData.get(i));
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+
+                scriptExecutor.run(mData);
+
                 int i2 = 0;
                 while (i2 < ScriptActivity.this.time / 100) {
                     if (ScriptActivity.this.isRun) {
@@ -275,9 +271,9 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
             if (myService2 == null) {
                 return;
             }
-            if (duration < 150) {
+            if (duration < 50) {
                 myService2.dispatchGestureClick((float) x0, (float) y0);
-                Thread.sleep(150);
+                Thread.sleep(50);
             } else if (duration < 30000) {
                 myService2.dispatchGestureClick((float) x0, (float) y0, duration);
                 Thread.sleep(duration);

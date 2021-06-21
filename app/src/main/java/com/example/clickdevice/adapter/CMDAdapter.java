@@ -1,6 +1,7 @@
 package com.example.clickdevice.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,13 +57,15 @@ public class CMDAdapter extends RecyclerView.Adapter {
             ((CMDViewHolder) holder).textView.setText(mData.get(position).getContent());
             if (cmdListener != null) {
                 ((CMDViewHolder) holder).btn_insert.setOnClickListener(v -> {
-                    cmdListener.insert(position);
+                    cmdListener.insert(holder);
                 });
                 ((CMDViewHolder) holder).btn_edit.setOnClickListener(v -> {
-                    cmdListener.edit(position, mData.get(position));
+                    cmdListener.edit(holder);
                 });
             }
+
         }
+        Log.e("TAG", "onBindViewHolder: "+position );
     }
 
     @Override
@@ -85,8 +88,8 @@ public class CMDAdapter extends RecyclerView.Adapter {
     }
 
     public interface CmdListener {
-        void insert(int position);
+        void insert(RecyclerView.ViewHolder holder);
 
-        void edit(int position, ScriptCmdBean scriptCmdBean);
+        void edit(RecyclerView.ViewHolder holder);
     }
 }

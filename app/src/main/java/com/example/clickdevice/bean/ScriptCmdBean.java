@@ -4,9 +4,12 @@ public class ScriptCmdBean {
     public static int ACTION_DELAYED=1;
     public static int ACTION_CLICK=2;
     public static int ACTION_GESTURE=3;
+    public static int ACTION_FOR=4;
+    public static int ACTION_FOR_END=5;
     private int action;
     private int delayed;
     private int duration;
+    private int frequency;
     private int x0;
     private int y0;
     private int x1;
@@ -21,7 +24,25 @@ public class ScriptCmdBean {
         return scriptCmdBean;
     }
 
-    public static ScriptCmdBean BuildClickCMD(int x0,int y0,int duration){
+    public static ScriptCmdBean BuildForCMD(int frequency){
+        ScriptCmdBean scriptCmdBean=new ScriptCmdBean();
+        scriptCmdBean.setAction(ACTION_FOR);
+        if (frequency<0){
+            frequency=1;
+        }
+        scriptCmdBean.setFrequency(frequency);
+        scriptCmdBean.setContent("循环开始For("+frequency+"){");
+        return scriptCmdBean;
+    }
+
+    public static ScriptCmdBean BuildForEndCMD(){
+        ScriptCmdBean scriptCmdBean=new ScriptCmdBean();
+        scriptCmdBean.setAction(ACTION_FOR_END);
+        scriptCmdBean.setContent("}循环结束");
+        return scriptCmdBean;
+    }
+
+    public static ScriptCmdBean BuildClickCMD(int x0, int y0, int duration){
         ScriptCmdBean scriptCmdBean=new ScriptCmdBean();
         scriptCmdBean.setAction(ACTION_CLICK);
         scriptCmdBean.setX0(x0);
@@ -45,6 +66,14 @@ public class ScriptCmdBean {
 
     private ScriptCmdBean(){
 
+    }
+
+    public int getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(int frequency) {
+        this.frequency = frequency;
     }
 
     public int getAction() {

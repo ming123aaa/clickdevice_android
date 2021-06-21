@@ -24,6 +24,7 @@ import android.os.Message;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,18 +139,24 @@ public class ScriptEditFragment extends Fragment {
         btn_insert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String[] items = new String[]{"点击命令", "延时命令", "滑屏命令"};
+                final String[] items = new String[]{"点击命令", "延时命令", "滑屏命令","循环开始","循环结束"};
                 DialogHelper.showMenuDialog(items, getActivity(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
-                            ClickDialogShow(getContext());
+                            ClickDialogShow(getContext(),mData.size(),null);
                         }
                         if (which == 1) {
-                            DelayedDialogShow(getContext());
+                            DelayedDialogShow(getContext(),mData.size(),null);
                         }
                         if (which == 2) {
-                            GestureDialogShow(getContext());
+                            GestureDialogShow(getContext(),mData.size(),null);
+                        }
+                        if (which==3){
+                            ForDialogShow(getContext(),mData.size(),null);
+                        }
+                        if (which==4){
+                            addForEndCmd(mData.size());
                         }
 
                         dialog.dismiss();
@@ -210,8 +217,10 @@ public class ScriptEditFragment extends Fragment {
         cmdAdapter = new CMDAdapter(mData, getContext());
         cmdAdapter.setCmdListener(new CMDAdapter.CmdListener() {
             @Override
-            public void insert(int position) {
-                final String[] items = new String[]{"点击命令", "延时命令", "滑屏命令"};
+            public void insert(RecyclerView.ViewHolder holder) {
+                int position=holder.getAdapterPosition();
+                ScriptCmdBean scriptCmdBean=mData.get(position);
+                final String[] items = new String[]{"点击命令", "延时命令", "滑屏命令","循环开始","循环结束"};
                 DialogHelper.showMenuDialog(items, getActivity(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -224,6 +233,12 @@ public class ScriptEditFragment extends Fragment {
                         if (which == 2) {
                             GestureDialogShow(getContext(),position,null);
                         }
+                        if (which==3){
+                            ForDialogShow(getContext(),position,null);
+                        }
+                        if (which==4){
+                            addForEndCmd(position);
+                        }
 
                         dialog.dismiss();
                     }
@@ -231,13 +246,17 @@ public class ScriptEditFragment extends Fragment {
             }
 
             @Override
-            public void edit(int position, ScriptCmdBean scriptCmdBean) {
+            public void edit(RecyclerView.ViewHolder holder) {
+                int position=holder.getAdapterPosition();
+                ScriptCmdBean scriptCmdBean=mData.get(position);
                 if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_CLICK) {
                     ClickDialogShow(getContext(), position, scriptCmdBean);
                 } else if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_DELAYED) {
                     DelayedDialogShow(getContext(), position, scriptCmdBean);
                 } else if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_GESTURE) {
                     GestureDialogShow(getContext(), position, scriptCmdBean);
+                } else if(scriptCmdBean.getAction() == ScriptCmdBean.ACTION_FOR){
+                    ForDialogShow(getContext(), position, scriptCmdBean);
                 }
             }
         });
@@ -341,33 +360,38 @@ public class ScriptEditFragment extends Fragment {
         }
     }
 
-    private Dialog DelayedDialogShow(Context context) {
-        View view = LayoutInflater.from(context).inflate(R.layout.dialog_delayed, null);
-        final Dialog dialog = new AlertDialog.Builder(context, R.style.MyDialog).setView(view).setCancelable(false).create();
-        EditText ed_delayed = view.findViewById(R.id.edit_delayed);
-        Button btn_cancel = view.findViewById(R.id.btn_cancel);
-        Button btn_determine = view.findViewById(R.id.btn_determine);
-        btn_cancel.setOnClickListener(v -> {
-            dialog.dismiss();
-        });
-        btn_determine.setOnClickListener(v -> {
-            String s_delayed = ed_delayed.getText().toString();
-            int d = Integer.parseInt(TextUtils.isEmpty(s_delayed) ? "0" : s_delayed);
-            addDelayedCmd(d);
-            dialog.dismiss();
-
-        });
-        dialog.show();
-        //需要先显示再设置大小
-        Window window = dialog.getWindow();
-        WindowManager.LayoutParams params = window.getAttributes();
-        DisplayMetrics dm = context.getResources().getDisplayMetrics();//获取屏幕分辨率
-        int screenWidth = dm.widthPixels;
-        int screenHeight = dm.heightPixels;
-        params.width = (int) (0.7 * screenWidth);
-        window.setAttributes(params);
-        return dialog;
+    private void addForCmd(int d, int position) {
+        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildForCMD(d);
+        if (mData != null) {
+            mData.add(position, scriptCmdBean);
+            cmdAdapter.notifyDataSetChanged();
+        }
     }
+
+
+    private void setForCmd(int d, int position) {
+        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildForCMD(d);
+        if (mData != null) {
+            mData.set(position, scriptCmdBean);
+            cmdAdapter.notifyDataSetChanged();
+        }
+    }
+    private void addForEndCmd(int position) {
+        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildForEndCMD();
+        if (mData != null) {
+            mData.add(position, scriptCmdBean);
+            cmdAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void setForEndCmd( int position) {
+        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildForEndCMD();
+        if (mData != null) {
+            mData.set(position, scriptCmdBean);
+            cmdAdapter.notifyDataSetChanged();
+        }
+    }
+
 
     private Dialog DelayedDialogShow(Context context, int position, ScriptCmdBean scriptCmdBean) {
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_delayed, null);
@@ -405,36 +429,34 @@ public class ScriptEditFragment extends Fragment {
         return dialog;
     }
 
-    private Dialog ClickDialogShow(Context context) {
-        View view = LayoutInflater.from(context).inflate(R.layout.dialog_click, null);
+    private Dialog ForDialogShow(Context context, int position, ScriptCmdBean scriptCmdBean) {
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_delayed, null);
         final Dialog dialog = new AlertDialog.Builder(context, R.style.MyDialog).setView(view).setCancelable(false).create();
-        EditText edit_X = view.findViewById(R.id.edit_X);
-        EditText edit_Y = view.findViewById(R.id.edit_Y);
-        EditText edit_duration = view.findViewById(R.id.edit_duration);
-        Button btn_getXY = view.findViewById(R.id.btn_getXY);
+        EditText ed_delayed = view.findViewById(R.id.edit_delayed);
         Button btn_cancel = view.findViewById(R.id.btn_cancel);
         Button btn_determine = view.findViewById(R.id.btn_determine);
+        TextView textView=view.findViewById(R.id.tv_title);
+        textView.setText("循环命令");
+        TextView textView2=view.findViewById(R.id.tv_tips);
+        textView2.setText("输入循环次数");
+        if (scriptCmdBean != null) {
+            ed_delayed.setText(scriptCmdBean.getFrequency() + "");
+
+        }
         btn_cancel.setOnClickListener(v -> {
-            dismissWindow();
             dialog.dismiss();
         });
         btn_determine.setOnClickListener(v -> {
-            String sx = edit_X.getText().toString();
-            String sy = edit_Y.getText().toString();
-            String duration = edit_duration.getText().toString();
-            int x = Integer.parseInt(TextUtils.isEmpty(sx) ? "0" : sx);
-            int y = Integer.parseInt(TextUtils.isEmpty(sy) ? "0" : sy);
-            int d = Integer.parseInt(TextUtils.isEmpty(duration) ? "0" : duration);
-            addClickCmd(x, y, d);
+            String s_delayed = ed_delayed.getText().toString();
+            int d = Integer.parseInt(TextUtils.isEmpty(s_delayed) ? "0" : s_delayed);
+            if (scriptCmdBean != null) {
+                setForCmd(d, position);
+            } else {
+                addForCmd(d, position);
+            }
             dialog.dismiss();
-            dismissWindow();
-        });
-        btn_getXY.setOnClickListener(v -> {
-            editText_x = edit_X;
-            editText_y = edit_Y;
-            alertWindow();
-        });
 
+        });
         dialog.show();
         //需要先显示再设置大小
         Window window = dialog.getWindow();
@@ -446,6 +468,8 @@ public class ScriptEditFragment extends Fragment {
         window.setAttributes(params);
         return dialog;
     }
+
+
 
     private Dialog ClickDialogShow(Context context, int position, ScriptCmdBean scriptCmdBean) {
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_click, null);
@@ -498,60 +522,7 @@ public class ScriptEditFragment extends Fragment {
         return dialog;
     }
 
-    private Dialog GestureDialogShow(Context context) {
-        View view = LayoutInflater.from(context).inflate(R.layout.dialog_gesture, null);
-        final Dialog dialog = new AlertDialog.Builder(context, R.style.MyDialog).setView(view).setCancelable(false).create();
-        EditText edit_X = view.findViewById(R.id.edit_X);
-        EditText edit_Y = view.findViewById(R.id.edit_Y);
-        EditText edit_duration = view.findViewById(R.id.edit_duration);
-        EditText edit_X2 = view.findViewById(R.id.edit_X2);
-        EditText edit_Y2 = view.findViewById(R.id.edit_Y2);
-        Button btn_getXY = view.findViewById(R.id.btn_getXY);
-        Button btn_getXY2 = view.findViewById(R.id.btn_getXY2);
-        Button btn_cancel = view.findViewById(R.id.btn_cancel);
-        Button btn_determine = view.findViewById(R.id.btn_determine);
-        btn_cancel.setOnClickListener(v -> {
-            dismissWindow();
-            dialog.dismiss();
-        });
-        btn_determine.setOnClickListener(v -> {
-            String sx = edit_X.getText().toString();
-            String sy = edit_Y.getText().toString();
-            String sx2 = edit_X2.getText().toString();
-            String sy2 = edit_Y2.getText().toString();
-            String duration = edit_duration.getText().toString();
-            int x = Integer.parseInt(TextUtils.isEmpty(sx) ? "0" : sx);
-            int y = Integer.parseInt(TextUtils.isEmpty(sy) ? "0" : sy);
-            int x2 = Integer.parseInt(TextUtils.isEmpty(sx2) ? "0" : sx2);
-            int y2 = Integer.parseInt(TextUtils.isEmpty(sy2) ? "0" : sy2);
-            int d = Integer.parseInt(TextUtils.isEmpty(duration) ? "0" : duration);
 
-            addGesture(x, y, x2, y2, d);
-            dialog.dismiss();
-            dismissWindow();
-        });
-        btn_getXY.setOnClickListener(v -> {
-            editText_x = edit_X;
-            editText_y = edit_Y;
-            alertWindow();
-        });
-        btn_getXY2.setOnClickListener(v -> {
-            editText_x = edit_X2;
-            editText_y = edit_Y2;
-            alertWindow();
-        });
-
-        dialog.show();
-        //需要先显示再设置大小
-        Window window = dialog.getWindow();
-        WindowManager.LayoutParams params = window.getAttributes();
-        DisplayMetrics dm = context.getResources().getDisplayMetrics();//获取屏幕分辨率
-        int screenWidth = dm.widthPixels;
-        int screenHeight = dm.heightPixels;
-        params.width = (int) (0.8 * screenWidth);
-        window.setAttributes(params);
-        return dialog;
-    }
 
     private Dialog GestureDialogShow(Context context, int position, ScriptCmdBean scriptCmdBean) {
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_gesture, null);
