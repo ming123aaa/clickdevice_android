@@ -10,6 +10,7 @@ import android.os.Message;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -58,7 +59,7 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
         }
     };
     /* access modifiers changed from: private */
-    public  boolean  isRun = false;
+    public  volatile boolean  isRun = false;
     private boolean isShow = false;
     /* access modifiers changed from: private */
     public List<ScriptCmdBean> mData;
@@ -205,6 +206,18 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
                     }
                 }
         );
+        textView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (isRun) {
+                    stopTime=System.currentTimeMillis();
+                    isRun = false;
+                    handler.sendEmptyMessage(0);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
 

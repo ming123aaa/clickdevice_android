@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -127,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
     private void initBtnWindowsView() {
         TextView textView2 = (TextView) this.btn_windowView.findViewById(R.id.tv_win_b);
         this.textView = textView2;
-        textView2.setOnClickListener(new View.OnClickListener() {
+        textView.setOnClickListener(new View.OnClickListener() {
             @Override
             @SuppressLint("WrongConstant")
             public void onClick(View v) {
@@ -166,14 +167,14 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             time = time2;
                         }
-                        MainActivity.this.windowView.setwmParamsFlags(24);
+
                         final int finalNum = num;
 
-                        DisplayMetrics displayMetrics = dm;
+
 
                         final int x2 = x;
                         final int y2 = y;
-                        int i3 = screenHeight;
+
                         windowView.setwmParamsFlags(24);
 
                         singleThreadExecutor.execute(new Runnable() {
@@ -211,6 +212,18 @@ public class MainActivity extends AppCompatActivity {
                     stopTime=System.currentTimeMillis();
                     MainActivity.this.isRun = false;
                 }
+            }
+        });
+
+        textView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+               if (isRun){
+                   stopTime=System.currentTimeMillis();
+                   MainActivity.this.isRun = false;
+                   return true;
+               }
+                return false;
             }
         });
     }
