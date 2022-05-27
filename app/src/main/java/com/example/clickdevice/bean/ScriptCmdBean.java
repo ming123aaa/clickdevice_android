@@ -42,17 +42,18 @@ public class ScriptCmdBean {
         return scriptCmdBean;
     }
 
-    public static ScriptCmdBean BuildClickCMD(int x0, int y0, int duration){
+    public static ScriptCmdBean BuildClickCMD(int x0, int y0, int duration,int delayed){
         ScriptCmdBean scriptCmdBean=new ScriptCmdBean();
         scriptCmdBean.setAction(ACTION_CLICK);
         scriptCmdBean.setX0(x0);
         scriptCmdBean.setY0(y0);
         scriptCmdBean.setDuration(duration);
-        scriptCmdBean.setContent("点击坐标("+x0+","+y0+")执行时长"+duration+"ms");
+        scriptCmdBean.setDelayed(delayed);
+        scriptCmdBean.setContent("延时"+delayed+"ms点击坐标("+x0+","+y0+")执行时长"+duration+"ms");
         return scriptCmdBean;
     }
 
-    public static ScriptCmdBean BuildGestureCMD(int x0,int y0,int x1,int y1,int duration){
+    public static ScriptCmdBean BuildGestureCMD(int x0,int y0,int x1,int y1,int duration,int delayed){
         ScriptCmdBean scriptCmdBean=new ScriptCmdBean();
         scriptCmdBean.setAction(ACTION_GESTURE);
         scriptCmdBean.setX0(x0);
@@ -60,7 +61,8 @@ public class ScriptCmdBean {
         scriptCmdBean.setX1(x1);
         scriptCmdBean.setY1(y1);
         scriptCmdBean.setDuration(duration);
-        scriptCmdBean.setContent("滑动手势从坐标("+x0+","+y0+")到("+x1+","+y1+")执行时长"+duration+"ms");
+        scriptCmdBean.setDelayed(delayed);
+        scriptCmdBean.setContent("延时"+delayed+"ms滑动手势从坐标("+x0+","+y0+")到("+x1+","+y1+")执行时长"+duration+"ms");
         return scriptCmdBean;
     }
 

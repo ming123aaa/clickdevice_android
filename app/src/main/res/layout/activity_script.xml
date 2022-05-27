@@ -70,10 +70,15 @@
             android:inputType="number"
             android:text="1" />
     </LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp">
     <TextView
         android:id="@+id/tv_script_code"
         android:layout_width="match_parent"
         android:textColor="@color/blackLine"
+        android:textIsSelectable="true"
         android:layout_height="match_parent"/>
-
+    </ScrollView>
 </LinearLayout>

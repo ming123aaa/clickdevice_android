@@ -312,48 +312,36 @@ public class ScriptEditFragment extends Fragment {
         }
     }
 
-    private void addClickCmd(int x, int y, int duration) {
-        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildClickCMD(x, y, duration);
-        if (mData != null) {
-            mData.add(scriptCmdBean);
-            cmdAdapter.notifyDataSetChanged();
-        }
-    }
 
-    private void addClickCmd(int x, int y, int duration, int position) {
-        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildClickCMD(x, y, duration);
+
+    private void addClickCmd(int x, int y, int duration, int position,int delayed) {
+        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildClickCMD(x, y, duration,delayed);
         if (mData != null) {
             mData.add(position, scriptCmdBean);
             cmdAdapter.notifyDataSetChanged();
         }
     }
 
-    private void setClickCmd(int x, int y, int duration, int position) {
-        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildClickCMD(x, y, duration);
+    private void setClickCmd(int x, int y, int duration, int position,int delay) {
+        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildClickCMD(x, y, duration,delay);
         if (mData != null) {
             mData.set(position, scriptCmdBean);
             cmdAdapter.notifyDataSetChanged();
         }
     }
 
-    private void addGesture(int x0, int y0, int x1, int y1, int duration) {
-        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildGestureCMD(x0, y0, x1, y1, duration);
-        if (mData != null) {
-            mData.add(scriptCmdBean);
-            cmdAdapter.notifyDataSetChanged();
-        }
-    }
 
-    private void addGesture(int x0, int y0, int x1, int y1, int duration, int position) {
-        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildGestureCMD(x0, y0, x1, y1, duration);
+
+    private void addGesture(int x0, int y0, int x1, int y1, int duration, int position,int delay) {
+        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildGestureCMD(x0, y0, x1, y1, duration,delay);
         if (mData != null) {
             mData.add(position, scriptCmdBean);
             cmdAdapter.notifyDataSetChanged();
         }
     }
 
-    private void setGesture(int x0, int y0, int x1, int y1, int duration, int position) {
-        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildGestureCMD(x0, y0, x1, y1, duration);
+    private void setGesture(int x0, int y0, int x1, int y1, int duration, int position,int delay) {
+        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildGestureCMD(x0, y0, x1, y1, duration, delay);
         if (mData != null) {
             mData.set(position, scriptCmdBean);
             cmdAdapter.notifyDataSetChanged();
@@ -477,6 +465,7 @@ public class ScriptEditFragment extends Fragment {
         EditText edit_X = view.findViewById(R.id.edit_X);
         EditText edit_Y = view.findViewById(R.id.edit_Y);
         EditText edit_duration = view.findViewById(R.id.edit_duration);
+        EditText ed_delayed = view.findViewById(R.id.edit_delayed);
         Button btn_getXY = view.findViewById(R.id.btn_getXY);
         Button btn_cancel = view.findViewById(R.id.btn_cancel);
         Button btn_determine = view.findViewById(R.id.btn_determine);
@@ -484,6 +473,7 @@ public class ScriptEditFragment extends Fragment {
             edit_X.setText(scriptCmdBean.getX0() + "");
             edit_Y.setText(scriptCmdBean.getY0() + "");
             edit_duration.setText(scriptCmdBean.getDuration() + "");
+            ed_delayed.setText(scriptCmdBean.getDelayed()+"");
         }
         btn_cancel.setOnClickListener(v -> {
             dismissWindow();
@@ -493,13 +483,15 @@ public class ScriptEditFragment extends Fragment {
             String sx = edit_X.getText().toString();
             String sy = edit_Y.getText().toString();
             String duration = edit_duration.getText().toString();
+            String delayed=ed_delayed.getText().toString();
             int x = Integer.parseInt(TextUtils.isEmpty(sx) ? "0" : sx);
             int y = Integer.parseInt(TextUtils.isEmpty(sy) ? "0" : sy);
             int d = Integer.parseInt(TextUtils.isEmpty(duration) ? "0" : duration);
+            int delay=Integer.parseInt(TextUtils.isEmpty(delayed) ? "0" : delayed);
             if (scriptCmdBean != null) {
-                setClickCmd(x, y, d, position);
+                setClickCmd(x, y, d, position,delay);
             } else {
-                addClickCmd(x, y, d, position);
+                addClickCmd(x, y, d, position,delay);
             }
             dialog.dismiss();
             dismissWindow();
@@ -532,6 +524,7 @@ public class ScriptEditFragment extends Fragment {
         EditText edit_duration = view.findViewById(R.id.edit_duration);
         EditText edit_X2 = view.findViewById(R.id.edit_X2);
         EditText edit_Y2 = view.findViewById(R.id.edit_Y2);
+        EditText ed_delayed = view.findViewById(R.id.edit_delayed);
         Button btn_getXY = view.findViewById(R.id.btn_getXY);
         Button btn_getXY2 = view.findViewById(R.id.btn_getXY2);
         Button btn_cancel = view.findViewById(R.id.btn_cancel);
@@ -542,6 +535,7 @@ public class ScriptEditFragment extends Fragment {
             edit_X2.setText(scriptCmdBean.getX1() + "");
             edit_Y2.setText(scriptCmdBean.getY1() + "");
             edit_duration.setText(scriptCmdBean.getDuration() + "");
+            ed_delayed.setText(scriptCmdBean.getDelayed()+"");
         }
         btn_cancel.setOnClickListener(v -> {
             dismissWindow();
@@ -553,15 +547,17 @@ public class ScriptEditFragment extends Fragment {
             String sx2 = edit_X2.getText().toString();
             String sy2 = edit_Y2.getText().toString();
             String duration = edit_duration.getText().toString();
+            String delayed=ed_delayed.getText().toString();
             int x = Integer.parseInt(TextUtils.isEmpty(sx) ? "0" : sx);
             int y = Integer.parseInt(TextUtils.isEmpty(sy) ? "0" : sy);
             int x2 = Integer.parseInt(TextUtils.isEmpty(sx2) ? "0" : sx2);
             int y2 = Integer.parseInt(TextUtils.isEmpty(sy2) ? "0" : sy2);
             int d = Integer.parseInt(TextUtils.isEmpty(duration) ? "0" : duration);
+            int delay=Integer.parseInt(TextUtils.isEmpty(delayed) ? "0" : delayed);
             if (scriptCmdBean != null) {
-                setGesture(x, y, x2, y2, d, position);
+                setGesture(x, y, x2, y2, d, position,delay);
             } else {
-                addGesture(x, y, x2, y2, d, position);
+                addGesture(x, y, x2, y2, d, position,delay);
             }
             dialog.dismiss();
             dismissWindow();

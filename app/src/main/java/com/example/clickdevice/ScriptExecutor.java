@@ -68,9 +68,11 @@ public class ScriptExecutor {
             scriptInterFace.delayedCmd(scriptCmdBean.getDelayed());
         }
         if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_CLICK) {
+            scriptInterFace.delayedCmd(scriptCmdBean.getDelayed());
             scriptInterFace.clickCMD(scriptCmdBean.getX0(), scriptCmdBean.getY0(), scriptCmdBean.getDuration());
         }
         if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_GESTURE) {
+            scriptInterFace.delayedCmd(scriptCmdBean.getDelayed());
             scriptInterFace.gestureCMD(scriptCmdBean.getX0(), scriptCmdBean.getY0()
                     , scriptCmdBean.getX1(), scriptCmdBean.getY1()
                     , scriptCmdBean.getDuration());
