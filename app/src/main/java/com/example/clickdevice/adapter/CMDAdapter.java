@@ -55,6 +55,7 @@ public class CMDAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof CMDViewHolder) {
             ((CMDViewHolder) holder).textView.setText(mData.get(position).getContent());
+            setImage(((CMDViewHolder) holder).imageView,mData.get(position).getAction());
             if (cmdListener != null) {
                 ((CMDViewHolder) holder).btn_insert.setOnClickListener(v -> {
                     cmdListener.insert(holder);
@@ -68,6 +69,22 @@ public class CMDAdapter extends RecyclerView.Adapter {
         Log.e("TAG", "onBindViewHolder: "+position );
     }
 
+
+    private void setImage(ImageView image,int action){
+        if (action== ScriptCmdBean.ACTION_CLICK){
+            image.setBackgroundResource(R.drawable.icon_click);
+        }else if (action==ScriptCmdBean.ACTION_FOR){
+            image.setBackgroundResource(R.drawable.icon_for);
+        }else if (action ==ScriptCmdBean.ACTION_FOR_END){
+            image.setBackgroundResource(R.drawable.icon_for);
+        }else if (action==ScriptCmdBean.ACTION_DELAYED){
+            image.setBackgroundResource(R.drawable.icon_delay);
+        }else if (action ==ScriptCmdBean.ACTION_GESTURE){
+            image.setBackgroundResource(R.drawable.icon_gesture);
+        }else if (action==ScriptCmdBean.ACTION_RANDOM_CLICK){
+            image.setBackgroundResource(R.drawable.icon_random);
+        }
+    }
     @Override
     public int getItemCount() {
         return mData == null ? 0 : mData.size();

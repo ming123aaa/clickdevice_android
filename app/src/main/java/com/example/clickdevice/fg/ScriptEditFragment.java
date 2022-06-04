@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.Ohuang.ilivedata.MyLiveData;
+import com.example.clickdevice.AC.ScriptActivity;
 import com.example.clickdevice.AC.ScriptEditActivity;
 import com.example.clickdevice.MyApp;
 import com.example.clickdevice.R;
@@ -139,25 +140,32 @@ public class ScriptEditFragment extends Fragment {
         btn_insert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String[] items = new String[]{"点击命令", "延时命令", "滑屏命令","循环开始","循环结束"};
+                final String[] items = new String[]{"点击命令", "延时命令", "滑屏命令", "循环开始", "循环结束","随机点击","json数据导入"};
                 DialogHelper.showMenuDialog(items, getActivity(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
-                            ClickDialogShow(getContext(),mData.size(),null);
+                            ClickDialogShow(getContext(), mData.size(), null);
                         }
                         if (which == 1) {
-                            DelayedDialogShow(getContext(),mData.size(),null);
+                            DelayedDialogShow(getContext(), mData.size(), null);
                         }
                         if (which == 2) {
-                            GestureDialogShow(getContext(),mData.size(),null);
+                            GestureDialogShow(getContext(), mData.size(), null);
                         }
-                        if (which==3){
-                            ForDialogShow(getContext(),mData.size(),null);
+                        if (which == 3) {
+                            ForDialogShow(getContext(), mData.size(), null);
                         }
-                        if (which==4){
+                        if (which == 4) {
                             addForEndCmd(mData.size());
                         }
+                        if (which==5){
+                            RandomClickDialogShow(getContext(),mData.size(),null);
+                        }
+                        if (which ==6){
+                            JsonDialogShow(getContext(),mData.size());
+                        }
+
 
                         dialog.dismiss();
                     }
@@ -218,26 +226,34 @@ public class ScriptEditFragment extends Fragment {
         cmdAdapter.setCmdListener(new CMDAdapter.CmdListener() {
             @Override
             public void insert(RecyclerView.ViewHolder holder) {
-                int position=holder.getAdapterPosition();
-                ScriptCmdBean scriptCmdBean=mData.get(position);
-                final String[] items = new String[]{"点击命令", "延时命令", "滑屏命令","循环开始","循环结束"};
+                int position = holder.getAdapterPosition();
+                ScriptCmdBean scriptCmdBean = mData.get(position);
+                final String[] items = new String[]{"点击命令", "延时命令", "滑屏命令", "循环开始", "循环结束","随机点击","json数据导入"};
                 DialogHelper.showMenuDialog(items, getActivity(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
-                            ClickDialogShow(getContext(),position,null);
+                            ClickDialogShow(getContext(), position, null);
                         }
                         if (which == 1) {
-                            DelayedDialogShow(getContext(),position,null);
+                            DelayedDialogShow(getContext(), position, null);
                         }
                         if (which == 2) {
-                            GestureDialogShow(getContext(),position,null);
+                            GestureDialogShow(getContext(), position, null);
                         }
-                        if (which==3){
-                            ForDialogShow(getContext(),position,null);
+                        if (which == 3) {
+                            ForDialogShow(getContext(), position, null);
                         }
-                        if (which==4){
+                        if (which == 4) {
                             addForEndCmd(position);
+                        }
+
+
+                        if (which==5){
+                            RandomClickDialogShow(getContext(),position,null);
+                        }
+                        if (which==6){
+                            JsonDialogShow(getContext(),position);
                         }
 
                         dialog.dismiss();
@@ -247,16 +263,18 @@ public class ScriptEditFragment extends Fragment {
 
             @Override
             public void edit(RecyclerView.ViewHolder holder) {
-                int position=holder.getAdapterPosition();
-                ScriptCmdBean scriptCmdBean=mData.get(position);
+                int position = holder.getAdapterPosition();
+                ScriptCmdBean scriptCmdBean = mData.get(position);
                 if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_CLICK) {
                     ClickDialogShow(getContext(), position, scriptCmdBean);
                 } else if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_DELAYED) {
                     DelayedDialogShow(getContext(), position, scriptCmdBean);
                 } else if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_GESTURE) {
                     GestureDialogShow(getContext(), position, scriptCmdBean);
-                } else if(scriptCmdBean.getAction() == ScriptCmdBean.ACTION_FOR){
+                } else if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_FOR) {
                     ForDialogShow(getContext(), position, scriptCmdBean);
+                }else if (scriptCmdBean.getAction() ==ScriptCmdBean.ACTION_RANDOM_CLICK){
+                    RandomClickDialogShow(getContext(),position,scriptCmdBean);
                 }
             }
         });
@@ -313,17 +331,16 @@ public class ScriptEditFragment extends Fragment {
     }
 
 
-
-    private void addClickCmd(int x, int y, int duration, int position,int delayed) {
-        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildClickCMD(x, y, duration,delayed);
+    private void addClickCmd(int x, int y, int duration, int position, int delayed) {
+        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildClickCMD(x, y, duration, delayed);
         if (mData != null) {
             mData.add(position, scriptCmdBean);
             cmdAdapter.notifyDataSetChanged();
         }
     }
 
-    private void setClickCmd(int x, int y, int duration, int position,int delay) {
-        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildClickCMD(x, y, duration,delay);
+    private void setClickCmd(int x, int y, int duration, int position, int delay) {
+        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildClickCMD(x, y, duration, delay);
         if (mData != null) {
             mData.set(position, scriptCmdBean);
             cmdAdapter.notifyDataSetChanged();
@@ -331,17 +348,31 @@ public class ScriptEditFragment extends Fragment {
     }
 
 
-
-    private void addGesture(int x0, int y0, int x1, int y1, int duration, int position,int delay) {
-        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildGestureCMD(x0, y0, x1, y1, duration,delay);
+    private void addGesture(int x0, int y0, int x1, int y1, int duration, int position, int delay) {
+        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildGestureCMD(x0, y0, x1, y1, duration, delay);
         if (mData != null) {
             mData.add(position, scriptCmdBean);
             cmdAdapter.notifyDataSetChanged();
         }
     }
 
-    private void setGesture(int x0, int y0, int x1, int y1, int duration, int position,int delay) {
+    private void setGesture(int x0, int y0, int x1, int y1, int duration, int position, int delay) {
         ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildGestureCMD(x0, y0, x1, y1, duration, delay);
+        if (mData != null) {
+            mData.set(position, scriptCmdBean);
+            cmdAdapter.notifyDataSetChanged();
+        }
+    }
+    private void addRandomClick(int x0, int y0, int x1, int y1, int duration, int position, int delay) {
+        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildRandomClickCMD(x0, y0, x1, y1, duration, delay);
+        if (mData != null) {
+            mData.add(position, scriptCmdBean);
+            cmdAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void setRandomClick(int x0, int y0, int x1, int y1, int duration, int position, int delay) {
+        ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildRandomClickCMD(x0, y0, x1, y1, duration, delay);
         if (mData != null) {
             mData.set(position, scriptCmdBean);
             cmdAdapter.notifyDataSetChanged();
@@ -364,6 +395,7 @@ public class ScriptEditFragment extends Fragment {
             cmdAdapter.notifyDataSetChanged();
         }
     }
+
     private void addForEndCmd(int position) {
         ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildForEndCMD();
         if (mData != null) {
@@ -372,7 +404,7 @@ public class ScriptEditFragment extends Fragment {
         }
     }
 
-    private void setForEndCmd( int position) {
+    private void setForEndCmd(int position) {
         ScriptCmdBean scriptCmdBean = ScriptCmdBean.BuildForEndCMD();
         if (mData != null) {
             mData.set(position, scriptCmdBean);
@@ -380,6 +412,53 @@ public class ScriptEditFragment extends Fragment {
         }
     }
 
+    private Dialog JsonDialogShow(Context context, int position) {
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_json, null);
+        final Dialog dialog = new AlertDialog.Builder(context, R.style.MyDialog).setView(view).setCancelable(false).create();
+        EditText ed_delayed = view.findViewById(R.id.edit_delayed);
+        Button btn_cancel = view.findViewById(R.id.btn_cancel);
+        Button btn_determine = view.findViewById(R.id.btn_determine);
+
+        btn_cancel.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+        btn_determine.setOnClickListener(v -> {
+            String json = ed_delayed.getText().toString();
+            if (!TextUtils.isEmpty(json)) {
+                try {
+                    Gson gson = new Gson();
+                    List<ScriptCmdBean> list = gson.fromJson(json, new TypeToken<List<ScriptCmdBean>>() {
+                    }.getType());
+                    if (list == null || list.size() == 0) {
+                        Toast.makeText(getContext(), "脚本为空或json格式有问题", Toast.LENGTH_LONG).show();
+                    } else {
+                        if (mData != null) {
+                            mData.addAll(position, list);
+                            cmdAdapter.notifyDataSetChanged();
+                        }
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "脚本为空或json格式有问题", Toast.LENGTH_LONG).show();
+                }
+
+            }else {
+                Toast.makeText(getContext(),"没有内容",Toast.LENGTH_LONG).show();
+            }
+
+            dialog.dismiss();
+
+        });
+        dialog.show();
+        //需要先显示再设置大小
+        Window window = dialog.getWindow();
+        WindowManager.LayoutParams params = window.getAttributes();
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();//获取屏幕分辨率
+        int screenWidth = dm.widthPixels;
+        int screenHeight = dm.heightPixels;
+        params.width = (int) (0.7 * screenWidth);
+        window.setAttributes(params);
+        return dialog;
+    }
 
     private Dialog DelayedDialogShow(Context context, int position, ScriptCmdBean scriptCmdBean) {
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_delayed, null);
@@ -423,9 +502,9 @@ public class ScriptEditFragment extends Fragment {
         EditText ed_delayed = view.findViewById(R.id.edit_delayed);
         Button btn_cancel = view.findViewById(R.id.btn_cancel);
         Button btn_determine = view.findViewById(R.id.btn_determine);
-        TextView textView=view.findViewById(R.id.tv_title);
+        TextView textView = view.findViewById(R.id.tv_title);
         textView.setText("循环命令");
-        TextView textView2=view.findViewById(R.id.tv_tips);
+        TextView textView2 = view.findViewById(R.id.tv_tips);
         textView2.setText("输入循环次数");
         if (scriptCmdBean != null) {
             ed_delayed.setText(scriptCmdBean.getFrequency() + "");
@@ -458,7 +537,6 @@ public class ScriptEditFragment extends Fragment {
     }
 
 
-
     private Dialog ClickDialogShow(Context context, int position, ScriptCmdBean scriptCmdBean) {
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_click, null);
         final Dialog dialog = new AlertDialog.Builder(context, R.style.MyDialog).setView(view).setCancelable(false).create();
@@ -473,7 +551,7 @@ public class ScriptEditFragment extends Fragment {
             edit_X.setText(scriptCmdBean.getX0() + "");
             edit_Y.setText(scriptCmdBean.getY0() + "");
             edit_duration.setText(scriptCmdBean.getDuration() + "");
-            ed_delayed.setText(scriptCmdBean.getDelayed()+"");
+            ed_delayed.setText(scriptCmdBean.getDelayed() + "");
         }
         btn_cancel.setOnClickListener(v -> {
             dismissWindow();
@@ -483,15 +561,15 @@ public class ScriptEditFragment extends Fragment {
             String sx = edit_X.getText().toString();
             String sy = edit_Y.getText().toString();
             String duration = edit_duration.getText().toString();
-            String delayed=ed_delayed.getText().toString();
+            String delayed = ed_delayed.getText().toString();
             int x = Integer.parseInt(TextUtils.isEmpty(sx) ? "0" : sx);
             int y = Integer.parseInt(TextUtils.isEmpty(sy) ? "0" : sy);
             int d = Integer.parseInt(TextUtils.isEmpty(duration) ? "0" : duration);
-            int delay=Integer.parseInt(TextUtils.isEmpty(delayed) ? "0" : delayed);
+            int delay = Integer.parseInt(TextUtils.isEmpty(delayed) ? "0" : delayed);
             if (scriptCmdBean != null) {
-                setClickCmd(x, y, d, position,delay);
+                setClickCmd(x, y, d, position, delay);
             } else {
-                addClickCmd(x, y, d, position,delay);
+                addClickCmd(x, y, d, position, delay);
             }
             dialog.dismiss();
             dismissWindow();
@@ -515,7 +593,6 @@ public class ScriptEditFragment extends Fragment {
     }
 
 
-
     private Dialog GestureDialogShow(Context context, int position, ScriptCmdBean scriptCmdBean) {
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_gesture, null);
         final Dialog dialog = new AlertDialog.Builder(context, R.style.MyDialog).setView(view).setCancelable(false).create();
@@ -535,7 +612,7 @@ public class ScriptEditFragment extends Fragment {
             edit_X2.setText(scriptCmdBean.getX1() + "");
             edit_Y2.setText(scriptCmdBean.getY1() + "");
             edit_duration.setText(scriptCmdBean.getDuration() + "");
-            ed_delayed.setText(scriptCmdBean.getDelayed()+"");
+            ed_delayed.setText(scriptCmdBean.getDelayed() + "");
         }
         btn_cancel.setOnClickListener(v -> {
             dismissWindow();
@@ -547,17 +624,85 @@ public class ScriptEditFragment extends Fragment {
             String sx2 = edit_X2.getText().toString();
             String sy2 = edit_Y2.getText().toString();
             String duration = edit_duration.getText().toString();
-            String delayed=ed_delayed.getText().toString();
+            String delayed = ed_delayed.getText().toString();
             int x = Integer.parseInt(TextUtils.isEmpty(sx) ? "0" : sx);
             int y = Integer.parseInt(TextUtils.isEmpty(sy) ? "0" : sy);
             int x2 = Integer.parseInt(TextUtils.isEmpty(sx2) ? "0" : sx2);
             int y2 = Integer.parseInt(TextUtils.isEmpty(sy2) ? "0" : sy2);
             int d = Integer.parseInt(TextUtils.isEmpty(duration) ? "0" : duration);
-            int delay=Integer.parseInt(TextUtils.isEmpty(delayed) ? "0" : delayed);
+            int delay = Integer.parseInt(TextUtils.isEmpty(delayed) ? "0" : delayed);
             if (scriptCmdBean != null) {
-                setGesture(x, y, x2, y2, d, position,delay);
+                setGesture(x, y, x2, y2, d, position, delay);
             } else {
-                addGesture(x, y, x2, y2, d, position,delay);
+                addGesture(x, y, x2, y2, d, position, delay);
+            }
+            dialog.dismiss();
+            dismissWindow();
+        });
+        btn_getXY.setOnClickListener(v -> {
+            editText_x = edit_X;
+            editText_y = edit_Y;
+            alertWindow();
+        });
+        btn_getXY2.setOnClickListener(v -> {
+            editText_x = edit_X2;
+            editText_y = edit_Y2;
+            alertWindow();
+        });
+
+        dialog.show();
+        //需要先显示再设置大小
+        Window window = dialog.getWindow();
+        WindowManager.LayoutParams params = window.getAttributes();
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();//获取屏幕分辨率
+        int screenWidth = dm.widthPixels;
+        int screenHeight = dm.heightPixels;
+        params.width = (int) (0.8 * screenWidth);
+        window.setAttributes(params);
+        return dialog;
+    }
+    private Dialog RandomClickDialogShow(Context context, int position, ScriptCmdBean scriptCmdBean) {
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_random_click, null);
+        final Dialog dialog = new AlertDialog.Builder(context, R.style.MyDialog).setView(view).setCancelable(false).create();
+        EditText edit_X = view.findViewById(R.id.edit_X);
+        EditText edit_Y = view.findViewById(R.id.edit_Y);
+        EditText edit_duration = view.findViewById(R.id.edit_duration);
+        EditText edit_X2 = view.findViewById(R.id.edit_X2);
+        EditText edit_Y2 = view.findViewById(R.id.edit_Y2);
+        EditText ed_delayed = view.findViewById(R.id.edit_delayed);
+        Button btn_getXY = view.findViewById(R.id.btn_getXY);
+        Button btn_getXY2 = view.findViewById(R.id.btn_getXY2);
+        Button btn_cancel = view.findViewById(R.id.btn_cancel);
+        Button btn_determine = view.findViewById(R.id.btn_determine);
+        if (scriptCmdBean != null) {
+            edit_X.setText(scriptCmdBean.getX0() + "");
+            edit_Y.setText(scriptCmdBean.getY0() + "");
+            edit_X2.setText(scriptCmdBean.getX1() + "");
+            edit_Y2.setText(scriptCmdBean.getY1() + "");
+            edit_duration.setText(scriptCmdBean.getDuration() + "");
+            ed_delayed.setText(scriptCmdBean.getDelayed() + "");
+        }
+        btn_cancel.setOnClickListener(v -> {
+            dismissWindow();
+            dialog.dismiss();
+        });
+        btn_determine.setOnClickListener(v -> {
+            String sx = edit_X.getText().toString();
+            String sy = edit_Y.getText().toString();
+            String sx2 = edit_X2.getText().toString();
+            String sy2 = edit_Y2.getText().toString();
+            String duration = edit_duration.getText().toString();
+            String delayed = ed_delayed.getText().toString();
+            int x = Integer.parseInt(TextUtils.isEmpty(sx) ? "0" : sx);
+            int y = Integer.parseInt(TextUtils.isEmpty(sy) ? "0" : sy);
+            int x2 = Integer.parseInt(TextUtils.isEmpty(sx2) ? "0" : sx2);
+            int y2 = Integer.parseInt(TextUtils.isEmpty(sy2) ? "0" : sy2);
+            int d = Integer.parseInt(TextUtils.isEmpty(duration) ? "0" : duration);
+            int delay = Integer.parseInt(TextUtils.isEmpty(delayed) ? "0" : delayed);
+            if (scriptCmdBean != null) {
+                setRandomClick(x, y, x2, y2, d, position, delay);
+            } else {
+                addRandomClick(x, y, x2, y2, d, position, delay);
             }
             dialog.dismiss();
             dismissWindow();

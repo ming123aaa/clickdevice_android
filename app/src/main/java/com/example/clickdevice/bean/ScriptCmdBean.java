@@ -6,6 +6,7 @@ public class ScriptCmdBean {
     public static int ACTION_GESTURE=3;
     public static int ACTION_FOR=4;
     public static int ACTION_FOR_END=5;
+    public static int ACTION_RANDOM_CLICK=6;
     private int action;
     private int delayed;
     private int duration;
@@ -15,6 +16,9 @@ public class ScriptCmdBean {
     private int x1;
     private int y1;
     private String content;
+
+
+
 
     public static ScriptCmdBean BuildDelayedCMD(int delayed){
         ScriptCmdBean scriptCmdBean=new ScriptCmdBean();
@@ -49,7 +53,7 @@ public class ScriptCmdBean {
         scriptCmdBean.setY0(y0);
         scriptCmdBean.setDuration(duration);
         scriptCmdBean.setDelayed(delayed);
-        scriptCmdBean.setContent("延时"+delayed+"ms点击坐标("+x0+","+y0+")执行时长"+duration+"ms");
+        scriptCmdBean.setContent("延时"+delayed+"ms后,点击坐标("+x0+","+y0+")执行时长"+duration+"ms");
         return scriptCmdBean;
     }
 
@@ -62,7 +66,20 @@ public class ScriptCmdBean {
         scriptCmdBean.setY1(y1);
         scriptCmdBean.setDuration(duration);
         scriptCmdBean.setDelayed(delayed);
-        scriptCmdBean.setContent("延时"+delayed+"ms滑动手势从坐标("+x0+","+y0+")到("+x1+","+y1+")执行时长"+duration+"ms");
+        scriptCmdBean.setContent("延时"+delayed+"ms后,滑动手势:从坐标("+x0+","+y0+")到("+x1+","+y1+")执行时长"+duration+"ms");
+        return scriptCmdBean;
+    }
+
+    public static ScriptCmdBean BuildRandomClickCMD(int x0,int y0,int x1,int y1,int duration,int delayed){
+        ScriptCmdBean scriptCmdBean=new ScriptCmdBean();
+        scriptCmdBean.setAction(ACTION_RANDOM_CLICK);
+        scriptCmdBean.setX0(x0);
+        scriptCmdBean.setY0(y0);
+        scriptCmdBean.setX1(x1);
+        scriptCmdBean.setY1(y1);
+        scriptCmdBean.setDuration(duration);
+        scriptCmdBean.setDelayed(delayed);
+        scriptCmdBean.setContent("延时"+delayed+"ms后,随机点击:("+x0+","+y0+")到("+x1+","+y1+")所形成对角线的矩形内点击。执行时长"+duration+"ms");
         return scriptCmdBean;
     }
 

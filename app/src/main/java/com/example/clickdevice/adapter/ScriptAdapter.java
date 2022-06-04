@@ -5,11 +5,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.clickdevice.R;
+import com.example.clickdevice.bean.ScriptCmdBean;
 import com.example.clickdevice.databinding.ItemScriptBinding;
 import com.example.clickdevice.db.ScriptDataBean;
 
@@ -54,7 +56,7 @@ public class ScriptAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ScriptViewHolder) {
             ((ScriptViewHolder) holder).itemScriptBinding.setScriptData(mData.get(position));
-            Log.e(TAG, "onBindViewHolder: "+position );
+
             if (clickListener != null) {
                 ((ScriptViewHolder) holder).itemScriptBinding.btnDelete.setOnClickListener(v -> {
                     clickListener.delete(mData.get(position));

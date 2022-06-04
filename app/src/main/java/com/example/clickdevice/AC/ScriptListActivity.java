@@ -106,6 +106,7 @@ public class ScriptListActivity extends AppCompatActivity {
             @Override
             public void select(ScriptDataBean scriptDataBean) {
                LiveDataBus.get().with("json",String.class).setValue(scriptDataBean.getScriptJson());
+               LiveDataBus.get().with("scriptName",String.class).setValue(scriptDataBean.getName());
                finish();
             }
         });

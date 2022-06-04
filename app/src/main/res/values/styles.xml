@@ -2,10 +2,9 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="QMUI.Compat.NoActionBar">
         <!-- Customize your theme here. -->
-<!--        <item name="colorPrimary">@color/colorPrimary</item>-->
-<!--        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
-<!--        <item name="colorAccent">@color/colorAccent</item>-->
-
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="MyDialog">
@@ -22,6 +21,7 @@
 
     <style name="MyEditText" parent="AppTheme">
         <item name="colorControlNormal">@color/blackLine</item>
+        <item name="android:textColorHint">@color/hintColor</item>
         <item name="colorControlActivated">#2196F3</item>
     </style>
 
