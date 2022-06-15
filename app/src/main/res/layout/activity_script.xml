@@ -70,15 +70,41 @@
             android:inputType="number"
             android:text="1" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:paddingHorizontal="10dp"
+        android:textColor="@color/blackLine"/>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="10dp">
-    <TextView
-        android:id="@+id/tv_script_code"
-        android:layout_width="match_parent"
-        android:textColor="@color/blackLine"
-        android:textIsSelectable="true"
-        android:layout_height="match_parent"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tv_copy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="20dp"
+                android:textSize="20dp"
+                android:text="复制脚本"
+                android:visibility="gone"
+                android:textColor="@color/blackLine"/>
+            <TextView
+                android:id="@+id/tv_script_code"
+                android:layout_width="match_parent"
+                android:textColor="#2196F3"
+                android:textIsSelectable="true"
+                android:padding="5dp"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+
     </ScrollView>
 </LinearLayout>

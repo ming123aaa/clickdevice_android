@@ -28,6 +28,7 @@ import androidx.lifecycle.Observer;
 import com.Ohuang.ilivedata.LiveDataBus;
 import com.example.clickdevice.MyService;
 import com.example.clickdevice.PowerKeyObserver;
+import com.example.clickdevice.Util;
 import com.example.clickdevice.bean.ScriptCmdBean;
 import com.example.clickdevice.ScriptExecutor;
 
@@ -104,6 +105,8 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
     public TextView tv_bw;
     private WindowManager wm;
     private TextView textView;
+    private TextView tv_name;
+    private TextView tv_copy;
     private String json;
     private Button btn_script_openScript;
     private PowerKeyObserver powerKeyObserver;//检测电源键是否被按下
@@ -117,6 +120,20 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
         this.editText_time = (EditText) findViewById(R.id.edit_script_time);
         btn_script_openScript=findViewById(R.id.btn_script_openScript);
         textView = findViewById(R.id.tv_script_code);
+        tv_name=findViewById(R.id.tv_name);
+        tv_copy=findViewById(R.id.tv_copy);
+        tv_copy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Util.copyText(textView.getText(),ScriptActivity.this);
+                    Toast.makeText(ScriptActivity.this,"复制成功",Toast.LENGTH_LONG).show();
+                }catch (Exception e){
+                    Toast.makeText(ScriptActivity.this,"复制失败"+e.toString(),Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
         this.singleThreadExecutor = Executors.newSingleThreadExecutor();
         if (this.btn_windowView != null) {
             initBtnWindowsView();
@@ -144,9 +161,21 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
                 List<ScriptCmdBean> list = gson.fromJson(json, new TypeToken<List<ScriptCmdBean>>() {
                 }.getType());
                 if (list == null || list.size() == 0){
+                    tv_copy.setVisibility(View.GONE);
                     Toast.makeText(ScriptActivity.this,"脚本为空或json格式有问题",Toast.LENGTH_SHORT).show();
                 }
+                tv_copy.setVisibility(View.VISIBLE);
                 mData=list;
+            }
+        });
+        LiveDataBus.get().with("scriptName",String.class).observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                if (TextUtils.isEmpty(s)){
+                    tv_name.setText("");
+                }else {
+                    tv_name.setText("脚本名称:"+s);
+                }
             }
         });
     }

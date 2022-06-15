@@ -14,7 +14,7 @@
             android:id="@+id/img_icon"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@drawable/ic_launcher_foreground" />
+            android:background="@drawable/ic_launcher_foreground" />
 
         <TextView
             android:id="@+id/tv_content"
@@ -47,7 +47,7 @@
             android:layout_weight="1"
             android:background="@drawable/btn_ok_dialog_sign"
             android:gravity="center"
-            android:text="插入"
+            android:text="前面插入"
             android:textColor="#FF5722" />
     </LinearLayout>
 

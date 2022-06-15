@@ -4,5 +4,6 @@
     <color name="colorPrimaryDark">#6331D3</color>
     <color name="colorAccent">#183618</color>
     <color name="blackLine">#fff</color>
+    <color name="hintColor">#ffc0c0c0</color>
     <color name="background">#101010</color>
 </resources>
