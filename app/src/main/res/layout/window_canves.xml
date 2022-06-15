@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <com.example.clickdevice.view.RecordTouchView
+        android:id="@+id/recordTouchView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#30005080"/>
+
+    <LinearLayout
+        android:id="@+id/layout1"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_start"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="开始"
+            android:textSize="16dp"
+            android:textColor="@color/btn_color"
+            android:gravity="center"/>
+        <TextView
+            android:id="@+id/tv_close"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/btn_color"
+            android:text="关闭"
+            android:textSize="16dp"
+            android:gravity="center"/>
+        <TextView
+            android:id="@+id/tv_hide"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textColor="@color/btn_color"
+            android:text="隐藏"
+            android:textSize="16dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"/>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

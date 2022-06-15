@@ -62,6 +62,12 @@ public class MyService extends AccessibilityService {
                 (path, 0, duration)).build(), null, null);
     }
 
+
+    public void dispatchGesture(Path path,int duration){
+        dispatchGesture(new GestureDescription.Builder().addStroke(new GestureDescription.StrokeDescription
+                (path, 0, duration)).build(), null, null);
+    }
+
     @Override
     public void onRebind(Intent intent) {
         super.onRebind(intent);

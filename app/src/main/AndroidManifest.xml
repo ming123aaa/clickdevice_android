@@ -14,10 +14,12 @@
         android:allowBackup="true"
         android:icon="@mipmap/icon_app"
         android:label="@string/app_name"
-
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AC.ScriptEditActivity"></activity>
+        <activity
+            android:name=".AC.RecordScriptActivity"
+            android:exported="false" />
+        <activity android:name=".AC.ScriptEditActivity" />
         <activity android:name=".AC.ScriptListActivity" />
         <activity android:name=".AC.ScriptActivity" />
         <activity android:name=".AC.MainActivity">

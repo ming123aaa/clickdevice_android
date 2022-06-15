@@ -150,25 +150,25 @@ public class SmallWindowView extends LinearLayout {
                 if (isHorizontalScreen(wm)) {
 
                     if (wmParams.y <= 0) {
-                        wmParams.y = Math.abs(wmParams.y) <= screenWidth / 2 ? wmParams.y : -screenWidth / 2;
+                        wmParams.y = Math.abs(wmParams.y) <= screenWidth / 2-getWidth()/2 ? wmParams.y : -screenWidth / 2+getWidth()/2;
                     } else {
-                        wmParams.y = (wmParams.y <= (screenWidth / 2)) ? wmParams.y : screenWidth / 2;
+                        wmParams.y = Math.min(wmParams.y, (screenWidth / 2) - getWidth() / 2);
                     }
                     if (wmParams.x <= 0) {
-                        wmParams.x = Math.abs(wmParams.x) <= screenHeight / 2 ? wmParams.x : -screenHeight / 2;
+                        wmParams.x = Math.abs(wmParams.x) <= screenHeight / 2-getHeight()/2 ? wmParams.x : -screenHeight / 2+getHeight()/2;
                     } else {
-                        wmParams.x = (wmParams.x <= (screenHeight / 2)) ? wmParams.x : screenHeight / 2;
+                        wmParams.x = Math.min(wmParams.x, (screenHeight / 2)-getHeight()/2);
                     }
                 } else {
                     if (wmParams.x <= 0) {
-                        wmParams.x = Math.abs(wmParams.x) <= screenWidth / 2 ? wmParams.x : -screenWidth / 2;
+                        wmParams.x = Math.abs(wmParams.x) <= screenWidth / 2-getWidth()/2 ? wmParams.x : -screenWidth / 2+getWidth()/2;
                     } else {
-                        wmParams.x = (wmParams.x <= (screenWidth / 2)) ? wmParams.x : screenWidth / 2;
+                        wmParams.x = Math.min(wmParams.x, (screenWidth / 2)-getWidth()/2);
                     }
                     if (wmParams.y <= 0) {
-                        wmParams.y = Math.abs(wmParams.y) <= screenHeight / 2 ? wmParams.y : -screenHeight / 2;
+                        wmParams.y = Math.abs(wmParams.y) <= screenHeight / 2-getHeight()/2 ? wmParams.y : -screenHeight / 2+getHeight()/2;
                     } else {
-                        wmParams.y = (wmParams.y <= (screenHeight / 2)) ? wmParams.y : screenHeight / 2;
+                        wmParams.y = Math.min(wmParams.y, (screenHeight / 2)-getHeight()/2);
                     }
 
                 }
