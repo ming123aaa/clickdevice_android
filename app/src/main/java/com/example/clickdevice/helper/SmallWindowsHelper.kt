@@ -64,7 +64,6 @@ class SmallWindowsHelper(val context: Context) {
         try {
             mWindowManager?.removeView(root)
         }catch (e:Exception){
-
         }
 
         isShow = false

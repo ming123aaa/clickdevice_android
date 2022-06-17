@@ -9,7 +9,7 @@ public class RecordScriptCmd {
     public int delayed;
     public int duration;
 
-    enum Type {
+    public enum  Type {
         Gesture, Delay
     }
 
