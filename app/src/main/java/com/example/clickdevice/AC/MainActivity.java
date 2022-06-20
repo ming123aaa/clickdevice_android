@@ -347,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void startRecordAc(View view) {
-        startActivity(new Intent(this, RecordScriptActivity.class));
+        startActivity(new Intent(this, RecordScriptListActivity.class));
         hideFloatWindows(btn_main);
     }
 }

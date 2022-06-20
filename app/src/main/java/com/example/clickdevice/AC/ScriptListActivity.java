@@ -68,30 +68,19 @@ public class ScriptListActivity extends AppCompatActivity {
 
         appDatabase = ((MyApp) getApplication()).getAppDatabase();
         liveData.postValue("s");
-        listLiveData.observe(this, new Observer<List<ScriptDataBean>>() {
-            @Override
-            public void onChanged(List<ScriptDataBean> scriptDataBeans) {
-                mData = scriptDataBeans;
-                scriptAdapter.setmData(mData);
+        listLiveData.observe(this, scriptDataBeans -> {
+            mData = scriptDataBeans;
+            scriptAdapter.setmData(mData);
 
-            }
         });
         scriptAdapter.setClickListener(new ScriptAdapter.ClickListener() {
             @Override
             public void delete(ScriptDataBean scriptDataBean) {
              dialog  = DialogHelper.DeleteDialogShow(ScriptListActivity.this, "删除脚本", "你确定要删除" + scriptDataBean.getName() + "?",
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                singleThreadExecutor.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        appDatabase.getScriptDao().deleteScriptDataBean(scriptDataBean);
-                                    }
-                                });
-                                dialog.dismiss();
-                            }
-                        });
+                     v -> {
+                         singleThreadExecutor.execute(() -> appDatabase.getScriptDao().deleteScriptDataBean(scriptDataBean));
+                         dialog.dismiss();
+                     });
             }
 
             @Override

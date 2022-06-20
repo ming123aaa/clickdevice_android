@@ -13,6 +13,9 @@ public class RecordScriptCmd {
         Gesture, Delay
     }
 
+    public RecordScriptCmd() {
+    }
+
     public static RecordScriptCmd createGestureCMD(List<Bean> path, int duration) {
         RecordScriptCmd recordScriptCmd = new RecordScriptCmd();
         recordScriptCmd.type = Type.Gesture;

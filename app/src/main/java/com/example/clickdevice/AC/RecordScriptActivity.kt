@@ -14,9 +14,14 @@ import com.example.clickdevice.bean.RecordScriptCmd
 import com.example.clickdevice.databinding.ActivityRecordScriptBinding
 import com.example.clickdevice.databinding.WindowBBinding
 import com.example.clickdevice.databinding.WindowCanvesBinding
+import com.example.clickdevice.helper.IOCoroutineContext
 import com.example.clickdevice.helper.SmallWindowsHelper
 import com.example.clickdevice.view.RecordTouchView
 import com.example.clickdevice.vm.RecordScriptViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScriptInterface {
 
@@ -52,6 +57,7 @@ class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScr
         initPlaySmallWindows()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun initEvent() {
         viewModel?.recordScriptExecutor?.recordScriptInterface = this
         binding?.btnOpen?.setOnClickListener {
@@ -71,6 +77,26 @@ class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScr
             } else {
                 playSmallWindowsHelper.hide()
             }
+        }
+        binding?.btnBack?.setOnClickListener {
+            finish()
+        }
+
+        binding?.btnComplete?.setOnClickListener {
+            var editName = binding?.editName?.text
+            editName?.run {
+                GlobalScope.launch(IOCoroutineContext ()){
+                    viewModel?.saveScript(this@RecordScriptActivity,editName.toString())
+                    MainScope().launch {
+                        finish()
+                        Toast.makeText(this@RecordScriptActivity,"保存成功",Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+            editName?: run {
+                Toast.makeText(this@RecordScriptActivity,"请输入脚本名",Toast.LENGTH_LONG).show()
+            }
+
         }
     }
 
@@ -239,7 +265,7 @@ class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScr
     override fun onDestroy() {
         super.onDestroy()
         smallWindowsHelper.hide()
-        smallWindowsHelper.hide()
+        playSmallWindowsHelper.hide()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
