@@ -1,79 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
- >
+    android:orientation="vertical">
+
     <Button
         android:id="@+id/btn_open"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="打开悬浮窗"
-        android:textColor="@color/blackLine"
         android:background="@drawable/btn_background"
-        />
-     <Button
+        android:text="打开悬浮窗"
+        android:textColor="@color/blackLine" />
+
+    <Button
         android:id="@+id/btn_play"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="运行录制脚本"
-        android:textColor="@color/blackLine"
-        android:background="@drawable/btn_background"
-        />
-
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <EditText
-        android:id="@+id/edit_name"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:hint="请输入脚本名称"
-        android:maxLines="1"
-        android:textColor="@color/blackLine"
-        android:theme="@style/MyEditText"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="5dp"
-        />
-
-
-    <Button
-        android:id="@+id/btn_back"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:text="返回"
-        android:textColor="@color/blackLine"
-
-        android:layout_margin="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintLeft_toLeftOf="parent"
         android:background="@drawable/btn_background"
-        app:layout_constraintRight_toLeftOf="@id/btn_complete" />
+        android:text="运行录制脚本"
+        android:textColor="@color/blackLine" />
 
-    <Button
-        android:id="@+id/btn_complete"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:text="完成"
-        android:textColor="@color/blackLine"
-
-        android:layout_margin="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_weight="1"
-        android:background="@drawable/btn_background"
-        app:layout_constraintLeft_toRightOf="@id/btn_back"
-        app:layout_constraintRight_toRightOf="parent" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_script_edit"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/btn_back"
-        app:layout_constraintTop_toBottomOf="@id/edit_name"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/edit_name"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:hint="请输入脚本名称"
+            android:maxLines="1"
+            android:textColor="@color/blackLine"
+            android:theme="@style/MyEditText"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <Button
+            android:id="@+id/btn_back"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/btn_background"
+
+            android:text="返回"
+            android:textColor="@color/blackLine"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/btn_complete" />
+
+        <Button
+            android:id="@+id/btn_complete"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/btn_background"
+
+            android:text="完成"
+            android:textColor="@color/blackLine"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintLeft_toRightOf="@id/btn_back"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_script_edit"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/btn_back"
+            app:layout_constraintTop_toBottomOf="@id/edit_name" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

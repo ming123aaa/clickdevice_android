@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.Ohuang.ilivedata.MyLiveData
 import com.example.clickdevice.R
 import com.example.clickdevice.adapter.RecordScriptAdapter
 import com.example.clickdevice.db.AppDatabase
@@ -57,11 +58,17 @@ class RecordScriptListActivity : AppCompatActivity() {
             }
 
             override fun edit(recordScriptBean: RecordScriptBean?) {
-
+                MyLiveData.getInstance().with("RecordScriptEdit", RecordScriptBean::class.java)
+                    .postValue(recordScriptBean)
+                var intent = Intent(this@RecordScriptListActivity, RecordScriptActivity::class.java)
+                intent.putExtra("isEdit",true)
+                startActivity(intent)
             }
 
             override fun select(recordScriptBean: RecordScriptBean?) {
-
+                MyLiveData.getInstance().with("RecordScriptPlay", RecordScriptBean::class.java)
+                    .postValue(recordScriptBean)
+                finish()
             }
 
         }
@@ -70,7 +77,7 @@ class RecordScriptListActivity : AppCompatActivity() {
             dataLiveData = appDatabase?.recordScriptDao?.loadLiveDataOfAllRecordScriptBean()
             MainScope().launch {
                 dataLiveData?.value?.let {
-                    mData=it
+                    mData = it
                     recordScriptAdapter?.setmData(mData)
                 }
             }

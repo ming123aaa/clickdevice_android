@@ -10,7 +10,6 @@ import android.os.Message;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,19 +25,18 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.example.clickdevice.PowerKeyObserver;
-import com.example.clickdevice.bean.Bean;
 import com.example.clickdevice.MyService;
-import com.example.clickdevice.SmallWindowView;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
+import com.example.clickdevice.PowerKeyObserver;
 import com.example.clickdevice.R;
+import com.example.clickdevice.SmallWindowView;
 import com.example.clickdevice.Util;
+import com.example.clickdevice.bean.Bean;
 import com.example.clickdevice.dialog.DialogHelper;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -347,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void startRecordAc(View view) {
-        startActivity(new Intent(this, RecordScriptListActivity.class));
+        startActivity(new Intent(this, RecordScriptPlayActivity.class));
         hideFloatWindows(btn_main);
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 import com.example.clickdevice.R;
 
 public class RecordScriptAdapter extends RecyclerView.Adapter {
-    private static final String TAG ="ScriptAdapter" ;
+
     private List<RecordScriptBean> mData;
     private Context context;
     private ClickListener clickListener;

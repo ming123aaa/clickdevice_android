@@ -32,4 +32,13 @@ public class RecordScriptCmd {
         return recordScriptCmd;
     }
 
+    @Override
+    public String toString() {
+        return "RecordScriptCmd{" +
+                "type=" + type +
+                ", path=" + path +
+                ", delayed=" + delayed +
+                ", duration=" + duration +
+                '}';
+    }
 }

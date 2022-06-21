@@ -23,8 +23,10 @@
         <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/activity_main.xml" value="0.358695652173913" />
         <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/activity_record_script.xml" value="0.22" />
         <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/activity_record_script_list.xml" value="0.3446557971014493" />
+        <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/activity_record_script_play.xml" value="0.3536458333333333" />
         <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/activity_record_scripta_list.xml" value="0.3390625" />
         <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/activity_script.xml" value="0.175" />
+        <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/activity_script_edit.xml" value="0.3536458333333333" />
         <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/activity_script_list.xml" value="0.3536458333333333" />
         <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/dialog_click.xml" value="0.17696629213483145" />
         <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/dialog_delayed.xml" value="0.1649214659685864" />
@@ -32,6 +34,7 @@
         <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/dialog_gesture.xml" value="0.3536458333333333" />
         <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/fragment_script_edit.xml" value="0.36614583333333334" />
         <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/item_cmd.xml" value="0.3536458333333333" />
+        <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/item_record_cmd.xml" value="0.175" />
         <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/item_record_script.xml" value="0.3446557971014493" />
         <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/item_script.xml" value="0.358695652173913" />
         <entry key="..\:/AndroidStudioProjects/gitclone/click-device_-android/app/src/main/res/layout/window_a.xml" value="0.358695652173913" />

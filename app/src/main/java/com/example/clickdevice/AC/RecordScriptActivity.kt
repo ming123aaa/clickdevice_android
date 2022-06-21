@@ -3,21 +3,29 @@ package com.example.clickdevice.AC
 import android.content.Intent
 import android.graphics.Path
 import android.os.Bundle
-import android.util.Log
-import android.view.*
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.Ohuang.ilivedata.MyLiveData
 import com.example.clickdevice.MyService
 import com.example.clickdevice.RecordScriptExecutor
+import com.example.clickdevice.adapter.RecordCMDAdapter
 import com.example.clickdevice.bean.RecordScriptCmd
 import com.example.clickdevice.databinding.ActivityRecordScriptBinding
 import com.example.clickdevice.databinding.WindowBBinding
 import com.example.clickdevice.databinding.WindowCanvesBinding
+import com.example.clickdevice.db.RecordScriptBean
 import com.example.clickdevice.helper.IOCoroutineContext
 import com.example.clickdevice.helper.SmallWindowsHelper
 import com.example.clickdevice.view.RecordTouchView
 import com.example.clickdevice.vm.RecordScriptViewModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
@@ -36,6 +44,7 @@ class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScr
     private var runnable1: Runnable? = null
     private var runnable2: Runnable? = null
     private var isRun = false
+    private var recordCMDAdapter:RecordCMDAdapter?=null
 
     private var playRunnable = Runnable {
 
@@ -52,9 +61,29 @@ class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScr
         setContentView(binding?.root)
         viewModel = ViewModelProvider(this)[RecordScriptViewModel::class.java]
         initEvent()
-
         initSmallWindows()
         initPlaySmallWindows()
+        initRv()
+        var booleanExtra = intent.getBooleanExtra("isEdit", false)
+        if (booleanExtra) {
+            MyLiveData.getInstance().with("RecordScriptEdit", RecordScriptBean::class.java)
+                .observe(this) {
+                    viewModel!!.recordScriptBean = it
+                    val name = it.name
+                    binding?.editName?.setText(name)
+                    val gson = Gson()
+                    viewModel!!.data = gson.fromJson(it.scriptJson,
+                        object : TypeToken<List<RecordScriptCmd>>() {}.type)
+                    recordCMDAdapter!!.setmData(viewModel!!.data)
+                }
+        }
+    }
+
+    private fun initRv() {
+        binding?.rvScriptEdit?.layoutManager=LinearLayoutManager(this)
+        recordCMDAdapter= RecordCMDAdapter(viewModel!!.data,this)
+        viewModel?.recordCMDAdapter=recordCMDAdapter
+        binding?.rvScriptEdit?.adapter=recordCMDAdapter
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -85,16 +114,16 @@ class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScr
         binding?.btnComplete?.setOnClickListener {
             var editName = binding?.editName?.text
             editName?.run {
-                GlobalScope.launch(IOCoroutineContext ()){
-                    viewModel?.saveScript(this@RecordScriptActivity,editName.toString())
+                GlobalScope.launch(IOCoroutineContext()) {
+                    viewModel?.saveScript(this@RecordScriptActivity, editName.toString())
                     MainScope().launch {
                         finish()
-                        Toast.makeText(this@RecordScriptActivity,"保存成功",Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@RecordScriptActivity, "保存成功", Toast.LENGTH_LONG).show()
                     }
                 }
             }
-            editName?: run {
-                Toast.makeText(this@RecordScriptActivity,"请输入脚本名",Toast.LENGTH_LONG).show()
+            editName ?: run {
+                Toast.makeText(this@RecordScriptActivity, "请输入脚本名", Toast.LENGTH_LONG).show()
             }
 
         }

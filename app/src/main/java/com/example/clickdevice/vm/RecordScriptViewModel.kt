@@ -4,8 +4,8 @@ import android.content.Context
 import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import com.example.clickdevice.RecordScriptExecutor
+import com.example.clickdevice.adapter.RecordCMDAdapter
 import com.example.clickdevice.bean.RecordScriptCmd
-import com.example.clickdevice.bean.ScriptCmdBean
 import com.example.clickdevice.db.AppDatabase
 import com.example.clickdevice.db.RecordScriptBean
 import com.example.clickdevice.helper.toDate
@@ -28,6 +28,7 @@ class RecordScriptViewModel : ViewModel() {
 
     var lastTime = 0L
 
+    var recordCMDAdapter: RecordCMDAdapter?=null
 
     fun playScript() {
         recordScriptExecutor.run(data)
@@ -37,6 +38,7 @@ class RecordScriptViewModel : ViewModel() {
     fun addRecordScriptCmd(recordScriptCmd: RecordScriptCmd) {
         if (isRecord) {
             data.add(recordScriptCmd)
+            recordCMDAdapter?.notifyDataSetChanged()
         }
     }
 

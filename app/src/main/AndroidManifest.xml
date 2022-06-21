@@ -16,6 +16,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
+        <activity android:name=".AC.RecordScriptPlayActivity">
+
+        </activity>
         <activity
             android:name=".AC.RecordScriptListActivity"
             android:exported="false" />

@@ -1,6 +1,5 @@
 package com.example.clickdevice
 
-import android.gesture.Gesture
 import android.graphics.Path
 import com.example.clickdevice.bean.Bean
 import com.example.clickdevice.bean.RecordScriptCmd
@@ -34,7 +33,7 @@ class RecordScriptExecutor {
         delay(recordScriptCmd.delayed.toLong())
     }
 
-    private fun delay(time: Long): Boolean {
+     fun delay(time: Long): Boolean {
         if (time <= 0) {
             return false
         }
@@ -92,6 +91,7 @@ class RecordScriptExecutor {
         fun dispatchGesture(position: Int, path: Path, duration: Int)
 
         fun endDispatchGesture()
+
 
     }
 }
