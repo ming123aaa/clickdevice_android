@@ -2,6 +2,7 @@ package com.example.clickdevice.AC
 
 import android.content.Intent
 import android.graphics.Path
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -34,8 +35,8 @@ import kotlinx.coroutines.launch
 class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScriptInterface {
 
 
-    private lateinit var smallWindowsHelper: SmallWindowsHelper
-    private lateinit var playSmallWindowsHelper: SmallWindowsHelper
+    private  var smallWindowsHelper: SmallWindowsHelper?=null
+    private  var playSmallWindowsHelper: SmallWindowsHelper?=null
     private var smallWindowBinding: WindowCanvesBinding? = null
     private var binding: ActivityRecordScriptBinding? = null
     private var viewModel: RecordScriptViewModel? = null
@@ -92,7 +93,7 @@ class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScr
         binding?.btnOpen?.setOnClickListener {
             if (MyService.isStart()) {
                 showSmallWindows()
-                playSmallWindowsHelper.hide()
+                playSmallWindowsHelper?.hide()
                 isRun = false
             } else {
                 Toast.makeText(this, "请手动开启辅助功能，若已开启请重启应用再试一次。", Toast.LENGTH_LONG)
@@ -100,11 +101,11 @@ class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScr
             }
         }
         binding?.btnPlay?.setOnClickListener {
-            if (!playSmallWindowsHelper.isShow) {
+            if (!playSmallWindowsHelper?.isShow!!) {
                 showPlayWindow()
                 closeSmallWindow()
             } else {
-                playSmallWindowsHelper.hide()
+                playSmallWindowsHelper?.hide()
             }
         }
         binding?.btnBack?.setOnClickListener {
@@ -131,7 +132,10 @@ class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScr
 
     private fun initPlaySmallWindows() {
         playSmallWindowsHelper = SmallWindowsHelper(this)
-        val mLayoutParams = playSmallWindowsHelper.mLayoutParams
+        val mLayoutParams = playSmallWindowsHelper?.mLayoutParams
+
+
+
         mLayoutParams?.gravity = Gravity.TOP
         windowBBinding = WindowBBinding.inflate(layoutInflater)
         windowBBinding?.tvWinB?.setOnClickListener {
@@ -153,7 +157,15 @@ class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScr
 
 
     private fun initSmallWindows() {
-        smallWindowsHelper = SmallWindowsHelper(this)
+        if (!MyService.isStart()){
+            return
+        }
+        smallWindowsHelper = SmallWindowsHelper(MyService.myService)
+        val mLayoutParams = smallWindowsHelper?.mLayoutParams
+        var type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
+
+        mLayoutParams?.type=type
+
         smallWindowBinding = WindowCanvesBinding.inflate(layoutInflater)
         smallWindowBinding?.recordTouchView?.scriptListener =
             object : RecordTouchView.ScriptListener {
@@ -204,7 +216,7 @@ class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScr
         binding?.root?.removeCallbacks(runnable2)
         smallWindowBinding?.tvStart?.text = "开始"
         viewModel?.stopRecord()
-        smallWindowsHelper.hide()
+        smallWindowsHelper?.hide()
     }
 
     private fun dispatchGesturePath(
@@ -230,48 +242,51 @@ class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScr
 
     private fun notTouch() {
         smallWindowBinding?.recordTouchView?.isEnabled = false
-        var mLayoutParams = smallWindowsHelper.mLayoutParams
+        var mLayoutParams = smallWindowsHelper?.mLayoutParams
         mLayoutParams?.flags =
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-        smallWindowsHelper.mLayoutParams = mLayoutParams!!
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+
+        smallWindowsHelper?.mLayoutParams = mLayoutParams!!
+
         smallWindowBinding?.recordTouchView?.setBackgroundColor(0x30805000)
     }
 
     private fun canTouch() {
         smallWindowBinding?.recordTouchView?.isEnabled = true
-        val mLayoutParams = smallWindowsHelper.mLayoutParams
+        val mLayoutParams = smallWindowsHelper?.mLayoutParams
         mLayoutParams?.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-        smallWindowsHelper.mLayoutParams = mLayoutParams!!
+        smallWindowsHelper?.mLayoutParams = mLayoutParams!!
+
         smallWindowBinding?.recordTouchView?.setBackgroundColor(0x30005080)
     }
 
     private fun playNotTouch() {
 
-        var mLayoutParams = playSmallWindowsHelper.mLayoutParams
+        var mLayoutParams = playSmallWindowsHelper?.mLayoutParams
         mLayoutParams?.flags =
             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-        playSmallWindowsHelper.mLayoutParams = mLayoutParams!!
+        playSmallWindowsHelper?.mLayoutParams = mLayoutParams!!
         windowBBinding?.tvWinB?.setTextColor(0xff000000.toInt())
     }
 
 
     private fun playCanTouch() {
-        val mLayoutParams = playSmallWindowsHelper.mLayoutParams
+        val mLayoutParams = playSmallWindowsHelper?.mLayoutParams
         mLayoutParams?.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-        playSmallWindowsHelper.mLayoutParams = mLayoutParams!!
+        playSmallWindowsHelper?.mLayoutParams = mLayoutParams!!
         windowBBinding?.tvWinB?.setTextColor(0xffff0000.toInt())
     }
 
     private fun showSmallWindows() {
         if (SmallWindowsHelper.requestPermission(this)) {
-            if (smallWindowsHelper.root == null) {
-                smallWindowsHelper.attach(smallWindowBinding?.root!!)
-                val mLayoutParams = smallWindowsHelper.mLayoutParams
+            if (smallWindowsHelper?.root == null) {
+                smallWindowsHelper?.attach(smallWindowBinding?.root!!)
+                val mLayoutParams = smallWindowsHelper?.mLayoutParams
                 mLayoutParams?.width = ViewGroup.LayoutParams.MATCH_PARENT
                 mLayoutParams?.height = ViewGroup.LayoutParams.MATCH_PARENT
-                smallWindowsHelper.mLayoutParams = mLayoutParams
+                smallWindowsHelper?.mLayoutParams = mLayoutParams
             } else {
-                smallWindowsHelper.show()
+                smallWindowsHelper?.show()
             }
             canTouch()
         }
@@ -280,11 +295,12 @@ class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScr
 
 
     private fun showPlayWindow() {
+
         if (SmallWindowsHelper.requestPermission(this)) {
-            if (playSmallWindowsHelper.root == null) {
-                playSmallWindowsHelper.attach(windowBBinding?.root!!)
+            if (playSmallWindowsHelper?.root == null) {
+                playSmallWindowsHelper?.attach(windowBBinding?.root!!)
             } else {
-                playSmallWindowsHelper.show()
+                playSmallWindowsHelper?.show()
             }
         }
 
@@ -293,8 +309,8 @@ class RecordScriptActivity : AppCompatActivity(), RecordScriptExecutor.RecordScr
 
     override fun onDestroy() {
         super.onDestroy()
-        smallWindowsHelper.hide()
-        playSmallWindowsHelper.hide()
+        smallWindowsHelper?.hide()
+        playSmallWindowsHelper?.hide()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

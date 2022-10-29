@@ -8,7 +8,9 @@
         android:name="android.permission.INJECT_EVENTS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="androd.permission.DISABLE_KEYGUARD" />
-
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+    <uses-permission android:name="android.permission.GET_TASKS"/>
     <application
         android:name=".MyApp"
         android:allowBackup="true"
@@ -16,19 +18,34 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
-        <activity android:name=".AC.RecordScriptPlayActivity">
+        <activity android:name=".AC.RecordScriptPlayActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize">
 
         </activity>
         <activity
             android:name=".AC.RecordScriptListActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:exported="false" />
         <activity
             android:name=".AC.RecordScriptActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:exported="false" />
-        <activity android:name=".AC.ScriptEditActivity" />
-        <activity android:name=".AC.ScriptListActivity" />
-        <activity android:name=".AC.ScriptActivity" />
-        <activity android:name=".AC.MainActivity" >
+        <activity android:name=".AC.ScriptEditActivity"
+            android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AC.ScriptListActivity"
+            android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AC.ScriptActivity"
+            android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AC.MainActivity"
+            android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
+            android:screenOrientation="portrait"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,6 +57,7 @@
             android:name=".MyService"
             android:enabled="true"
             android:exported="true"
+
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
