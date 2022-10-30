@@ -388,6 +388,7 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
         if(MyService.isStart()) {
             MyService.myService.pkgNameMutableLiveData.removeObserver(observer);
         }
+        powerKeyObserver.stopListen();
         super.onDestroy();
     }
 }

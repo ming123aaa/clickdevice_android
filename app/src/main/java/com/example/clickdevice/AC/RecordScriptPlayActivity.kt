@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.Ohuang.ilivedata.MyLiveData
 import com.example.clickdevice.MyService
+import com.example.clickdevice.PowerKeyObserver
+import com.example.clickdevice.PowerKeyObserver.OnPowerKeyListener
 import com.example.clickdevice.RecordScriptExecutor
 import com.example.clickdevice.bean.RecordScriptCmd
 import com.example.clickdevice.databinding.ActivityRecordScriptPlayBinding
@@ -54,6 +56,8 @@ class RecordScriptPlayActivity : AppCompatActivity(), RecordScriptExecutor.Recor
         }
     }
 
+    private var powerKeyObserver:PowerKeyObserver?=null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRecordScriptPlayBinding.inflate(layoutInflater)
@@ -61,11 +65,15 @@ class RecordScriptPlayActivity : AppCompatActivity(), RecordScriptExecutor.Recor
         initEvent()
         recordScriptExecutor.recordScriptInterface = this
         initPlaySmallWindows()
+        powerKeyObserver = PowerKeyObserver(this)
+        powerKeyObserver?.startListen() //h开始注册广播
+        powerKeyObserver?.setHomeKeyListener(OnPowerKeyListener { isRun=false })
     }
 
 
     override fun onDestroy() {
         super.onDestroy()
+        powerKeyObserver?.stopListen()
         playSmallWindowsHelper.hide()
     }
 
@@ -80,6 +88,7 @@ class RecordScriptPlayActivity : AppCompatActivity(), RecordScriptExecutor.Recor
         }
         binding?.btnSelect?.setOnClickListener {
             startActivity(Intent(this, RecordScriptListActivity::class.java))
+            playSmallWindowsHelper.hide()
         }
         MyLiveData.getInstance().with("RecordScriptPlay", RecordScriptBean::class.java)
             .observe(this) {
@@ -103,12 +112,27 @@ class RecordScriptPlayActivity : AppCompatActivity(), RecordScriptExecutor.Recor
     }
 
     private fun initPlaySmallWindows() {
-        playSmallWindowsHelper = SmallWindowsHelper(this)
+        if (MyService.isStart()){
+            playSmallWindowsHelper=SmallWindowsHelper(MyService.myService)
+            val mLayoutParams = playSmallWindowsHelper.mLayoutParams
+            mLayoutParams?.type=WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
+        }else{
+            playSmallWindowsHelper = SmallWindowsHelper(this)
+        }
+
         val mLayoutParams = playSmallWindowsHelper.mLayoutParams
         mLayoutParams?.gravity = Gravity.TOP
         windowBBinding = WindowBBinding.inflate(layoutInflater)
         windowBBinding?.tvWinB?.setOnClickListener {
             if (!isRun) {
+                if (!MyService.isStart()){
+                    Toast.makeText(
+                        this@RecordScriptPlayActivity,
+                        "请手动开启辅助功能，若已开启请重启应用再试一次。",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@setOnClickListener
+                }
                 val text = binding?.editScriptTime?.text.toString()
                 val toString = binding?.editScriptNumber?.text.toString()
                 tryCatch{

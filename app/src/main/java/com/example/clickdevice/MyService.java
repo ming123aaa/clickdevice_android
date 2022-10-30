@@ -43,7 +43,7 @@ public class MyService extends AccessibilityService {
     @Override
     public void onCreate() {
         super.onCreate();
-        myService = this;
+
         Log.e(TAG, "onCreate: ");
     }
 
@@ -94,6 +94,7 @@ public class MyService extends AccessibilityService {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        myService=null;
         Log.e(TAG, "onDestroy: ");
     }
 
@@ -177,6 +178,7 @@ public class MyService extends AccessibilityService {
         config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
 
         setServiceInfo(config);
+        myService = this;
 //        createWindow();
     }
 

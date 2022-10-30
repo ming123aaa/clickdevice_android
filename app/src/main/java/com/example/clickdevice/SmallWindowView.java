@@ -109,13 +109,7 @@ public class SmallWindowView extends LinearLayout {
     boolean isRange = false;
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-
-        return super.dispatchTouchEvent(ev);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             isRange = calcPointRange(event);
             Log.e(TAG, "onTouchEvent: isRange = " + isRange);
@@ -181,6 +175,12 @@ public class SmallWindowView extends LinearLayout {
             default:
                 break;
         }
+        return super.dispatchTouchEvent(event);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
         return super.onTouchEvent(event);
     }
 

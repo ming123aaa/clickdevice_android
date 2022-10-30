@@ -1,6 +1,9 @@
 package com.example.clickdevice.AC;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -348,4 +351,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, RecordScriptPlayActivity.class));
         hideFloatWindows(btn_main);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        powerKeyObserver.stopListen();
+    }
+
+
 }
