@@ -1,4 +1,4 @@
-package com.example.clickdevice.AC;
+package com.example.clickdevice.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -27,14 +27,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 
-import com.Ohuang.ilivedata.LiveDataBus;
+import com.Ohuang.ilivedata.MyLiveData;
 import com.example.clickdevice.MyService;
 import com.example.clickdevice.PowerKeyObserver;
 import com.example.clickdevice.Util;
 import com.example.clickdevice.bean.ScriptCmdBean;
 import com.example.clickdevice.ScriptExecutor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -162,7 +161,7 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
     }
 
     private void initEvent() {
-        LiveDataBus.get().with("json", String.class).observe(this, new Observer<String>() {
+        MyLiveData.getInstance().with("json", String.class).observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 json = s;
@@ -178,7 +177,7 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
                 mData = list;
             }
         });
-        LiveDataBus.get().with("scriptName", String.class).observe(this, new Observer<String>() {
+        MyLiveData.getInstance().with("scriptName", String.class).observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 if (TextUtils.isEmpty(s)) {

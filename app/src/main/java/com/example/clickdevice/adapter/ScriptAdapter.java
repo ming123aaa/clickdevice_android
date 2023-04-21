@@ -18,7 +18,7 @@ import com.example.clickdevice.db.ScriptDataBean;
 import java.util.List;
 
 public class ScriptAdapter extends RecyclerView.Adapter {
-    private static final String TAG ="ScriptAdapter" ;
+    private static final String TAG = "ScriptAdapter";
     private List<ScriptDataBean> mData;
     private Context context;
     private ClickListener clickListener;
@@ -61,11 +61,14 @@ public class ScriptAdapter extends RecyclerView.Adapter {
                 ((ScriptViewHolder) holder).itemScriptBinding.btnDelete.setOnClickListener(v -> {
                     clickListener.delete(mData.get(position));
                 });
-                ((ScriptViewHolder) holder).itemScriptBinding.btnEdit.setOnClickListener(v->{
+                ((ScriptViewHolder) holder).itemScriptBinding.btnEdit.setOnClickListener(v -> {
                     clickListener.edit(mData.get(position));
                 });
-                ((ScriptViewHolder) holder).itemScriptBinding.btnSelect.setOnClickListener(v->{
+                ((ScriptViewHolder) holder).itemScriptBinding.btnSelect.setOnClickListener(v -> {
                     clickListener.select(mData.get(position));
+                });
+                ((ScriptViewHolder) holder).itemScriptBinding.tvCreateDesktop.setOnClickListener(v -> {
+                    clickListener.createDesktop(mData.get(position));
                 });
             }
         }
@@ -91,5 +94,7 @@ public class ScriptAdapter extends RecyclerView.Adapter {
         void edit(ScriptDataBean scriptDataBean);
 
         void select(ScriptDataBean scriptDataBean);
+
+        void createDesktop(ScriptDataBean scriptDataBean);
     }
 }

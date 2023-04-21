@@ -49,6 +49,22 @@ public class DialogHelper {
                 .addAction(0, "确定", QMUIDialogAction.ACTION_PROP_POSITIVE,listener)
                 .show();
     }
+    public static void showMessagePositiveDialog(Activity activity,String title,String msg,QMUIDialogAction.ActionListener listener,View.OnClickListener quxiao) {
+        new QMUIDialog.MessageDialogBuilder(activity)
+                .setTitle(title)
+                .setMessage(msg)
+                .addAction("取消", new QMUIDialogAction.ActionListener() {
+                    @Override
+                    public void onClick(QMUIDialog dialog, int index) {
+                        dialog.dismiss();
+                        if (quxiao!=null){
+                            quxiao.onClick(null);
+                        }
+                    }
+                })
+                .addAction(0, "确定", QMUIDialogAction.ACTION_PROP_POSITIVE,listener)
+                .show();
+    }
 
 
     public static Dialog DeleteDialogShow(Context context, String title, String content, View.OnClickListener confirmListener){

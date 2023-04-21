@@ -1,4 +1,4 @@
-package com.example.clickdevice.AC
+package com.example.clickdevice.activity
 
 import android.app.Dialog
 import android.content.Intent
@@ -14,6 +14,7 @@ import com.example.clickdevice.adapter.RecordScriptAdapter
 import com.example.clickdevice.db.AppDatabase
 import com.example.clickdevice.db.RecordScriptBean
 import com.example.clickdevice.dialog.DialogHelper
+import com.example.clickdevice.helper.DesktopIconHelper
 import com.example.clickdevice.helper.IOCoroutineContext
 import com.example.clickdevice.helper.MainCoroutineContext
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -68,7 +69,11 @@ class RecordScriptListActivity : AppCompatActivity() {
             override fun select(recordScriptBean: RecordScriptBean?) {
                 MyLiveData.getInstance().with("RecordScriptPlay", RecordScriptBean::class.java)
                     .postValue(recordScriptBean)
-                finish()
+                startActivity(Intent(this@RecordScriptListActivity,RecordScriptPlayActivity::class.java))
+            }
+
+            override fun createDesktop(recordScriptBean: RecordScriptBean?) {
+                DesktopIconHelper.addShortcut(this@RecordScriptListActivity,recordScriptBean!!)
             }
 
         }

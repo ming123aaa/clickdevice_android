@@ -4,35 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/background"
-    >
+    android:orientation="vertical">
+
     <Button
 
-        android:layout_marginTop="20dp"
         android:id="@+id/btn_script_openScript"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="打开脚本"
-        android:textColor="@color/blackLine"
-
+        android:layout_marginTop="20dp"
         android:background="@drawable/btn_background"
-      />
+        android:text="打开脚本"
+
+        android:textColor="@color/blackLine" />
+
     <Button
         android:id="@+id/btn_select"
-        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/btn_background"
         android:text="选择脚本"
         android:textColor="@color/blackLine"
-
-        android:background="@drawable/btn_background"
+        android:visibility="gone"
 
         />
+
     <LinearLayout
-        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="40dp"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
         <TextView
@@ -40,8 +41,8 @@
             android:layout_width="120dp"
             android:layout_height="match_parent"
             android:gravity="right|center"
-            android:textColor="@color/blackLine"
-            android:text="时间间隔（单位ms 最小值为100）:" />
+            android:text="时间间隔（单位ms 最小值为100）:"
+            android:textColor="@color/blackLine" />
 
         <EditText
             android:id="@+id/edit_script_time"
@@ -49,28 +50,28 @@
             android:layout_height="match_parent"
             android:inputType="number"
             android:maxLength="6"
-            android:theme="@style/MyEditText"
+            android:text="1000"
             android:textColor="@color/blackLine"
 
-            android:text="1000" />
+            android:theme="@style/MyEditText" />
 
         <TextView
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:gravity="right|center"
-            android:textColor="@color/blackLine"
-            android:text="次数:" />
+            android:text="次数:"
+            android:textColor="@color/blackLine" />
 
         <EditText
             android:id="@+id/edit_script_number"
             android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:maxLength="6"
-            android:theme="@style/MyEditText"
-            android:textColor="@color/blackLine"
-
             android:inputType="number"
-            android:text="1" />
+            android:maxLength="6"
+            android:text="1"
+
+            android:textColor="@color/blackLine"
+            android:theme="@style/MyEditText" />
     </LinearLayout>
 
     <TextView
@@ -79,33 +80,44 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:paddingHorizontal="10dp"
-        android:textColor="@color/blackLine"/>
+        android:textColor="@color/blackLine" />
+    <CheckBox
+        android:id="@+id/cb_reChange_app"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:paddingHorizontal="10dp"
+        android:text="应用切换停止运行" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="10dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <TextView
                 android:id="@+id/tv_copy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:paddingHorizontal="20dp"
-                android:textSize="20dp"
                 android:text="复制脚本"
-                android:visibility="gone"
-                android:textColor="@color/blackLine"/>
+                android:textColor="@color/blackLine"
+                android:textSize="20dp"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/tv_script_code"
                 android:layout_width="match_parent"
-                android:textColor="#2196F3"
-                android:textIsSelectable="true"
+                android:layout_height="match_parent"
                 android:padding="5dp"
-                android:layout_height="match_parent"/>
+                android:textColor="#2196F3"
+                android:textIsSelectable="true" />
+
         </LinearLayout>
 
     </ScrollView>

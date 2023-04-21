@@ -1,11 +1,10 @@
-package com.example.clickdevice.AC;
+package com.example.clickdevice.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.arch.core.util.Function;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,12 +13,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 
-import com.Ohuang.ilivedata.LiveDataBus;
 import com.Ohuang.ilivedata.MyLiveData;
 import com.example.clickdevice.MyApp;
 import com.example.clickdevice.R;
@@ -27,6 +23,7 @@ import com.example.clickdevice.adapter.ScriptAdapter;
 import com.example.clickdevice.db.AppDatabase;
 import com.example.clickdevice.db.ScriptDataBean;
 import com.example.clickdevice.dialog.DialogHelper;
+import com.example.clickdevice.helper.DesktopIconHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,9 +91,14 @@ public class ScriptListActivity extends AppCompatActivity {
 
             @Override
             public void select(ScriptDataBean scriptDataBean) {
-               LiveDataBus.get().with("json",String.class).setValue(scriptDataBean.getScriptJson());
-               LiveDataBus.get().with("scriptName",String.class).setValue(scriptDataBean.getName());
-               finish();
+               MyLiveData.getInstance().with("json",String.class).setValue(scriptDataBean.getScriptJson());
+               MyLiveData.getInstance().with("scriptName",String.class).setValue(scriptDataBean.getName());
+               startActivity(new Intent(ScriptListActivity.this,ScriptActivity.class));
+            }
+
+            @Override
+            public void createDesktop(ScriptDataBean scriptDataBean) {
+                DesktopIconHelper.INSTANCE.addShortcut(ScriptListActivity.this,scriptDataBean);
             }
         });
     }

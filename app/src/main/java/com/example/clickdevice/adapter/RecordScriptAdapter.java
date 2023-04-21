@@ -12,6 +12,7 @@ import com.example.clickdevice.databinding.ItemRecordScriptBinding;
 import com.example.clickdevice.db.RecordScriptBean;
 
 import java.util.List;
+
 import com.example.clickdevice.R;
 
 public class RecordScriptAdapter extends RecyclerView.Adapter {
@@ -58,11 +59,14 @@ public class RecordScriptAdapter extends RecyclerView.Adapter {
                 ((RecordScriptViewHolder) holder).itemScriptBinding.btnDelete.setOnClickListener(v -> {
                     clickListener.delete(mData.get(position));
                 });
-                ((RecordScriptViewHolder) holder).itemScriptBinding.btnEdit.setOnClickListener(v->{
+                ((RecordScriptViewHolder) holder).itemScriptBinding.btnEdit.setOnClickListener(v -> {
                     clickListener.edit(mData.get(position));
                 });
-                ((RecordScriptViewHolder) holder).itemScriptBinding.btnSelect.setOnClickListener(v->{
+                ((RecordScriptViewHolder) holder).itemScriptBinding.btnSelect.setOnClickListener(v -> {
                     clickListener.select(mData.get(position));
+                });
+                ((RecordScriptViewHolder) holder).itemScriptBinding.tvCreateDesktop.setOnClickListener(v -> {
+                    clickListener.createDesktop(mData.get(position));
                 });
             }
         }
@@ -88,5 +92,7 @@ public class RecordScriptAdapter extends RecyclerView.Adapter {
         void edit(RecordScriptBean recordScriptBean);
 
         void select(RecordScriptBean recordScriptBean);
+
+        void createDesktop(RecordScriptBean recordScriptBean);
     }
 }

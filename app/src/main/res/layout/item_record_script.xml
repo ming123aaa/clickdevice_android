@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+
         <TextView
             android:id="@+id/tv_id"
             android:layout_width="100dp"
@@ -113,6 +114,17 @@
             app:layout_constraintTop_toTopOf="@id/btn_delete"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toRightOf="@id/btn_edit"/>
+        <TextView
+            android:id="@+id/tv_createDesktop"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:text="创建桌面图标"
+            android:textColor="#aa0000"
+            android:background="@drawable/btn_ok_dialog_sign"
+            android:layout_marginTop="10dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

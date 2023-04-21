@@ -1,15 +1,14 @@
-package com.example.clickdevice.AC;
+package com.example.clickdevice.activity;
 
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Process;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -35,6 +34,7 @@ import com.example.clickdevice.SmallWindowView;
 import com.example.clickdevice.Util;
 import com.example.clickdevice.bean.Bean;
 import com.example.clickdevice.dialog.DialogHelper;
+import com.example.clickdevice.helper.DesktopIconHelper;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 
@@ -342,13 +342,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startScriptAc(View view) {
-        startActivity(new Intent(this, ScriptActivity.class));
+        startActivity(new Intent(this, ScriptListActivity.class));
         hideFloatWindows(btn_main);
     }
 
 
     public void startRecordAc(View view) {
-        startActivity(new Intent(this, RecordScriptPlayActivity.class));
+
+        startActivity(new Intent(this, RecordScriptListActivity.class));
         hideFloatWindows(btn_main);
     }
 

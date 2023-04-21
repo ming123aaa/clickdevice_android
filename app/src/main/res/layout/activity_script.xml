@@ -24,9 +24,9 @@
         android:layout_marginTop="10dp"
         android:background="@drawable/btn_background"
         android:onClick="selectScript"
-
         android:text="选择脚本"
-        android:textColor="@color/blackLine" />
+        android:textColor="@color/blackLine"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -74,10 +74,10 @@
 
     <CheckBox
         android:id="@+id/cb_reChange_app"
-        android:layout_marginTop="5dp"
-        android:paddingHorizontal="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:paddingHorizontal="10dp"
         android:text="应用切换停止运行" />
 
     <TextView

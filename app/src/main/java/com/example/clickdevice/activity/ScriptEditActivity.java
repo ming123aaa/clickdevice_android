@@ -1,17 +1,12 @@
-package com.example.clickdevice.AC;
+package com.example.clickdevice.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Observer;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
-import com.Ohuang.ilivedata.LiveDataBus;
-import com.Ohuang.ilivedata.MyLiveData;
 import com.example.clickdevice.R;
-import com.example.clickdevice.db.ScriptDataBean;
 
 import com.example.clickdevice.fg.ScriptEditFragment;
 

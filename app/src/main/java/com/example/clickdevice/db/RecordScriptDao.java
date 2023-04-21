@@ -37,4 +37,7 @@ public interface RecordScriptDao {
     //分页查询 size为每次查询数据的个数  page为第几个数据开始
     @Query("SELECT * FROM record order by id limit :size offset :page")
     List<RecordScriptBean> loadRecordScriptBeanForPage(int size, int page);
+
+    @Query("SELECT * FROM record WHERE id=:iID")
+    RecordScriptBean findBeanById(int iID);
 }

@@ -1,8 +1,7 @@
-package com.example.clickdevice.AC
+package com.example.clickdevice.activity
 
 import android.content.Intent
 import android.graphics.Path
-import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -10,6 +9,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.Ohuang.ilivedata.MyLiveData

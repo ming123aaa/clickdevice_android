@@ -1,4 +1,4 @@
-package com.example.clickdevice.AC
+package com.example.clickdevice.activity
 
 import android.content.Intent
 import android.graphics.Path
@@ -8,6 +8,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import com.Ohuang.ilivedata.MyLiveData
 import com.example.clickdevice.MyService
 import com.example.clickdevice.PowerKeyObserver
@@ -33,6 +34,21 @@ class RecordScriptPlayActivity : AppCompatActivity(), RecordScriptExecutor.Recor
     var data = ArrayList<RecordScriptCmd>()
     var time = 0L
     var count = 0
+
+
+    private var thisPkgName = ""
+    private var pkgNameNow = ""
+    private var checkAppChange = false
+    private var observer: Observer<String> =  Observer<String> { s: String ->
+        pkgNameNow = s
+        if (checkAppChange) {
+            if (pkgNameNow != thisPkgName) {
+                if (isRun) {
+                    isRun = false
+                }
+            }
+        }
+    }
 
     private var playRunnable = Runnable {
         forCount(count) {
@@ -68,6 +84,9 @@ class RecordScriptPlayActivity : AppCompatActivity(), RecordScriptExecutor.Recor
         powerKeyObserver = PowerKeyObserver(this)
         powerKeyObserver?.startListen() //h开始注册广播
         powerKeyObserver?.setHomeKeyListener(OnPowerKeyListener { isRun=false })
+        if (MyService.isStart()) {
+            MyService.myService.pkgNameMutableLiveData.observeForever(observer)
+        }
     }
 
 
@@ -75,6 +94,9 @@ class RecordScriptPlayActivity : AppCompatActivity(), RecordScriptExecutor.Recor
         super.onDestroy()
         powerKeyObserver?.stopListen()
         playSmallWindowsHelper.hide()
+        if (MyService.isStart()) {
+            MyService.myService.pkgNameMutableLiveData.removeObserver(observer)
+        }
     }
 
 
@@ -139,7 +161,8 @@ class RecordScriptPlayActivity : AppCompatActivity(), RecordScriptExecutor.Recor
                     time=text.toLong()
                 }
                 tryCatch { count=toString.toInt() }
-
+                checkAppChange = binding!!.cbReChangeApp.isChecked
+                thisPkgName = pkgNameNow
                 isRun = true
                 singleThreadExecutor.execute(playRunnable)
                 windowBBinding?.tvWinB?.text = "停止"

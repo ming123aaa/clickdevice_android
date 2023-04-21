@@ -6,13 +6,18 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical">
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:textColor="@color/blackLine"
+        android:text="录制脚本"
+        />
     <Button
         android:id="@+id/btn_start"
-        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="创建新的脚本"
+        android:text="创建新脚本"
         android:textColor="@color/blackLine"
         android:background="@drawable/btn_background"/>
 
