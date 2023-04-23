@@ -36,10 +36,11 @@ public class DialogHelper {
 
     }
 
-    public static void showMessagePositiveDialog(Activity activity,String title,String msg,QMUIDialogAction.ActionListener listener) {
-        new QMUIDialog.MessageDialogBuilder(activity)
+    public static Dialog showMessagePositiveDialog(Activity activity,String title,String msg,QMUIDialogAction.ActionListener listener) {
+       return new QMUIDialog.MessageDialogBuilder(activity)
                 .setTitle(title)
                 .setMessage(msg)
+               .setCancelable(false)
                 .addAction("取消", new QMUIDialogAction.ActionListener() {
                     @Override
                     public void onClick(QMUIDialog dialog, int index) {
@@ -53,6 +54,7 @@ public class DialogHelper {
         new QMUIDialog.MessageDialogBuilder(activity)
                 .setTitle(title)
                 .setMessage(msg)
+                .setCancelable(false)
                 .addAction("取消", new QMUIDialogAction.ActionListener() {
                     @Override
                     public void onClick(QMUIDialog dialog, int index) {

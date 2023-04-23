@@ -8,9 +8,12 @@ import android.widget.Toast
 import com.Ohuang.ilivedata.MyLiveData
 import com.example.clickdevice.MyApp
 import com.example.clickdevice.MyService
+import com.example.clickdevice.R
 import com.example.clickdevice.db.RecordScriptBean
 import com.example.clickdevice.db.ScriptDataBean
 import com.example.clickdevice.dialog.DialogHelper
+import com.example.clickdevice.helper.SizeUtils
+import com.example.clickdevice.view.CornerImageView
 import com.google.gson.Gson
 
 class LauncherScriptActivity : Activity() {
@@ -32,14 +35,23 @@ class LauncherScriptActivity : Activity() {
     var scriptDataBean: ScriptDataBean? = null
     var recordScriptBean: RecordScriptBean? = null
     var type: String? = null
-    var isLauncher=false
+    var id = -1
+    var isLauncher = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_launcher)
         type = intent.getStringExtra(TYPE)
-        val id = intent.getIntExtra(ID, -1)
+        id = intent.getIntExtra(ID, -1)
         Log.d(TAG, "onCreate: type=$type  id=$id")
+        findViewById<CornerImageView>(R.id.cornerImageView).setRoundCorner(SizeUtils.dp2px(20f))
+        window.decorView.postDelayed({
+            initConfig()
+        }, 1500)//延迟等待无障碍服务自动启动
+    }
+
+    private fun initConfig() {
         val appDatabase = (application as MyApp).appDatabase
 
         if (id > 0) {
@@ -95,10 +107,10 @@ class LauncherScriptActivity : Activity() {
     }
 
     fun startScript() {
-        if (isLauncher){
+        if (isLauncher) {
             return
         }
-        isLauncher=true
+        isLauncher = true
         if (type == TYPE_RECORD_SCRIPT) {
             if (recordScriptBean == null) {
                 Toast.makeText(this, "没有脚本数据", Toast.LENGTH_LONG).show()

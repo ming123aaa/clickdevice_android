@@ -16,6 +16,12 @@
         android:textColor="@color/blackLine"
         android:background="@drawable/btn_background"
         android:onClick="openAccessibility"/>
+    <TextView
+        android:id="@+id/tv_permission_tips"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@color/blackLine"/>
 
 
     <Button

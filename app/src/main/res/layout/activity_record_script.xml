@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     android:orientation="vertical">
 
     <Button
@@ -30,7 +31,7 @@
         <EditText
             android:id="@+id/edit_name"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:hint="请输入脚本名称"
             android:maxLines="1"

@@ -1,6 +1,7 @@
 package com.example.clickdevice.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -12,6 +13,7 @@ import android.os.Process;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -89,7 +91,9 @@ public class MainActivity extends AppCompatActivity {
     private WindowManager wm;
     private long stopTime=0;
     private PowerKeyObserver powerKeyObserver;//检测电源键是否被按下
+    Dialog dialog;
 
+    TextView tv_permission_tips;
     /* access modifiers changed from: protected */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,22 +103,29 @@ public class MainActivity extends AppCompatActivity {
         this.editText_time = (EditText) findViewById(R.id.edit_time);
         this.editText_number = (EditText) findViewById(R.id.edit_number);
         btn_main=findViewById(R.id.btn_main);
+        tv_permission_tips=findViewById(R.id.tv_permission_tips);
+        String tip="通过adb命令授予权限后可自动开启无障碍模式： \nadb shell pm grant "+getPackageName()+" android.permission.WRITE_SECURE_SETTINGS";
+        tv_permission_tips.setText(tip);
         this.singleThreadExecutor = Executors.newSingleThreadExecutor();
         if (this.btn_windowView != null) {
             initBtnWindowsView();
         }
-        DialogHelper.showMessagePositiveDialog(this, "辅助功能", "使用连点器需要开启(无障碍)辅助功能，是否现在去开启？"
-                , new QMUIDialogAction.ActionListener() {
-                    @Override
-                    public void onClick(QMUIDialog dialog, int index) {
-                        try {
-                            startActivity(new Intent("android.settings.ACCESSIBILITY_SETTINGS"));
-                        } catch (Exception e) {
-                            startActivity(new Intent("android.settings.SETTINGS"));
-                            e.printStackTrace();
-                        }
-                    }
-                });
+        if (!MyService.isStart()){
+
+                dialog = DialogHelper.showMessagePositiveDialog(this, "辅助功能", "使用连点器需要开启(无障碍)辅助功能，是否现在去开启？"
+                        , new QMUIDialogAction.ActionListener() {
+                            @Override
+                            public void onClick(QMUIDialog dialog, int index) {
+                                try {
+                                    startActivity(new Intent("android.settings.ACCESSIBILITY_SETTINGS"));
+                                } catch (Exception e) {
+                                    startActivity(new Intent("android.settings.SETTINGS"));
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+        }
 
         powerKeyObserver=new PowerKeyObserver(this);
         powerKeyObserver.startListen();//开始注册广播
@@ -346,6 +357,34 @@ public class MainActivity extends AppCompatActivity {
         hideFloatWindows(btn_main);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (MyService.isStart()){
+            if (dialog!=null&&dialog.isShowing()){
+                dialog.dismiss();
+            }
+        }
+        setACCESSIBILITYEnable();
+    }
+
+    public void setACCESSIBILITYEnable(){
+        String string = Settings.Secure.getString(getContentResolver(),
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+        Log.d(TAG, "setACCESSIBILITYEnable: "+string);
+//        if (Settings.Secure.getString(getContentResolver(),
+//                Settings.Secure.ACCESSIBILITY_ENABLED).contains("1")) {
+//            if (Settings.Secure.getString(getContentResolver(),
+//                    Settings.Secure.ACCESSIBILITY_ENABLED).contains("1")) {
+//                System.out.println("Putting the Value to Enable..");
+//                Settings.Secure.putInt(getContentResolver(),
+//                        Settings.Secure.ACCESSIBILITY_ENABLED, 0);
+//            } else {
+//                Settings.Secure.putInt(getContentResolver(),
+//                        Settings.Secure.TOUCH_EXPLORATION_ENABLED, 1);
+//            }
+//        }
+    }
 
     public void startRecordAc(View view) {
 

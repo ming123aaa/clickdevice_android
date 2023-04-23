@@ -21,6 +21,7 @@
         android:layout_height="40dp"
         android:gravity="center"
         android:text="脚本名称："
+        android:layout_marginTop="3dp"
         android:textColor="@color/blackLine"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_insert_cmd" />
@@ -29,11 +30,12 @@
     <EditText
         android:id="@+id/edit_name"
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:hint="请输入脚本名称"
         android:maxLines="1"
         android:textColor="@color/blackLine"
         android:theme="@style/MyEditText"
+        android:layout_marginTop="3dp"
         app:layout_constraintLeft_toRightOf="@id/tv_name"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_insert_cmd" />

@@ -38,8 +38,6 @@ public class MyService extends AccessibilityService {
     public MutableLiveData<String> pkgNameMutableLiveData = new MutableLiveData<>();
 
 
-
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -171,6 +169,7 @@ public class MyService extends AccessibilityService {
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+        Log.d(TAG, "onServiceConnected: ");
         AccessibilityServiceInfo config = new AccessibilityServiceInfo();
         config.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
         config.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
