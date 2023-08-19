@@ -317,7 +317,7 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
     @SuppressLint("WrongConstant")
     public void initSmallViewLayout() {
         this.btn_windowView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.window_b, (ViewGroup) null);
-        this.wm = (WindowManager) getSystemService("window");
+        this.wm = (WindowManager) getApplicationContext().getSystemService("window");
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(-2, -2, 2003, 8, -3);
         this.btn_layoutParams = layoutParams;
         layoutParams.gravity = 49;

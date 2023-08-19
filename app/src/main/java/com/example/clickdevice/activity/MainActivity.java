@@ -3,13 +3,11 @@ package com.example.clickdevice.activity;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Process;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -36,7 +34,6 @@ import com.example.clickdevice.SmallWindowView;
 import com.example.clickdevice.Util;
 import com.example.clickdevice.bean.Bean;
 import com.example.clickdevice.dialog.DialogHelper;
-import com.example.clickdevice.helper.DesktopIconHelper;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 
@@ -252,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
     public void initSmallViewLayout() {
         this.windowView = (SmallWindowView) LayoutInflater.from(this).inflate(R.layout.window_a, (ViewGroup) null);
         this.btn_windowView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.window_b, (ViewGroup) null);
-        this.wm = (WindowManager) getSystemService("window");
+        this.wm = (WindowManager) getApplication().getSystemService("window");
         this.mLayoutParams = new WindowManager.LayoutParams(-2, -2, 2003, 8, -3);
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(-2, -2, 2003, 8, -3);
         this.btn_layoutParams = layoutParams;

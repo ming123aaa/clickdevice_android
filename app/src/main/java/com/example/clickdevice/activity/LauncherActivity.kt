@@ -15,6 +15,6 @@ class LauncherActivity : AppCompatActivity() {
         window.decorView.postDelayed({
             startActivity(Intent(this@LauncherActivity, MainActivity::class.java))
             finish()
-        }, 1500)//延迟等待无障碍服务自动启动
+        }, 500)//延迟等待无障碍服务自动启动
     }
 }

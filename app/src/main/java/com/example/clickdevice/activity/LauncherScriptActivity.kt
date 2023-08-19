@@ -48,7 +48,7 @@ class LauncherScriptActivity : Activity() {
         findViewById<CornerImageView>(R.id.cornerImageView).setRoundCorner(SizeUtils.dp2px(20f))
         window.decorView.postDelayed({
             initConfig()
-        }, 1500)//延迟等待无障碍服务自动启动
+        }, 500)//延迟等待无障碍服务自动启动
     }
 
     private fun initConfig() {

@@ -36,10 +36,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.Ohuang.ilivedata.MyLiveData;
+import com.example.clickdevice.SmallWindowView;
 import com.example.clickdevice.activity.ScriptEditActivity;
 import com.example.clickdevice.MyApp;
 import com.example.clickdevice.R;
-import com.example.clickdevice.SmallWindowView;
 import com.example.clickdevice.adapter.CMDAdapter;
 import com.example.clickdevice.adapter.SimpleCallbackHelp;
 import com.example.clickdevice.bean.ScriptCmdBean;
@@ -731,7 +731,7 @@ public class ScriptEditFragment extends Fragment {
     public void initSmallViewLayout() {
         this.windowView = (SmallWindowView) LayoutInflater.from(getContext()).inflate(R.layout.window_a, (ViewGroup) null);
         this.btn_windowView = (LinearLayout) LayoutInflater.from(getContext()).inflate(R.layout.window_b, (ViewGroup) null);
-        this.wm = (WindowManager) getActivity().getSystemService("window");
+        this.wm = (WindowManager) getContext().getApplicationContext().getSystemService("window");
         this.mLayoutParams = new WindowManager.LayoutParams(-2, -2, 2003, 8, -3);
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(-2, -2, 2003, 8, -3);
         this.btn_layoutParams = layoutParams;
