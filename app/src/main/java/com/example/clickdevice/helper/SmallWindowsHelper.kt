@@ -34,7 +34,7 @@ class SmallWindowsHelper(val context: Context) {
     var isShow = false
 
     init {
-        mWindowManager = context.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        mWindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
         mLayoutParams = WindowManager.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
