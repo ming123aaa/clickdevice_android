@@ -39,7 +39,15 @@
         <activity
             android:name=".activity.RecordScriptPlayActivity"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.ScriptGroupListActivity"
+            android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.ScriptGroupEditActivity"
+            android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activity.RecordScriptListActivity"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
@@ -61,6 +69,11 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ScriptActivity"
+            android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ScriptGroupPlayActivity"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />

@@ -47,7 +47,7 @@ public class ScriptListActivity extends AppCompatActivity {
     private AppDatabase appDatabase;
     private LifecycleOwner lifecycleOwner;
     private Context context;
-    private Dialog dialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +73,9 @@ public class ScriptListActivity extends AppCompatActivity {
         scriptAdapter.setClickListener(new ScriptAdapter.ClickListener() {
             @Override
             public void delete(ScriptDataBean scriptDataBean) {
-             dialog  = DialogHelper.DeleteDialogShow(ScriptListActivity.this, "删除脚本", "你确定要删除" + scriptDataBean.getName() + "?",
+             DialogHelper.DeleteDialogShow(ScriptListActivity.this, "删除脚本", "你确定要删除" + scriptDataBean.getName() + "?",
                      v -> {
                          singleThreadExecutor.execute(() -> appDatabase.getScriptDao().deleteScriptDataBean(scriptDataBean));
-                         dialog.dismiss();
                      });
             }
 

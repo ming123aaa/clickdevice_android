@@ -84,7 +84,28 @@ public class DialogHelper {
                 dialog.dismiss();
             }
         });
-        queding.setOnClickListener(confirmListener);
+        queding.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                confirmListener.onClick(v);
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+        //需要先显示再设置大小
+        Window window = dialog.getWindow();
+        WindowManager.LayoutParams params = window.getAttributes();
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();//获取屏幕分辨率
+        int screenWidth = dm.widthPixels;
+        int screenHeight = dm.heightPixels;
+        params.width = (int) (0.7 * screenWidth);
+        window.setAttributes(params);
+        return dialog;
+    }
+
+
+    public static Dialog showDialog(Context context,View view){
+        final Dialog dialog = new AlertDialog.Builder(context, R.style.MyDialog).setView(view).create();
         dialog.show();
         //需要先显示再设置大小
         Window window = dialog.getWindow();

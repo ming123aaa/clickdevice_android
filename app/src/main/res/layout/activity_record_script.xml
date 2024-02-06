@@ -46,7 +46,6 @@
             android:layout_height="40dp"
             android:layout_margin="5dp"
             android:background="@drawable/btn_background"
-
             android:text="返回"
             android:textColor="@color/blackLine"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -60,7 +59,6 @@
             android:layout_height="40dp"
             android:layout_margin="5dp"
             android:background="@drawable/btn_background"
-
             android:text="完成"
             android:textColor="@color/blackLine"
             app:layout_constraintBottom_toBottomOf="parent"

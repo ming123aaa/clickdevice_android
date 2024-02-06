@@ -46,14 +46,14 @@ class RecordScriptListActivity : AppCompatActivity() {
 
         recordScriptAdapter?.clickListener = object : RecordScriptAdapter.ClickListener {
             override fun delete(recordScriptBean: RecordScriptBean?) {
-                var dialog: Dialog? = null
-                dialog = DialogHelper.DeleteDialogShow(
+
+             DialogHelper.DeleteDialogShow(
                     this@RecordScriptListActivity, "删除脚本", "你确定要删除" + recordScriptBean?.name + "?"
                 ) {
                     GlobalScope.launch(IOCoroutineContext()) {
                         appDatabase?.recordScriptDao?.deleteRecordScriptBean(recordScriptBean)
                     }
-                    dialog?.dismiss()
+
                 }
 
             }

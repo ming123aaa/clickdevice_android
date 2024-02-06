@@ -46,7 +46,7 @@
             android:layout_height="match_parent"
             android:gravity="right|center"
             android:textColor="@color/blackLine"
-            android:text="时间间隔（单位ms 最小值为30）:" />
+            android:text="时间间隔（单位ms 最小值为10）:" />
 
         <EditText
             android:id="@+id/edit_time"
@@ -92,5 +92,13 @@
         android:textColor="@color/blackLine"
         android:background="@drawable/btn_background"
         android:onClick="startRecordAc"/>
+ <Button
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="自定义脚本"
+        android:textColor="@color/blackLine"
+        android:background="@drawable/btn_background"
+        android:onClick="startScriptGroupAc"/>
 
 </LinearLayout>

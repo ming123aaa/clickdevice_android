@@ -171,8 +171,8 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             num = num2;
                         }
-                        if (time2 < 30) {
-                            time = 30;
+                        if (time2 < 10) {
+                            time = 10;
                         } else {
                             time = time2;
                         }
@@ -396,4 +396,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void startScriptGroupAc(View view) {
+        startActivity(new Intent(this, ScriptGroupListActivity.class));
+        hideFloatWindows(btn_main);
+    }
 }

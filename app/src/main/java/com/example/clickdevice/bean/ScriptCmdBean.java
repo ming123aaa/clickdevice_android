@@ -1,12 +1,14 @@
 package com.example.clickdevice.bean;
 
 public class ScriptCmdBean {
-    public static int ACTION_DELAYED=1;
-    public static int ACTION_CLICK=2;
-    public static int ACTION_GESTURE=3;
-    public static int ACTION_FOR=4;
-    public static int ACTION_FOR_END=5;
-    public static int ACTION_RANDOM_CLICK=6;
+    public static final int ACTION_NONE = 0;
+
+    public static final int ACTION_DELAYED = 1;
+    public static final int ACTION_CLICK = 2;
+    public static final int ACTION_GESTURE = 3;
+    public static final int ACTION_FOR = 4;
+    public static final int ACTION_FOR_END = 5;
+    public static final int ACTION_RANDOM_CLICK = 6;
     private int action;
     private int delayed;
     private int duration;
@@ -18,47 +20,71 @@ public class ScriptCmdBean {
     private String content;
 
 
+    public String getActionTypeName() {
+        switch (action) {
+            case ACTION_NONE:
+                return "无命令";
+            case ACTION_DELAYED:
+                return "延时";
+            case ACTION_CLICK:
+                return "点击";
+            case ACTION_GESTURE:
+                return "手势";
+            case ACTION_FOR:
+                return "循环开始";
+            case ACTION_FOR_END:
+                return "循环结束";
+            case ACTION_RANDOM_CLICK:
+                return "随机位置点击";
+        }
+        return "未知命令";
+    }
 
-
-    public static ScriptCmdBean BuildDelayedCMD(int delayed){
-        ScriptCmdBean scriptCmdBean=new ScriptCmdBean();
+    public static  ScriptCmdBean BuildNoneCMD() {
+        ScriptCmdBean scriptCmdBean = new ScriptCmdBean();
+        scriptCmdBean.setContent("无操作");
+        scriptCmdBean.setAction(ACTION_NONE);
+        return  scriptCmdBean;
+    }
+    public static ScriptCmdBean BuildDelayedCMD(int delayed) {
+        ScriptCmdBean scriptCmdBean = new ScriptCmdBean();
         scriptCmdBean.setAction(ACTION_DELAYED);
         scriptCmdBean.setDelayed(delayed);
-        scriptCmdBean.setContent("延时"+delayed+"ms");
+        scriptCmdBean.setContent("延时" + delayed + "ms");
         return scriptCmdBean;
     }
 
-    public static ScriptCmdBean BuildForCMD(int frequency){
-        ScriptCmdBean scriptCmdBean=new ScriptCmdBean();
+    public static ScriptCmdBean BuildForCMD(int frequency) {
+        ScriptCmdBean scriptCmdBean = new ScriptCmdBean();
         scriptCmdBean.setAction(ACTION_FOR);
-        if (frequency<0){
-            frequency=1;
+        if (frequency < 0) {
+            frequency = 1;
         }
         scriptCmdBean.setFrequency(frequency);
-        scriptCmdBean.setContent("循环开始For("+frequency+"){");
+        scriptCmdBean.setContent("循环开始For(" + frequency + "){");
         return scriptCmdBean;
     }
 
-    public static ScriptCmdBean BuildForEndCMD(){
-        ScriptCmdBean scriptCmdBean=new ScriptCmdBean();
+    public static ScriptCmdBean BuildForEndCMD() {
+        ScriptCmdBean scriptCmdBean = new ScriptCmdBean();
         scriptCmdBean.setAction(ACTION_FOR_END);
         scriptCmdBean.setContent("}循环结束");
         return scriptCmdBean;
     }
 
-    public static ScriptCmdBean BuildClickCMD(int x0, int y0, int duration,int delayed){
-        ScriptCmdBean scriptCmdBean=new ScriptCmdBean();
+    public static ScriptCmdBean BuildClickCMD(int x0, int y0, int duration, int delayed) {
+        ScriptCmdBean scriptCmdBean = new ScriptCmdBean();
         scriptCmdBean.setAction(ACTION_CLICK);
         scriptCmdBean.setX0(x0);
         scriptCmdBean.setY0(y0);
         scriptCmdBean.setDuration(duration);
         scriptCmdBean.setDelayed(delayed);
-        scriptCmdBean.setContent("延时"+delayed+"ms后,点击坐标("+x0+","+y0+")执行时长"+duration+"ms");
+        scriptCmdBean.setContent("延时" + delayed + "ms后,点击坐标(" + x0 + "," + y0 + ")执行时长" + duration + "ms");
         return scriptCmdBean;
     }
 
-    public static ScriptCmdBean BuildGestureCMD(int x0,int y0,int x1,int y1,int duration,int delayed){
-        ScriptCmdBean scriptCmdBean=new ScriptCmdBean();
+    public static ScriptCmdBean BuildGestureCMD(int x0, int y0, int x1, int y1, int duration, int delayed) {
+        ScriptCmdBean scriptCmdBean = new ScriptCmdBean();
         scriptCmdBean.setAction(ACTION_GESTURE);
         scriptCmdBean.setX0(x0);
         scriptCmdBean.setY0(y0);
@@ -66,12 +92,12 @@ public class ScriptCmdBean {
         scriptCmdBean.setY1(y1);
         scriptCmdBean.setDuration(duration);
         scriptCmdBean.setDelayed(delayed);
-        scriptCmdBean.setContent("延时"+delayed+"ms后,滑动手势:从坐标("+x0+","+y0+")到("+x1+","+y1+")执行时长"+duration+"ms");
+        scriptCmdBean.setContent("延时" + delayed + "ms后,滑动手势:从坐标(" + x0 + "," + y0 + ")到(" + x1 + "," + y1 + ")执行时长" + duration + "ms");
         return scriptCmdBean;
     }
 
-    public static ScriptCmdBean BuildRandomClickCMD(int x0,int y0,int x1,int y1,int duration,int delayed){
-        ScriptCmdBean scriptCmdBean=new ScriptCmdBean();
+    public static ScriptCmdBean BuildRandomClickCMD(int x0, int y0, int x1, int y1, int duration, int delayed) {
+        ScriptCmdBean scriptCmdBean = new ScriptCmdBean();
         scriptCmdBean.setAction(ACTION_RANDOM_CLICK);
         scriptCmdBean.setX0(x0);
         scriptCmdBean.setY0(y0);
@@ -79,11 +105,11 @@ public class ScriptCmdBean {
         scriptCmdBean.setY1(y1);
         scriptCmdBean.setDuration(duration);
         scriptCmdBean.setDelayed(delayed);
-        scriptCmdBean.setContent("延时"+delayed+"ms后,随机点击:("+x0+","+y0+")到("+x1+","+y1+")所形成对角线的矩形内点击。执行时长"+duration+"ms");
+        scriptCmdBean.setContent("延时" + delayed + "ms后,随机点击:(" + x0 + "," + y0 + ")到(" + x1 + "," + y1 + ")所形成对角线的矩形内点击。执行时长" + duration + "ms");
         return scriptCmdBean;
     }
 
-    private ScriptCmdBean(){
+    private ScriptCmdBean() {
 
     }
 
