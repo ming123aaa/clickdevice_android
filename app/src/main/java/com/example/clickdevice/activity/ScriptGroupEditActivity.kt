@@ -9,6 +9,7 @@ import com.example.clickdevice.R
 import com.example.clickdevice.bean.ActionScript
 import com.example.clickdevice.bean.ScriptCmdBean
 import com.example.clickdevice.bean.ScriptGroup
+import com.example.clickdevice.bean.SimpleScriptGroup
 import com.example.clickdevice.bean.toScriptGroup
 import com.example.clickdevice.bean.toScriptGroupBean
 import com.example.clickdevice.db.AppDatabase
@@ -38,7 +39,7 @@ class ScriptGroupEditActivity : AppCompatActivity() {
 
     private val _page = MutableLiveData<Page>()
 
-    private var scriptGroupBean: ScriptGroupBean?=null
+    private var scriptGroupBean: ScriptGroupBean? = null
 
     companion object {
         fun startActivity(context: Context, scriptGroupId: Int = 0) {
@@ -103,15 +104,14 @@ class ScriptGroupEditActivity : AppCompatActivity() {
                     AppDatabase.getInstance(applicationContext).scriptGroupDao.findBeanById(
                         scriptGroupId
                     )
-                scriptGroupBean=findBeanById
+                scriptGroupBean = findBeanById
                 _mLiveData.postValue(findBeanById.toScriptGroup())
             }
         }
     }
 
 
-
-    private fun initFragment(){
+    private fun initFragment() {
         scriptGroupEditFragmentHelper.showFragment(now = true)
         scriptGroupEditListFragmentHelper.showFragment(now = true)
         scriptGroupEditScriptFragmentFragmentHelper.showFragment(now = true)
@@ -122,39 +122,43 @@ class ScriptGroupEditActivity : AppCompatActivity() {
         scriptGroupEditListFragmentHelper.hideFragment(now = true)
         scriptGroupEditScriptFragmentFragmentHelper.hideFragment(now = true)
         when (page) {
-            is Page.ScriptGroupEdit ->{
+            is Page.ScriptGroupEdit -> {
                 scriptGroupEditFragmentHelper.showFragment()
             }
-            is Page.ScriptList ->{
+
+            is Page.ScriptList -> {
                 refreshData()
                 scriptGroupEditListFragmentHelper.showFragment()
             }
-            is Page.ScriptEdit ->{
+
+            is Page.ScriptEdit -> {
                 scriptGroupEditScriptFragmentFragmentHelper.showFragment()
             }
         }
 
     }
 
-     fun refreshData() {
+    fun refreshData() {
         _mLiveData.value?.apply {
             _mLiveData.postValue(copy())
         }
     }
 
-    fun showScriptList(){
+    fun showScriptList() {
         _page.postValue(Page.ScriptList)
     }
 
-     fun goBack(){
-        when(_page.value){
-            is Page.ScriptGroupEdit ->{
+    fun goBack() {
+        when (_page.value) {
+            is Page.ScriptGroupEdit -> {
                 finish()
             }
-            is Page.ScriptList ->{
+
+            is Page.ScriptList -> {
                 _page.postValue(Page.ScriptGroupEdit)
             }
-            is Page.ScriptEdit ->{
+
+            is Page.ScriptEdit -> {
                 _page.postValue(Page.ScriptList)
             }
         }
@@ -168,40 +172,41 @@ class ScriptGroupEditActivity : AppCompatActivity() {
 
     fun onComplete(title: String) {
         val value: ScriptGroup = _mLiveData.value ?: return
-        val data=  value.copy(name = title)
-        val newData=if (scriptGroupBean!=null) {
+        val data = value.copy(name = title)
+        val newData = if (scriptGroupBean != null) {
             data.toScriptGroupBean(scriptGroupBean!!)
-        }else{
+        } else {
             data.toScriptGroupBean()
         }
 
-        GlobalScope.launch (Dispatchers.IO){
-            if (scriptGroupId==0){
+        GlobalScope.launch(Dispatchers.IO) {
+            if (scriptGroupId == 0) {
                 AppDatabase.getInstance(applicationContext).scriptGroupDao.insertScriptGroupBean(
                     newData
                 )
-            }else {
+            } else {
                 AppDatabase.getInstance(applicationContext).scriptGroupDao.updateScriptGroupBean(
                     newData
                 )
             }
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
                 finish()
             }
         }
     }
 
 
-     fun editScript(script: ActionScript) {
+    fun editScript(script: ActionScript) {
         _page.postValue(Page.ScriptEdit)
         scriptGroupEditScriptFragmentFragmentHelper.getFragment().setScript(script)
     }
+
     fun newScript() {
         val actionScript = ActionScript(name = "", script = ArrayList<String>())
         val value = _mLiveData.value!!
         val arrayList = ArrayList<ActionScript>(value.actionScript)
         arrayList.add(actionScript)
-        _mLiveData.postValue(value.copy(actionScript=arrayList))
+        _mLiveData.postValue(value.copy(actionScript = arrayList))
         editScript(actionScript)
 
     }
@@ -209,7 +214,7 @@ class ScriptGroupEditActivity : AppCompatActivity() {
     fun putCmd(name: String, script: ScriptCmdBean) {
         val value: ScriptGroup = _mLiveData.value ?: return
         val treeMap = TreeMap<String, ScriptCmdBean>(value.actionMap)
-        treeMap[name]=script
+        treeMap[name] = script
         val copy = value.copy(actionMap = treeMap)
         _mLiveData.postValue(copy)
     }
@@ -222,20 +227,25 @@ class ScriptGroupEditActivity : AppCompatActivity() {
         _mLiveData.postValue(copy)
     }
 
-    fun getActionScriptMsg(key:String):String{
+    fun getActionScriptMsg(key: String): String {
         val value: ScriptGroup = _mLiveData.value ?: return "没有匹配到命令"
-        return value.getScriptCmdBean(key)?.actionTypeName?:"没有匹配到命令"
+        return value.getScriptCmdBean(key)?.actionTypeName ?: "没有匹配到命令"
     }
 
-    fun getCmds(): Map<String,ScriptCmdBean> {
-        return _mLiveData.value ?.actionMap?: emptyMap()
+    fun getCmds(): Map<String, ScriptCmdBean> {
+        return _mLiveData.value?.actionMap ?: emptyMap()
     }
 
     fun deleteScript(data: ActionScript) {
-        val value= _mLiveData.value ?:return
+        val value = _mLiveData.value ?: return
         val actionScript = ArrayList<ActionScript>(value.actionScript)
         actionScript.remove(data)
         _mLiveData.postValue(value.copy(actionScript = actionScript))
+    }
+
+    fun setSimpleScriptGroup(data: SimpleScriptGroup) {
+        val value = _mLiveData.value ?: return
+        _mLiveData.postValue(value.copy(name = data.name, actionMap = data.actionMap))
     }
 
 

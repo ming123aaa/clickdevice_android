@@ -19,9 +19,22 @@ data class ScriptGroup(
     }
 }
 
+data class SimpleScriptGroup( val name: String,
+                              val actionMap: Map<String, ScriptCmdBean>){
+
+}
+
+
+fun ScriptGroup.toSimpleScriptGroup():SimpleScriptGroup{
+    actionMap.onEach {
+        it.value.content=it.value.actionTypeName
+    }
+    return  SimpleScriptGroup(name,actionMap)
+}
+
 data class ActionScript(
     var name: String,
-    val script: MutableList<String>
+    var script: MutableList<String>
 )
 
 

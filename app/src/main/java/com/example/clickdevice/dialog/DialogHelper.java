@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +17,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.clickdevice.R;
+import com.example.clickdevice.bean.ScriptCmdBean;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
+
+import java.util.List;
 
 public class DialogHelper {
     private static int mCurrentDialogStyle = com.qmuiteam.qmui.R.style.QMUI_Dialog;
@@ -118,5 +124,40 @@ public class DialogHelper {
         return dialog;
     }
 
+    public static Dialog EditDialogShow(Context context, String title,String textContent,DialogCallback<String> callback) {
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_json, null);
+        final Dialog dialog = new AlertDialog.Builder(context, R.style.MyDialog).setView(view).setCancelable(false).create();
+        EditText ed_delayed = view.findViewById(R.id.edit_delayed);
+        Button btn_cancel = view.findViewById(R.id.btn_cancel);
+        Button btn_determine = view.findViewById(R.id.btn_determine);
+        TextView tv_title = view.findViewById(R.id.tv_title);
+        tv_title.setText(title);
+        ed_delayed.setText(textContent);
+
+        btn_cancel.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+        btn_determine.setOnClickListener(v -> {
+            String json = ed_delayed.getText().toString();
+            callback.onCall(json);
+            dialog.dismiss();
+
+        });
+        dialog.show();
+        //需要先显示再设置大小
+        Window window = dialog.getWindow();
+        WindowManager.LayoutParams params = window.getAttributes();
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();//获取屏幕分辨率
+        int screenWidth = dm.widthPixels;
+        int screenHeight = dm.heightPixels;
+        params.width = (int) (0.7 * screenWidth);
+        window.setAttributes(params);
+        return dialog;
+    }
+
+
+    public interface DialogCallback<T>{
+        void onCall(T t);
+    }
 
 }

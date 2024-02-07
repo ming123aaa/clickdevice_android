@@ -28,7 +28,7 @@
             android:padding="5dp"
             android:background="@drawable/btn_background"
             android:minHeight="300dp"
-            android:hint="请输入脚本数据"
+            android:hint="请输入内容"
             android:gravity="top"
             android:textColor="@color/blackLine"
             android:theme="@style/MyEditText" />

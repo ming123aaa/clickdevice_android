@@ -6,15 +6,19 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.clickdevice.Util
 import com.example.clickdevice.activity.ScriptGroupEditActivity
 import com.example.clickdevice.adapter.ScriptGroupEditAdapter
 import com.example.clickdevice.bean.ActionScript
 import com.example.clickdevice.bean.ScriptCmdBean
+import com.example.clickdevice.bean.toSimpleScriptGroup
 import com.example.clickdevice.databinding.DialogListScriptGroupActionBinding
 import com.example.clickdevice.databinding.FgScriptGroupEditScriptBinding
 import com.example.clickdevice.dialog.DialogHelper
+import com.google.gson.Gson
 
 class ScriptGroupEditScriptFragment : Fragment() {
 
@@ -35,10 +39,45 @@ class ScriptGroupEditScriptFragment : Fragment() {
     }
 
 
-
     private fun FgScriptGroupEditScriptBinding.initView() {
         btnBack.setOnClickListener {
             mActivity.goBack()
+        }
+
+        btnOutJson.setOnClickListener {
+            actionScript?.apply {
+                val json = Gson().toJson(actionScript)
+                try {
+                    Util.copyText(json, requireContext())
+                    Toast.makeText(requireContext(), "已复制到剪贴板", Toast.LENGTH_LONG).show()
+                } catch (_: Exception) {
+
+                }
+            }
+        }
+
+        btnInputJson.setOnClickListener {
+            DialogHelper.EditDialogShow(requireContext(), "导入数据", "") {
+                val gson = Gson()
+                try {
+                    if (it.isEmpty()) {
+                        Toast.makeText(requireContext(), "数据为空", Toast.LENGTH_LONG).show()
+                        return@EditDialogShow
+                    }
+                    val fromJson = gson.fromJson(it, ActionScript::class.java)
+                    if (fromJson != null) {
+                        actionScript?.apply {
+                            name = fromJson.name
+                            script = fromJson.script
+                            setScript(this)
+                        }
+                    }else{
+                        Toast.makeText(requireContext(), "数据格式不正确", Toast.LENGTH_LONG).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(requireContext(), "导入数据失败", Toast.LENGTH_LONG).show()
+                }
+            }
         }
 
         editName.addTextChangedListener(object : TextWatcher {
@@ -51,7 +90,7 @@ class ScriptGroupEditScriptFragment : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                actionScript?.name=s.toString()
+                actionScript?.name = s.toString()
             }
         })
         rvScriptEdit.adapter = mAdapter
@@ -73,6 +112,15 @@ class ScriptGroupEditScriptFragment : Fragment() {
                 }
             }
         }
+        mAdapter.itemClickCallBack = { index, item ->
+            Toast.makeText(requireContext(), "选择要的插入命令", Toast.LENGTH_SHORT).show()
+            showCmdDialog { key ->
+                actionScript?.apply {
+                    script.add(index, key)
+                    setScript(this)
+                }
+            }
+        }
         btnInsertCmd.setOnClickListener {
             showCmdDialog { key ->
                 actionScript?.apply {
@@ -84,9 +132,9 @@ class ScriptGroupEditScriptFragment : Fragment() {
     }
 
 
-    fun showCmdDialog(call: (String) -> Unit) {
+    private fun showCmdDialog(call: (String) -> Unit) {
         val inflate = DialogListScriptGroupActionBinding.inflate(layoutInflater)
-        var showDialog = DialogHelper.showDialog(requireContext(), inflate.root)
+        val showDialog = DialogHelper.showDialog(requireContext(), inflate.root)
         inflate.tvTitle.text = "选择命令"
         val scriptGroupEditAdapter = ScriptGroupEditAdapter<String>()
         inflate.recyclerView.adapter = scriptGroupEditAdapter
@@ -121,6 +169,7 @@ class ScriptGroupEditScriptFragment : Fragment() {
 
     fun setScript(script: ActionScript) {
         this.actionScript = script
+        binding?.editName?.setText(script.name)
         val data = script.script.map {
             val msg = mActivity.getActionScriptMsg(it)
             ScriptGroupEditAdapter.Item<String>(name = it, msg = msg, data = it)

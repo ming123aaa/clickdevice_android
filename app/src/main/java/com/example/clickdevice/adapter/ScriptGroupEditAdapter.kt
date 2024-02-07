@@ -56,7 +56,7 @@ class ScriptGroupEditAdapter<T> : RecyclerView.Adapter<ViewHolder>() {
             val stringBuilder = StringBuilder()
             val item = mData[position]
             if (isShowPosition) {
-                stringBuilder.append("编号:$position: \n")
+                stringBuilder.append("序号:$position \n")
             }
             stringBuilder.append("名称:${item.name} \n")
             stringBuilder.append("信息:${item.msg} \n")

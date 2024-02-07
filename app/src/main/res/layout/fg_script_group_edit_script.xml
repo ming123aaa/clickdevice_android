@@ -4,6 +4,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/ll_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toTopOf="parent">
+        <Button
+            android:id="@+id/btn_out_json"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="导出数据"
+            android:layout_weight="1"
+            android:textColor="@color/blackLine"
+            android:layout_marginHorizontal="5dp"
+            android:background="@drawable/btn_background"
+        />
+        <Button
+            android:id="@+id/btn_input_json"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="导入数据"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="5dp"
+            android:textColor="@color/blackLine"
+            android:background="@drawable/btn_background"
+            />
+    </LinearLayout>
+
     <Button
         android:id="@+id/btn_insert_cmd"
         android:layout_width="match_parent"
@@ -12,7 +41,7 @@
         android:textColor="@color/blackLine"
         android:layout_marginTop="10dp"
         android:background="@drawable/btn_background"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/ll_top" />
 
     <TextView
         android:id="@+id/tv_name"

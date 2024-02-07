@@ -370,9 +370,9 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
                 Thread.sleep(30000);
                 return;
             }
-            if (duration < 200) {
+            if (duration < 100) {
                 myService2.dispatchGesture((float) x0, (float) y0, (float) x1, (float) y1, 200);
-                Thread.sleep(200);
+                Thread.sleep(100);
                 return;
             }
             myService2.dispatchGesture((float) x0, (float) y0, (float) x1, (float) y1, duration);
