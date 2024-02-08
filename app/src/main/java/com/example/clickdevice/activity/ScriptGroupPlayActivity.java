@@ -388,9 +388,9 @@ public class ScriptGroupPlayActivity extends AppCompatActivity implements Script
             if (myService2 == null) {
                 return;
             }
-            if (duration < 50) {
+            if (duration < 30) {
                 myService2.dispatchGestureClick((float) x0, (float) y0);
-                Thread.sleep(50);
+                Thread.sleep(30);
             } else if (duration < 30000) {
                 myService2.dispatchGestureClick((float) x0, (float) y0, duration);
                 Thread.sleep(duration);
