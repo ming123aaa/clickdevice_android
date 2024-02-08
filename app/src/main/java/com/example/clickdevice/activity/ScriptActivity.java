@@ -234,6 +234,27 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
 
     private long stopTime = 0;
 
+
+    //延迟系数
+    private double delayCoefficient=1d;
+
+    private void setDelayCoefficient(){
+        EditText viewById = findViewById(R.id.edit_speed);
+        String s = viewById.getText().toString();
+        try {
+            Double aDouble = Double.valueOf(s);
+            if (aDouble<0.25){
+                aDouble=0.25;
+            }
+            if (aDouble>5){
+                aDouble=5.0;
+            }
+            delayCoefficient=1.0/aDouble;
+        }catch (Throwable e){
+            delayCoefficient=1;
+        }
+    }
+
     @SuppressLint("WrongConstant")
     private void initBtnWindowsView() {
         TextView textView = (TextView) this.btn_windowView.findViewById(R.id.tv_win_b);
@@ -325,7 +346,8 @@ public class ScriptActivity extends AppCompatActivity implements ScriptExecutor.
 
     @Override
     public void delayedCmd(int delayed) throws InterruptedException {
-        for (int i = 0; i < delayed / 10 && this.isRun; i++) {
+        int time= (int) (delayCoefficient*delayed);
+        for (int i = 0; i < time / 10 && this.isRun; i++) {
             Thread.sleep(10);
         }
     }

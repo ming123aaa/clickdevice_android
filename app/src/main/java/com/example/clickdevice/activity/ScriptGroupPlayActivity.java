@@ -126,6 +126,9 @@ public class ScriptGroupPlayActivity extends AppCompatActivity implements Script
 
     private Spinner spinner_script;
 
+    //延迟系数
+    private double delayCoefficient=1d;
+
     /* access modifiers changed from: protected */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -258,6 +261,23 @@ public class ScriptGroupPlayActivity extends AppCompatActivity implements Script
 
     private long stopTime = 0;
 
+    private void setDelayCoefficient(){
+        EditText viewById = findViewById(R.id.edit_speed);
+        String s = viewById.getText().toString();
+        try {
+            Double aDouble = Double.valueOf(s);
+            if (aDouble<0.25){
+                aDouble=0.25;
+            }
+            if (aDouble>5){
+                aDouble=5.0;
+            }
+            delayCoefficient=1.0/aDouble;
+        }catch (Throwable e){
+            delayCoefficient=1;
+        }
+    }
+
     @SuppressLint("WrongConstant")
     private void initBtnWindowsView() {
         TextView textView = (TextView) this.btn_windowView.findViewById(R.id.tv_win_b);
@@ -282,11 +302,13 @@ public class ScriptGroupPlayActivity extends AppCompatActivity implements Script
                         time = Integer.parseInt(TextUtils.isEmpty(s1) ? "1000" : s1);
                         num = Integer.parseInt(TextUtils.isEmpty(s2) ? "0" : s2);
                         tv_bw.setText("停止");
+                        setDelayCoefficient();
                         isRun = true;
                         singleThreadExecutor.execute(runnable);
                     }
                 }
         );
+
         textView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -349,7 +371,8 @@ public class ScriptGroupPlayActivity extends AppCompatActivity implements Script
 
     @Override
     public void delayedCmd(int delayed) throws InterruptedException {
-        for (int i = 0; i < delayed / 10 && this.isRun; i++) {
+        int time= (int) (delayCoefficient*delayed);
+        for (int i = 0; i < time / 10 && this.isRun; i++) {
             Thread.sleep(10);
         }
     }

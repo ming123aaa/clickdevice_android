@@ -67,7 +67,30 @@
             android:inputType="number"
             android:maxLength="6"
             android:text="1"
+            android:textColor="@color/blackLine"
+            android:theme="@style/MyEditText" />
+    </LinearLayout>
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:gravity="right|center"
+            android:text="倍数(0.25-5之间):"
+            android:textColor="@color/blackLine" />
+
+        <EditText
+            android:id="@+id/edit_speed"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:maxLength="6"
+            android:text="1"
             android:textColor="@color/blackLine"
             android:theme="@style/MyEditText" />
     </LinearLayout>
@@ -91,7 +114,7 @@
     <Spinner
         android:id="@+id/spinner_script"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
     <ScrollView
         android:layout_width="match_parent"
