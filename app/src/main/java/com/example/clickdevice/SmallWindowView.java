@@ -11,11 +11,13 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
+import com.example.clickdevice.view.ScreenUtils;
+
 
 public class SmallWindowView extends LinearLayout {
     private static final String TAG = "SmallWindowView";
-    private final int screenHeight;
-    private final int screenWidth;
+    private int screenHeight;
+    private int screenWidth;
     private int statusHeight;//状态栏高度
     //MotionEvent.ACTION_DOWN的开始坐标
     private float mTouchStartX;
@@ -59,10 +61,11 @@ public class SmallWindowView extends LinearLayout {
 
     public SmallWindowView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        statusHeight = getStatusHeight(context);
+//        statusHeight = getStatusHeight(context);
+        statusHeight = 0;//不考虑状态栏高度
         DisplayMetrics dm = getResources().getDisplayMetrics();
-        screenHeight = dm.heightPixels;
-        screenWidth = dm.widthPixels;
+        screenHeight = dm.heightPixels;//默认值
+        screenWidth = dm.widthPixels;//默认值
     }
 
     public void setwmParamsFlags(int flags) {
@@ -205,10 +208,13 @@ public class SmallWindowView extends LinearLayout {
 
     private boolean isHorizontalScreen(WindowManager windowManager) {
         int angle = windowManager.getDefaultDisplay().getRotation();
-        if (angle == Surface.ROTATION_90 || angle == Surface.ROTATION_270) {
-            //如果屏幕旋转90°或者270°是判断为横屏，横屏规避不展示
-            return true;
-        }
+        screenHeight = ScreenUtils.getScreenHeight(windowManager);
+        screenWidth = ScreenUtils.getScreenWidth(windowManager);
+//        if (angle == Surface.ROTATION_90 || angle == Surface.ROTATION_270) {
+//            //如果屏幕旋转90°或者270°是判断为横屏，横屏规避不展示
+//            return true;
+//        }
+
         return false;
     }
 

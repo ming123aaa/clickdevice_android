@@ -21,7 +21,7 @@ public class MyApp extends Application {
         try {
             setMyServiceEnable();
         }catch (Exception ignored){
-
+            ignored.printStackTrace();
         }
 
     }
@@ -35,6 +35,9 @@ public class MyApp extends Application {
 
         String string = Settings.Secure.getString(getContentResolver(),
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+        if (string==null){
+            string="";
+        }
         StringBuffer stringBuffer=new StringBuffer(string);
         if (!string.contains(name)){
             String s = stringBuffer.append(":").append(name).toString();
