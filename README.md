@@ -20,15 +20,6 @@
    - 支持脚本分组管理
    - 支持延迟、循环等复杂操作
 
-3. **悬浮窗控制**
-   - 支持屏幕任意位置悬浮
-   - 支持手势拖动调整位置
-   - 支持权限动态申请
-
-4. **无障碍服务**
-   - 基于AccessibilityService实现
-   - 支持事件监听与中断处理
-   - 支持按键事件拦截
 
 ## 核心组件
 - **MyService**：核心无障碍服务，处理点击和手势事件
@@ -65,27 +56,3 @@
    - `helper/`：工具类和辅助功能
    - `view/`：自定义视图组件
    - `vm/`：ViewModel组件
-
-2. **核心技术栈**
-   - Android AccessibilityService
-   - Room数据库
-   - Kotlin协程
-   - RecyclerView组件化
-   - 自定义View绘制
-
-3. **权限要求**
-   ```xml
-   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-   ```
-
-## 贡献指南
-欢迎贡献代码，提交PR时请注意：
-1. 保持代码风格一致性
-2. 添加必要的注释和文档
-3. 提供完整的测试用例
-4. 遵循Android最佳实践
-
-## 许可证
-本项目采用Apache-2.0协议，详细请查看LICENSE文件。

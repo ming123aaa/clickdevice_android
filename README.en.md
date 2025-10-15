@@ -20,15 +20,6 @@ This is an automation click tool based on the Android Accessibility Service, mai
    - Supports script group management
    - Supports complex operations such as delays and loops
 
-3. **Floating Window Control**
-   - Supports floating at any screen position
-   - Supports gesture dragging to adjust position
-   - Supports dynamic permission requests
-
-4. **Accessibility Service**
-   - Implemented based on AccessibilityService
-   - Supports event listening and interruption handling
-   - Supports key event interception
 
 ## Core Components
 - **MyService**: Core accessibility service for handling clicks and gestures
@@ -65,27 +56,3 @@ This is an automation click tool based on the Android Accessibility Service, mai
    - `helper/`: Utility and helper classes
    - `view/`: Custom view components
    - `vm/`: ViewModel components
-
-2. **Core Technology Stack**
-   - Android AccessibilityService
-   - Room database
-   - Kotlin coroutines
-   - RecyclerView componentization
-   - Custom View drawing
-
-3. **Permission Requirements**
-   ```xml
-   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-   ```
-
-## Contribution Guidelines
-Contributions are welcome. Please note the following when submitting PRs:
-1. Maintain code style consistency
-2. Add necessary comments and documentation
-3. Provide complete test cases
-4. Follow Android best practices
-
-## License
-This project uses the Apache-2.0 license. Please see the LICENSE file for details.
