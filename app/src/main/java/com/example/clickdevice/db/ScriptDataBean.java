@@ -17,6 +17,10 @@ public class ScriptDataBean {
 
     private String scriptJson;
 
+    private float xCoefficient = 1.0f;
+
+    private float yCoefficient = 1.0f;
+
     public ScriptDataBean() {
     }
 
@@ -70,5 +74,21 @@ public class ScriptDataBean {
 
     public void setScriptJson(String scriptJson) {
         this.scriptJson = scriptJson;
+    }
+
+    public float getXCoefficient() {
+        return xCoefficient;
+    }
+
+    public void setXCoefficient(float xCoefficient) {
+        this.xCoefficient = xCoefficient;
+    }
+
+    public float getYCoefficient() {
+        return yCoefficient;
+    }
+
+    public void setYCoefficient(float yCoefficient) {
+        this.yCoefficient = yCoefficient;
     }
 }

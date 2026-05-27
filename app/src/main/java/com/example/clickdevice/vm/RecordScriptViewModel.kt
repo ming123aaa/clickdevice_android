@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import com.example.clickdevice.RecordScriptExecutor
-import com.example.clickdevice.adapter.RecordCMDAdapter
 import com.example.clickdevice.bean.RecordScriptCmd
 import com.example.clickdevice.db.AppDatabase
 import com.example.clickdevice.db.RecordScriptBean
@@ -28,7 +27,7 @@ class RecordScriptViewModel : ViewModel() {
 
     var lastTime = 0L
 
-    var recordCMDAdapter: RecordCMDAdapter?=null
+
 
     fun playScript() {
         recordScriptExecutor.run(data)
@@ -38,7 +37,7 @@ class RecordScriptViewModel : ViewModel() {
     fun addRecordScriptCmd(recordScriptCmd: RecordScriptCmd) {
         if (isRecord) {
             data.add(recordScriptCmd)
-            recordCMDAdapter?.notifyDataSetChanged()
+
         }
     }
 
@@ -67,7 +66,7 @@ class RecordScriptViewModel : ViewModel() {
         isRecord = false
     }
 
-    suspend fun saveScript(context: Context,name: String) {
+    suspend fun saveScript(context: Context,name: String, xCoefficient: Float = 1.0f, yCoefficient: Float = 1.0f) {
         if (recordScriptBean == null) {
             recordScriptBean=createRecordScriptCmd(name)
         }else{
@@ -78,10 +77,30 @@ class RecordScriptViewModel : ViewModel() {
             var toJson = gson.toJson(data)
             recordScriptBean!!.scriptJson=toJson
         }
+        recordScriptBean!!.xCoefficient = xCoefficient
+        recordScriptBean!!.yCoefficient = yCoefficient
         if (recordScriptBean!!.id>0){
             update(context,recordScriptBean!!)
         }else{
             insert(context,recordScriptBean!!)
+        }
+    }
+
+    fun saveScriptBlocking(context: Context, name: String, xCoefficient: Float = 1.0f, yCoefficient: Float = 1.0f) {
+        if (recordScriptBean == null) {
+            recordScriptBean = createRecordScriptCmd(name)
+        } else {
+            val currentTimeMillis = System.currentTimeMillis()
+            recordScriptBean!!.name = name
+            recordScriptBean!!.updateTime = currentTimeMillis.toDate()
+            recordScriptBean!!.scriptJson = Gson().toJson(data)
+        }
+        recordScriptBean!!.xCoefficient = xCoefficient
+        recordScriptBean!!.yCoefficient = yCoefficient
+        if (recordScriptBean!!.id > 0) {
+            update(context, recordScriptBean!!)
+        } else {
+            insert(context, recordScriptBean!!)
         }
     }
 

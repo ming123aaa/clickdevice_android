@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {ScriptDataBean.class, RecordScriptBean.class,ScriptGroupBean.class}, version = 3, exportSchema = false)
+@Database(entities = {ScriptDataBean.class, RecordScriptBean.class,ScriptGroupBean.class}, version = 5, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase appDatabase;
 
@@ -32,11 +32,31 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    public static Migration migration_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE `script_group` ADD COLUMN `xCoefficient` REAL NOT NULL DEFAULT 1.0");
+            database.execSQL("ALTER TABLE `script_group` ADD COLUMN `yCoefficient` REAL NOT NULL DEFAULT 1.0");
+        }
+    };
+
+    public static Migration migration_4_5 = new Migration(4, 5) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE `script` ADD COLUMN `xCoefficient` REAL NOT NULL DEFAULT 1.0");
+            database.execSQL("ALTER TABLE `script` ADD COLUMN `yCoefficient` REAL NOT NULL DEFAULT 1.0");
+            database.execSQL("ALTER TABLE `record` ADD COLUMN `xCoefficient` REAL NOT NULL DEFAULT 1.0");
+            database.execSQL("ALTER TABLE `record` ADD COLUMN `yCoefficient` REAL NOT NULL DEFAULT 1.0");
+        }
+    };
+
     public static AppDatabase getInstance(Context context) {
         if (appDatabase == null) {
             appDatabase = Room.databaseBuilder(context, AppDatabase.class, "script_info.db")
                     .addMigrations(migration_1_2)
                     .addMigrations(migration_2_3)
+                    .addMigrations(migration_3_4)
+                    .addMigrations(migration_4_5)
                     .build();
         }
         return appDatabase;

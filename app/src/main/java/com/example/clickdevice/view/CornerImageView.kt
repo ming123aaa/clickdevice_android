@@ -40,7 +40,7 @@ class CornerImageView @JvmOverloads constructor(context: Context, attrs: Attribu
         }
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         if (mMode == 1) {
             if (mWidth > mRadius && mHeight > mRadius) {
                 mPath.run {
@@ -52,7 +52,7 @@ class CornerImageView @JvmOverloads constructor(context: Context, attrs: Attribu
                     quadTo(0f, mHeight, 0f, mHeight - mRadius)
                     lineTo(0f, 0f)
                 }
-                canvas!!.clipPath(mPath)
+                canvas.clipPath(mPath)
             }
         }
         super.onDraw(canvas)

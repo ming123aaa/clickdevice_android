@@ -7,7 +7,9 @@ import com.example.clickdevice.helper.toDate
 data class ScriptGroup(
     val name: String,
     val actionMap: Map<String, ScriptCmdBean>,
-    val actionScript: List<ActionScript>
+    val actionScript: List<ActionScript>,
+    val xCoefficient: Float = 1.0f,
+    val yCoefficient: Float = 1.0f
 ) {
 
     fun getScriptCmdBean(actionName: String): ScriptCmdBean? {
@@ -43,6 +45,8 @@ fun ScriptGroup.toScriptGroupBean():ScriptGroupBean{
     scriptGroupBean.createTime=System.currentTimeMillis().toDate()
     scriptGroupBean.updateTime=System.currentTimeMillis().toDate()
     scriptGroupBean.name=name
+    scriptGroupBean.xCoefficient=xCoefficient
+    scriptGroupBean.yCoefficient=yCoefficient
     scriptGroupBean.scriptJson=GsonUtil.gson.toJson(this@toScriptGroupBean)
     return scriptGroupBean
 }
@@ -53,6 +57,8 @@ fun ScriptGroup.toScriptGroupBean(old:ScriptGroupBean):ScriptGroupBean{
     scriptGroupBean.createTime=old.createTime
     scriptGroupBean.updateTime=System.currentTimeMillis().toDate()
     scriptGroupBean.name=name
+    scriptGroupBean.xCoefficient=xCoefficient
+    scriptGroupBean.yCoefficient=yCoefficient
     scriptGroupBean.scriptJson=GsonUtil.gson.toJson(this@toScriptGroupBean)
     return scriptGroupBean
 }

@@ -16,8 +16,8 @@ import com.example.clickdevice.view.ScreenUtils;
 
 public class SmallWindowView extends LinearLayout {
     private static final String TAG = "SmallWindowView";
-    private int screenHeight;
-    private int screenWidth;
+    public int screenHeight;
+    public int screenWidth;
     private int statusHeight;//状态栏高度
     //MotionEvent.ACTION_DOWN的开始坐标
     private float mTouchStartX;
@@ -31,6 +31,15 @@ public class SmallWindowView extends LinearLayout {
     private WindowManager wm;
     public WindowManager.LayoutParams wmParams;
 
+    private boolean enableMove=true;
+
+    public void setEnableMove(boolean enableMove) {
+        this.enableMove = enableMove;
+    }
+
+    public boolean getEnableMove() {
+        return enableMove;
+    }
 
     public SmallWindowView(Context context) {
         this(context, null);
@@ -42,18 +51,20 @@ public class SmallWindowView extends LinearLayout {
 
     public void setWm(WindowManager wm) {
         this.wm = wm;
+        isHorizontalScreen(this.wm);
     }
 
     public WindowManager.LayoutParams getWmParams() {
         return wmParams;
     }
 
+
     public void setWmParams(WindowManager.LayoutParams wmParams) {
         this.wmParams = wmParams;
         this.wmParams.x = 0;
         this.wmParams.y = 0;
-
     }
+
 
     public SmallWindowView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
@@ -69,6 +80,7 @@ public class SmallWindowView extends LinearLayout {
     }
 
     public void setwmParamsFlags(int flags) {
+        if (wm==null) return;
         wmParams.flags = flags;
         wm.updateViewLayout(this, wmParams);
     }
@@ -111,8 +123,12 @@ public class SmallWindowView extends LinearLayout {
 
     boolean isRange = false;
 
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
+        if (wm==null||!enableMove){
+            return super.dispatchTouchEvent(event);
+        }
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             isRange = calcPointRange(event);
             Log.e(TAG, "onTouchEvent: isRange = " + isRange);
@@ -121,6 +137,8 @@ public class SmallWindowView extends LinearLayout {
         if (!isRange) {
             return super.onTouchEvent(event);
         }
+
+
         x = event.getRawX();
         y = event.getRawY();
         switch (event.getAction()) {
@@ -147,31 +165,31 @@ public class SmallWindowView extends LinearLayout {
                 if (isHorizontalScreen(wm)) {
 
                     if (wmParams.y <= 0) {
-                        wmParams.y = Math.abs(wmParams.y) <= screenWidth / 2-getWidth()/2 ? wmParams.y : -screenWidth / 2+getWidth()/2;
+                        wmParams.y = Math.abs(wmParams.y) <= screenWidth / 2 - getWidth() / 2 ? wmParams.y : -screenWidth / 2 + getWidth() / 2;
                     } else {
                         wmParams.y = Math.min(wmParams.y, (screenWidth / 2) - getWidth() / 2);
                     }
                     if (wmParams.x <= 0) {
-                        wmParams.x = Math.abs(wmParams.x) <= screenHeight / 2-getHeight()/2 ? wmParams.x : -screenHeight / 2+getHeight()/2;
+                        wmParams.x = Math.abs(wmParams.x) <= screenHeight / 2 - getHeight() / 2 ? wmParams.x : -screenHeight / 2 + getHeight() / 2;
                     } else {
-                        wmParams.x = Math.min(wmParams.x, (screenHeight / 2)-getHeight()/2);
+                        wmParams.x = Math.min(wmParams.x, (screenHeight / 2) - getHeight() / 2);
                     }
                 } else {
                     if (wmParams.x <= 0) {
-                        wmParams.x = Math.abs(wmParams.x) <= screenWidth / 2-getWidth()/2 ? wmParams.x : -screenWidth / 2+getWidth()/2;
+                        wmParams.x = Math.abs(wmParams.x) <= screenWidth / 2 - getWidth() / 2 ? wmParams.x : -screenWidth / 2 + getWidth() / 2;
                     } else {
-                        wmParams.x = Math.min(wmParams.x, (screenWidth / 2)-getWidth()/2);
+                        wmParams.x = Math.min(wmParams.x, (screenWidth / 2) - getWidth() / 2);
                     }
                     if (wmParams.y <= 0) {
-                        wmParams.y = Math.abs(wmParams.y) <= screenHeight / 2-getHeight()/2 ? wmParams.y : -screenHeight / 2+getHeight()/2;
+                        wmParams.y = Math.abs(wmParams.y) <= screenHeight / 2 - getHeight() / 2 ? wmParams.y : -screenHeight / 2 + getHeight() / 2;
                     } else {
-                        wmParams.y = Math.min(wmParams.y, (screenHeight / 2)-getHeight()/2);
+                        wmParams.y = Math.min(wmParams.y, (screenHeight / 2) - getHeight() / 2);
                     }
 
                 }
 
-                actionUpX = (int) (event.getRawX()+getWidth()/2-event.getX());
-                actionUpY = (int) (event.getRawY()+getHeight()/2-event.getY());
+                actionUpX = (int) (event.getRawX() + getWidth() / 2 - event.getX());
+                actionUpY = (int) (event.getRawY() + getHeight() / 2 - event.getY());
 //                wmParams.y = (int) (y - screenHeight / 2);
                 wm.updateViewLayout(this, wmParams);
                 break;
@@ -207,7 +225,9 @@ public class SmallWindowView extends LinearLayout {
     }
 
     private boolean isHorizontalScreen(WindowManager windowManager) {
+        if (windowManager==null) return false;
         int angle = windowManager.getDefaultDisplay().getRotation();
+
         screenHeight = ScreenUtils.getScreenHeight(windowManager);
         screenWidth = ScreenUtils.getScreenWidth(windowManager);
 //        if (angle == Surface.ROTATION_90 || angle == Surface.ROTATION_270) {
@@ -222,7 +242,6 @@ public class SmallWindowView extends LinearLayout {
     public int getActionUpX() {
         return actionUpX;
     }
-
 
 
     public int getActionUpY() {

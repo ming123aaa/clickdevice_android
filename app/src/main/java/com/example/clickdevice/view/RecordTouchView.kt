@@ -40,10 +40,10 @@ class RecordTouchView : View {
     private var enable = true
 
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         initPaint()
         path?.apply {
-            canvas?.drawPath(this, paint)
+            canvas.drawPath(this, paint)
         }
     }
 

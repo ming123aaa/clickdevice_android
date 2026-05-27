@@ -16,4 +16,7 @@ public class RecordScriptBean {
 
     public String scriptJson;
 
+    public float xCoefficient = 1.0f;
+
+    public float yCoefficient = 1.0f;
 }
