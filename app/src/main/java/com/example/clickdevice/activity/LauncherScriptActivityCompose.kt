@@ -34,7 +34,7 @@ import com.example.clickdevice.db.ScriptDataBean
 import com.example.clickdevice.db.ScriptGroupBean
 import com.example.clickdevice.ui.theme.ClickDeviceTheme
 
-class LauncherScriptActivityCompose : ComponentActivity() {
+class LauncherScriptActivity : ComponentActivity() {
 
     companion object {
         const val TYPE = "type"

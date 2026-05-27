@@ -23,41 +23,47 @@ public class ScriptExecutor {
 
 
     public void run(List<ScriptCmdBean> list) {
-        int size = list.size();
-        boolean isJump = false;
-        for (int i = 0; i < size; i++) {
-            ScriptCmdBean scriptCmdBean = list.get(i);
-            if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_FOR_END) {
-                isJump = false;
-                if (!stack.empty()) {
-                    ForStart forStart = stack.pop();
-                    if (forStart.num > 0) {
-                        i = forStart.index;
-                        forStart.num--;
-                        stack.push(forStart);
+        try {
+            int size = list.size();
+            boolean isJump = false;
+            for (int i = 0; i < size; i++) {
+                ScriptCmdBean scriptCmdBean = list.get(i);
+                if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_FOR_END) {
+                    isJump = false;
+                    if (!stack.empty()) {
+                        ForStart forStart = stack.pop();
+                        if (forStart.num > 0) {
+                            i = forStart.index;
+                            forStart.num--;
+                            stack.push(forStart);
+                        }
                     }
-                }
-            } else {
-                if (isJump) {
-                    continue;
-                }
-                if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_FOR) {
-                    int f = scriptCmdBean.getFrequency();
-                    if (f == 0) {
-                        isJump = true;
+                } else {
+                    if (isJump) {
                         continue;
                     }
-                    ForStart forStart = new ForStart(i, --f);
-                    stack.push(forStart);
-                } else {
-                    try {
-                        run(scriptCmdBean);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_FOR) {
+                        int f = scriptCmdBean.getFrequency();
+                        if (f == 0) {
+                            isJump = true;
+                            continue;
+                        }
+                        ForStart forStart = new ForStart(i, --f);
+                        stack.push(forStart);
+                    } else {
+                        try {
+                            run(scriptCmdBean);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
+
+        } catch (Throwable e) {
+
         }
+
     }
 
     public void run(ScriptCmdBean scriptCmdBean) throws InterruptedException {

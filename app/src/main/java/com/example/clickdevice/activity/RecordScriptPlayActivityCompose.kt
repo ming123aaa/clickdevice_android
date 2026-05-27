@@ -21,6 +21,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.Ohuang.ilivedata.MyLiveData
 import com.example.clickdevice.MyService
 import com.example.clickdevice.PowerKeyObserver
@@ -33,6 +34,7 @@ import com.example.clickdevice.helper.setOnTouchClick
 import com.example.clickdevice.ui.theme.ClickDeviceTheme
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -49,6 +51,7 @@ class RecordScriptPlayActivityCompose : ComponentActivity(), RecordScriptExecuto
     private var scriptJson by mutableStateOf("")
     private var time by mutableStateOf(1000L)
     private var count by mutableStateOf(0)
+    private var speed by mutableStateOf(1.0f)
     private var xCoefficient by mutableStateOf(1.0f)
     private var yCoefficient by mutableStateOf(1.0f)
     private var checkAppChange by mutableStateOf(false)
@@ -77,11 +80,13 @@ class RecordScriptPlayActivityCompose : ComponentActivity(), RecordScriptExecuto
                         scriptJson = scriptJson,
                         time = time,
                         count = count,
+                        speed = speed,
                         xCoefficient = xCoefficient,
                         yCoefficient = yCoefficient,
                         checkAppChange = checkAppChange,
                         onTimeChange = { time = it },
                         onCountChange = { count = it },
+                        onSpeedChange = { speed = it },
                         onXCoefficientChange = { xCoefficient = it },
                         onYCoefficientChange = { yCoefficient = it },
                         onCheckAppChangeChange = { checkAppChange = it },
@@ -137,6 +142,8 @@ class RecordScriptPlayActivityCompose : ComponentActivity(), RecordScriptExecuto
                 Toast.makeText(this, "没有脚本数据", Toast.LENGTH_LONG).show()
                 return@setOnTouchClick
             }
+            val speedValue = speed
+            recordScriptExecutor.delayCoefficient = if (speedValue in 0.25f..5.0f) (1.0 / speedValue) else 1.0
             isRun = true
             thisPkgName = pkgNameNow
             singleThreadExecutor.execute(playRunnable)
@@ -162,7 +169,7 @@ class RecordScriptPlayActivityCompose : ComponentActivity(), RecordScriptExecuto
             i++
         }
         isRun = false
-        windowBBinding?.root?.post {
+        lifecycleScope.launch {
             windowBBinding?.tvWinB?.text = "开始"
         }
     }
@@ -265,11 +272,13 @@ fun RecordScriptPlayScreen(
     scriptJson: String,
     time: Long,
     count: Int,
+    speed: Float = 1.0f,
     xCoefficient: Float,
     yCoefficient: Float,
     checkAppChange: Boolean,
     onTimeChange: (Long) -> Unit,
     onCountChange: (Int) -> Unit,
+    onSpeedChange: (Float) -> Unit = {},
     onXCoefficientChange: (Float) -> Unit,
     onYCoefficientChange: (Float) -> Unit,
     onCheckAppChangeChange: (Boolean) -> Unit,
@@ -281,6 +290,7 @@ fun RecordScriptPlayScreen(
     var coeffSynced by remember { mutableStateOf(false) }
     var timeText by remember { mutableStateOf(time.toString()) }
     var countText by remember { mutableStateOf(count.toString()) }
+    var speedText by remember { mutableStateOf(if (speed == 1.0f) "1" else speed.toString()) }
 
     LaunchedEffect(xCoefficient, yCoefficient) {
         if (!coeffSynced && (xCoefficient != 1.0f || yCoefficient != 1.0f)) {
@@ -350,6 +360,23 @@ fun RecordScriptPlayScreen(
                     singleLine = true
                 )
             }
+
+            OutlinedTextField(
+                value = speedText,
+                onValueChange = { value ->
+                    if (value.isEmpty() || value.matches(Regex("^\\d*\\.?\\d*$"))) {
+                        speedText = value
+                        val parsed = value.toFloatOrNull()
+                        if (parsed != null) onSpeedChange(parsed)
+                        else if (value.isEmpty()) onSpeedChange(1.0f)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("执行速度倍数(0.25~5)") },
+                placeholder = { Text("1为原速，2为2倍速，0.5为半速") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                singleLine = true
+            )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -426,11 +453,13 @@ fun RecordScriptPlayScreenPreview() {
             scriptJson = "[]",
             time = 1000,
             count = 1,
+            speed = 1.0f,
             xCoefficient = 1.0f,
             yCoefficient = 1.0f,
             checkAppChange = false,
             onTimeChange = {},
             onCountChange = {},
+            onSpeedChange = {},
             onXCoefficientChange = {},
             onYCoefficientChange = {},
             onCheckAppChangeChange = {},

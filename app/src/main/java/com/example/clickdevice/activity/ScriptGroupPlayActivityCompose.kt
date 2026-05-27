@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.Ohuang.ilivedata.MyLiveData
 import com.example.clickdevice.MyService
 import com.example.clickdevice.PowerKeyObserver
@@ -45,6 +46,7 @@ import com.example.clickdevice.bean.ScriptCmdBean
 import com.example.clickdevice.bean.ScriptGroup
 import com.example.clickdevice.helper.setOnTouchClick
 import com.example.clickdevice.ui.theme.ClickDeviceTheme
+import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -67,7 +69,7 @@ class ScriptGroupPlayActivityCompose : ComponentActivity(), ScriptExecutor.Scrip
     private var tvBtnWv: TextView? = null
     private var wm: WindowManager? = null
     private var btnLayoutParams: WindowManager.LayoutParams? = null
-    private val mainHandler = Handler(Looper.getMainLooper())
+
 
     var isRunning by mutableStateOf(false)
         private set
@@ -204,7 +206,7 @@ class ScriptGroupPlayActivityCompose : ComponentActivity(), ScriptExecutor.Scrip
             }
             isRun = false
             isRunning = false
-            mainHandler.post { tvBtnWv?.text = "开始" }
+            lifecycleScope.launch { tvBtnWv?.text = "开始" }
         }
     }
 
@@ -485,7 +487,7 @@ fun ScriptGroupPlayScreen(
                 value = speed,
                 onValueChange = { speed = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("延迟系数(0.25~5)") },
+                label = { Text("执行速度倍速(0.25~5)") },
                 singleLine = true
             )
 

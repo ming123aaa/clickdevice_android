@@ -17,7 +17,7 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import com.example.clickdevice.IconAddCallbackReceiver
 import com.example.clickdevice.R
-import com.example.clickdevice.activity.LauncherScriptActivityCompose
+import com.example.clickdevice.activity.LauncherScriptActivity
 import com.example.clickdevice.db.RecordScriptBean
 import com.example.clickdevice.db.ScriptDataBean
 import com.example.clickdevice.db.ScriptGroupBean
@@ -31,7 +31,7 @@ object DesktopIconHelper {
             context,
             "${data.id + 20000}",
             data.name+"",
-            LauncherScriptActivityCompose.TYPE_RECORD_SCRIPT,
+            LauncherScriptActivity.TYPE_RECORD_SCRIPT,
             data.id
         )
         if (!TextUtils.isEmpty(addShortcut)){
@@ -44,7 +44,7 @@ object DesktopIconHelper {
             context,
             "${data.id + 10000}",
             data.name+"",
-            LauncherScriptActivityCompose.TYPE_SCRIPT,
+            LauncherScriptActivity.TYPE_SCRIPT,
             data.id
         )
         if (!TextUtils.isEmpty(addShortcut)){
@@ -57,7 +57,7 @@ object DesktopIconHelper {
             context,
             "${data.id + 30000}",
             data.name+"",
-            LauncherScriptActivityCompose.TYPE_SCRIPT_GROUP,
+            LauncherScriptActivity.TYPE_SCRIPT_GROUP,
             data.id
         )
         if (!TextUtils.isEmpty(addShortcut)){
@@ -92,17 +92,17 @@ object DesktopIconHelper {
                 //构建点击intent
                 val shortcutInfoIntent = Intent().apply {
                     action = Intent.ACTION_VIEW
-                    setClassName(packageName, LauncherScriptActivityCompose::class.java.name)
+                    setClassName(packageName, LauncherScriptActivity::class.java.name)
                     addCategory(Intent.CATEGORY_LAUNCHER)
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    putExtra(LauncherScriptActivityCompose.TYPE,type)
-                    putExtra(LauncherScriptActivityCompose.ID,scriptID)
+                    putExtra(LauncherScriptActivity.TYPE,type)
+                    putExtra(LauncherScriptActivity.ID,scriptID)
 
                 }
                 //构建快捷方式信息
                 val pinShortcutInfo = ShortcutInfoCompat.Builder(context, uuid)
                     .setShortLabel(iconName)
-                    .setActivity(ComponentName(context, LauncherScriptActivityCompose::class.java))
+                    .setActivity(ComponentName(context, LauncherScriptActivity::class.java))
                     .setIcon(
                         IconCompat.createWithBitmap(
                             drawableToBitmap(
@@ -136,14 +136,14 @@ object DesktopIconHelper {
             //构建点击intent
             val shortcutInfoIntent = Intent().apply {
                 action = Intent.ACTION_VIEW
-                setClassName(packageName, LauncherScriptActivityCompose::class.java.name)
+                setClassName(packageName, LauncherScriptActivity::class.java.name)
                 addCategory(Intent.CATEGORY_LAUNCHER)
-                putExtra(LauncherScriptActivityCompose.TYPE,type)
-                putExtra(LauncherScriptActivityCompose.ID,scriptID)
+                putExtra(LauncherScriptActivity.TYPE,type)
+                putExtra(LauncherScriptActivity.ID,scriptID)
                 //设置点击快捷方式，进入指定的Activity
                 //注意：因为是从Lanucher中启动，所以这里用到了ComponentName
                 //其中new ComponentName这里的第二个参数，是Activity的全路径名，也就是包名类名要写全。
-                component = ComponentName(context, LauncherScriptActivityCompose::class.java)
+                component = ComponentName(context, LauncherScriptActivity::class.java)
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
 

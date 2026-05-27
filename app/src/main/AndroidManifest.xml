@@ -86,7 +86,7 @@
 
 
         <activity
-            android:name=".activity.LauncherScriptActivityCompose"
+            android:name=".activity.LauncherScriptActivity"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:exported="true"
             android:screenOrientation="unspecified">

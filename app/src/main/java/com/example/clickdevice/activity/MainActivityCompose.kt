@@ -68,6 +68,8 @@ class MainActivityCompose : ComponentActivity() {
     var clickInterval by mutableStateOf("1000")
         private set
 
+    var showAccessibilityDialog by mutableStateOf(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -80,7 +82,12 @@ class MainActivityCompose : ComponentActivity() {
                         isFloatingWindowShow = isShow,
                         clickCount = clickCount,
                         clickInterval = clickInterval,
-                        onOpenAccessibility = { openAccessibility() },
+                        showAccessibilityDialog = showAccessibilityDialog,
+                        onDismissAccessibilityDialog = { showAccessibilityDialog = false },
+                        onOpenAccessibility = {
+                            showAccessibilityDialog = false
+                            openAccessibility()
+                        },
                         onStartClickDevice = { startClickDevice() },
                         onOpenScriptList = { startScriptList() },
                         onOpenRecordScript = { startRecordScript() },
@@ -390,6 +397,8 @@ fun MainScreen(
     isFloatingWindowShow: Boolean,
     clickCount: String,
     clickInterval: String,
+    showAccessibilityDialog: Boolean = false,
+    onDismissAccessibilityDialog: () -> Unit = {},
     onOpenAccessibility: () -> Unit,
     onStartClickDevice: () -> Unit,
     onOpenScriptList: () -> Unit,
@@ -497,6 +506,24 @@ fun MainScreen(
                 Text("自定义脚本")
             }
         }
+    }
+
+    if (showAccessibilityDialog) {
+        AlertDialog(
+            onDismissRequest = onDismissAccessibilityDialog,
+            title = { Text("辅助功能") },
+            text = { Text("使用连点器需要开启(无障碍)辅助功能，是否现在去开启？") },
+            confirmButton = {
+                TextButton(onClick = onOpenAccessibility) {
+                    Text("确定")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismissAccessibilityDialog) {
+                    Text("取消")
+                }
+            }
+        )
     }
 }
 

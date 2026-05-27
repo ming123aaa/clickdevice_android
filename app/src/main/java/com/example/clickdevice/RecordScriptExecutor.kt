@@ -6,39 +6,42 @@ import com.example.clickdevice.bean.RecordScriptCmd
 
 class RecordScriptExecutor {
 
-
-     var recordScriptInterface: RecordScriptInterface? = null
+    var delayCoefficient = 1.0
+    var recordScriptInterface: RecordScriptInterface? = null
 
 
     fun run(data: MutableList<RecordScriptCmd>) {
+        try {
+            repeat(data.size) {
+                if (recordScriptInterface == null || !recordScriptInterface!!.isRun()) {
+                    return@repeat
+                }
+                when (data[it].type) {
+                    RecordScriptCmd.Type.Delay -> {
+                        delay(data[it])
+                    }
+                    RecordScriptCmd.Type.Gesture -> {
+                        gesture(it,data[it])
+                    }
+                    else -> {
+                    }
+                }
+            }
+        }catch (e: Throwable){}
 
-        repeat(data.size) {
-            if (recordScriptInterface == null || !recordScriptInterface!!.isRun()) {
-                return@repeat
-            }
-            when (data[it].type) {
-                RecordScriptCmd.Type.Delay -> {
-                    delay(data[it])
-                }
-                RecordScriptCmd.Type.Gesture -> {
-                    gesture(it,data[it])
-                }
-                else -> {
-                }
-            }
-        }
     }
 
     private fun delay(recordScriptCmd: RecordScriptCmd) {
         delay(recordScriptCmd.delayed.toLong())
     }
 
-     fun delay(time: Long): Boolean {
+    fun delay(time: Long): Boolean {
         if (time <= 0) {
             return false
         }
-        val count = time / 10
-        val t = time % 10
+        val adjustedTime = (time * delayCoefficient).toLong()
+        val count = adjustedTime / 10
+        val t = adjustedTime % 10
         Thread.sleep(t)
         for (i in 0 until count) {
             if (recordScriptInterface == null || !recordScriptInterface!!.isRun()) {
