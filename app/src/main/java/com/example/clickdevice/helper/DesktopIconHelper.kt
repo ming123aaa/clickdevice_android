@@ -66,6 +66,19 @@ object DesktopIconHelper {
     }
 
 
+    fun addKeyListShortcut(activity: Activity){
+        var addShortcut = addShortcut(
+            activity,
+            "key_binding_list",
+            "按键设置",
+            LauncherScriptActivity.TYPE_KEY_BINDING,
+            -1
+        )
+        if (!TextUtils.isEmpty(addShortcut)){
+            Toast.makeText(activity,"添加完成",Toast.LENGTH_LONG).show()
+        }
+    }
+
     @SuppressLint("UseCompatLoadingForDrawables")
     fun addShortcut(context: Activity, id: String, iconName: String,type:String,scriptID:Int): String {
 

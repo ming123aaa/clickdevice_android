@@ -66,3 +66,12 @@ fun ScriptGroupBean.toScriptGroup():ScriptGroup{
     return GsonUtil.gson.fromJson(scriptJson,ScriptGroup::class.java)
 }
 
+fun ScriptGroup.getScriptForName(scriptName: String):List<ScriptCmdBean>{
+    val action = actionScript.find { return@find it.name==scriptName }
+    if (action!=null){
+        return getListScriptCmdBean(action)
+    }
+    return emptyList()
+
+}
+

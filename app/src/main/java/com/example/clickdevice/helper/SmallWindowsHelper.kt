@@ -13,40 +13,58 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import com.example.clickdevice.MyService
+import com.example.clickdevice.helper.KeyFloatWindowManager.FloatWindowInfo
 import java.lang.Exception
+/**
+ *  用于显示小窗的context
+ */
+fun Context.smallWindowsContext(): Context{
+    return  (MyService.myService?:this.applicationContext)
+}
 
-
+/**
+ *  用于显示小窗的windowManager
+ */
+fun Context.smallWindowManager(): WindowManager{
+    return  smallWindowsContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
+}
 class SmallWindowsHelper(val context: Context) {
-    var mWindowManager: WindowManager? = null
+    var mWindowManager: WindowManager =
+        context.smallWindowManager()
         private set
 
-    var mLayoutParams: WindowManager.LayoutParams? = null
+    var mLayoutParams: WindowManager.LayoutParams = WindowManager.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+        WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSLUCENT
+    ).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        }
+        gravity = Gravity.NO_GRAVITY
+    }
         set(value) {
             field = value
-            if (isShow && root != null) {
-                mWindowManager?.updateViewLayout(root, mLayoutParams)
+            updateLayoutParams {}
+        }
+
+    fun updateLayoutParams(call:WindowManager.LayoutParams.()->Unit) {
+        if (isShow && root != null) {
+            try {
+                call(mLayoutParams)
+                mWindowManager.updateViewLayout(root, mLayoutParams)
+            } catch (e: Throwable) {
             }
         }
+    }
 
 
     var root: View? = null
 
     var isShow = false
 
-    init {
-        mWindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
-        mLayoutParams = WindowManager.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSLUCENT
-        )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mLayoutParams?.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        }
-        mLayoutParams?.gravity = Gravity.NO_GRAVITY
-
-    }
 
     fun attach(view: View) {
         root = view
@@ -56,23 +74,36 @@ class SmallWindowsHelper(val context: Context) {
 
     fun show() {
         if (!isShow)
-            mWindowManager?.addView(root, mLayoutParams)
+            mWindowManager.addView(root, mLayoutParams)
         isShow = true
     }
 
     fun hide() {
         try {
-            mWindowManager?.removeView(root)
-        }catch (e:Exception){
+            mWindowManager.removeView(root)
+        } catch (e: Exception) {
         }
 
         isShow = false
     }
 
+    /**
+     *  悬浮窗是否可交互
+     */
+    fun setTouchEnable(enable: Boolean) {
+        updateLayoutParams{
+            flags = if (enable) {
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+            } else {
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+            }
+        }
+    }
 
-    companion object{
+
+    companion object {
         private const val OVERLAY_PERMISSION_REQ_CODE = 2
-        fun requestPermission(activity:Activity):Boolean{
+        fun requestPermission(activity: Activity): Boolean {
 
             return if (!Settings.canDrawOverlays(activity)) {
                 Toast.makeText(activity, "can not DrawOverlays", Toast.LENGTH_LONG).show()
@@ -83,13 +114,13 @@ class SmallWindowsHelper(val context: Context) {
                     ), OVERLAY_PERMISSION_REQ_CODE
                 )
                 false
-            }else{
+            } else {
                 true
             }
             return false
         }
 
-        fun onActivityResult(activity:Activity,requestCode:Int , resultCode:Int , data:Intent? ){
+        fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
             if (requestCode != OVERLAY_PERMISSION_REQ_CODE) {
                 return
             }
@@ -99,7 +130,6 @@ class SmallWindowsHelper(val context: Context) {
                 Toast.makeText(activity, "设置权限成功", Toast.LENGTH_LONG).show()
             }
         }
-
 
 
     }

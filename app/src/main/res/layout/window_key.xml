@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.clickdevice.SmallWindowView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <FrameLayout
+        android:id="@+id/fl_key"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/key_button_bg" >
+
+            <TextView
+                android:id="@+id/tv_key"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="10dp"
+                android:text="按键"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                />
+
+
+            <TextView
+                android:id="@+id/tv_stop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="停止"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="10dp"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                android:textColor="#f00"
+                android:textSize="16sp"
+                />
+
+
+
+    </FrameLayout>
+
+
+</com.example.clickdevice.SmallWindowView>

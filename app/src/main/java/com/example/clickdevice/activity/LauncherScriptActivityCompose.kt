@@ -38,9 +38,10 @@ class LauncherScriptActivity : ComponentActivity() {
 
     companion object {
         const val TYPE = "type"
-        const val TYPE_SCRIPT = "type_script"
-        const val TYPE_RECORD_SCRIPT = "type_record_script"
-        const val TYPE_SCRIPT_GROUP = "type_script_group"
+        const val TYPE_SCRIPT = "type_script"  //普通脚本
+        const val TYPE_RECORD_SCRIPT = "type_record_script" //录制脚本
+        const val TYPE_SCRIPT_GROUP = "type_script_group" //脚本组
+        const val TYPE_KEY_BINDING = "type_key_binding" //按键设置
         const val ID = "id"
         private const val TAG = "LauncherScriptActivityCompose"
     }
@@ -94,7 +95,13 @@ class LauncherScriptActivity : ComponentActivity() {
     private fun initConfig() {
         val appDatabase = (application as MyApp).appDatabase
 
-        if (id > 0) {
+        if (type == TYPE_KEY_BINDING) {
+            startActivity(Intent(this, KeyBindingListActivity::class.java))
+            finish()
+            return
+        }
+
+        if (id >= 0) {
             when (type) {
                 TYPE_RECORD_SCRIPT -> {
                     Thread {

@@ -11,11 +11,11 @@ val HintColor = Color(0xFF404040) // hintColor
 val Background = Color(0x00000000) // background
 
 // Material 3 颜色
-val md_theme_light_primary = Color(0xFF00BCD4)
+val md_theme_light_primary = Color(0xFF2196F3)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)
 val md_theme_light_primaryContainer = Color(0xFFB2EBF2)
 val md_theme_light_onPrimaryContainer = Color(0xFF001F24)
-val md_theme_light_secondary = Color(0xFF2196F3)
+val md_theme_light_secondary = Color(0xFF00BCD4)
 val md_theme_light_onSecondary = Color(0xFFFFFFFF)
 val md_theme_light_secondaryContainer = Color(0xFFBBDEFB)
 val md_theme_light_onSecondaryContainer = Color(0xFF001C3B)

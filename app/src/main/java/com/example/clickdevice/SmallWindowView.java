@@ -29,7 +29,7 @@ public class SmallWindowView extends LinearLayout {
 
     private int actionUpX = 0, actionUpY = 0;
     private WindowManager wm;
-    public WindowManager.LayoutParams wmParams;
+    private WindowManager.LayoutParams wmParams;
 
     private boolean enableMove=true;
 
@@ -80,7 +80,7 @@ public class SmallWindowView extends LinearLayout {
     }
 
     public void setwmParamsFlags(int flags) {
-        if (wm==null) return;
+        if (wm==null||wmParams==null) return;
         wmParams.flags = flags;
         wm.updateViewLayout(this, wmParams);
     }
@@ -126,7 +126,7 @@ public class SmallWindowView extends LinearLayout {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (wm==null||!enableMove){
+        if (wm==null||wmParams==null||!enableMove){
             return super.dispatchTouchEvent(event);
         }
         if (event.getAction() == MotionEvent.ACTION_DOWN) {

@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import com.example.clickdevice.bean.Bean
 import com.example.clickdevice.bean.RecordScriptCmd
+import com.example.clickdevice.helper.toDate
 
 class RecordTouchView : View {
 
@@ -48,37 +49,51 @@ class RecordTouchView : View {
     }
 
     var scriptListener: ScriptListener? = null
+
+
     private var downTime = 0L
+    private var isDown: Boolean=false
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         if (!enable) {
              return false
         }
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
-                downTime = SystemClock.uptimeMillis()
-                scriptListener?.onActionDown()
-                path = Path()
-                scriptPath = Path()
-                data = ArrayList()
-                path!!.moveTo(event.x, event.y)
-                scriptPath!!.moveTo(event.rawX, event.rawY)
-                data?.add(Bean(event.rawX.toInt(), event.rawY.toInt()))
+                if (!isDown){
+                    isDown=true
+                    downTime = SystemClock.uptimeMillis()
+                    scriptListener?.onActionDown()
+                    path = Path()
+                    scriptPath = Path()
+                    data = ArrayList()
+                    path!!.moveTo(event.x, event.y)
+                    scriptPath!!.moveTo(event.rawX, event.rawY)
+                    data?.add(Bean(event.rawX.toInt(), event.rawY.toInt()))
+                }
+
             }
             MotionEvent.ACTION_MOVE -> {
-                path?.lineTo(event.x, event.y)
-                scriptPath?.lineTo(event.rawX, event.rawY)
-                data?.add(Bean(event.rawX.toInt(), event.rawY.toInt()))
+                if (isDown) {
+                    path?.lineTo(event.x, event.y)
+                    scriptPath?.lineTo(event.rawX, event.rawY)
+                    data?.add(Bean(event.rawX.toInt(), event.rawY.toInt()))
+                }
             }
             MotionEvent.ACTION_UP -> {
-                path?.lineTo(event.x, event.y)
-                scriptPath?.lineTo(event.rawX, event.rawY)
-                data?.add(Bean(event.rawX.toInt(), event.rawY.toInt()))
-                scriptListener?.apply {
-                    val createGestureCMD = RecordScriptCmd.createGestureCMD(
-                        data,
-                        (SystemClock.uptimeMillis() - downTime).toInt()
-                    )
-                    onUpdate(createGestureCMD, scriptPath!!)
+                if (isDown) {
+                    isDown=false
+                    path?.lineTo(event.x, event.y)
+                    scriptPath?.lineTo(event.rawX, event.rawY)
+                    data?.add(Bean(event.rawX.toInt(), event.rawY.toInt()))
+                    scriptListener?.apply {
+                        val createGestureCMD = RecordScriptCmd.createGestureCMD(
+                            data,
+                            (SystemClock.uptimeMillis() - downTime).toInt(),
+                            System.currentTimeMillis().toDate()
+                        )
+                        onUpdate(createGestureCMD, scriptPath!!)
+                    }
+
                 }
             }
         }

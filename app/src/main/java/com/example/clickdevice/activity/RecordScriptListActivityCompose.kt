@@ -34,8 +34,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class RecordScriptListActivityCompose : ComponentActivity() {
+    private var isSelectMode = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        isSelectMode = intent.getBooleanExtra("selectMode", false)
+        
         setContent {
             ClickDeviceTheme {
                 Surface(
@@ -46,11 +50,25 @@ class RecordScriptListActivityCompose : ComponentActivity() {
                         onBack = { finish() },
                         onStartRecording = {
                             startActivity(Intent(this, RecordScriptActivityCompose::class.java))
+                        },
+                        isSelectMode = isSelectMode,
+                        onSelectScript = { script ->
+                            selectScript(script)
                         }
                     )
                 }
             }
         }
+    }
+
+    private fun selectScript(script: RecordScriptBean) {
+        val intent = Intent().apply {
+            putExtra("type", LauncherScriptActivity.TYPE_RECORD_SCRIPT)
+            putExtra("id", script.id)
+            putExtra("name", script.name)
+        }
+        setResult(RESULT_OK, intent)
+        finish()
     }
 }
 
@@ -58,7 +76,9 @@ class RecordScriptListActivityCompose : ComponentActivity() {
 @Composable
 fun RecordScriptListScreen(
     onBack: () -> Unit,
-    onStartRecording: () -> Unit
+    onStartRecording: () -> Unit,
+    isSelectMode: Boolean = false,
+    onSelectScript: (RecordScriptBean) -> Unit = {}
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -81,7 +101,7 @@ fun RecordScriptListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("录制脚本列表") },
+                title = { Text(if (isSelectMode) "选择录制脚本" else "录制脚本列表") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "返回")
@@ -90,8 +110,10 @@ fun RecordScriptListScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onStartRecording) {
-                Icon(Icons.Default.Add, contentDescription = "开始录制")
+            if (!isSelectMode) {
+                FloatingActionButton(onClick = onStartRecording) {
+                    Icon(Icons.Default.Add, contentDescription = "开始录制")
+                }
             }
         }
     ) { padding ->
@@ -102,7 +124,7 @@ fun RecordScriptListScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("暂无录制脚本，点击右下角开始录制")
+                Text(if (isSelectMode) "暂无录制脚本" else "暂无录制脚本，点击右下角开始录制")
             }
         } else {
             LazyColumn(
@@ -113,31 +135,38 @@ fun RecordScriptListScreen(
                 contentPadding = PaddingValues(16.dp)
             ) {
                 items(scripts) { script ->
-                    RecordScriptItem(
-                        script = script,
-                        onSelect = {
-                            MyLiveData.getInstance().with("RecordScriptPlay", RecordScriptBean::class.java)
-                                .postValue(script)
-                            context.startActivity(Intent(context, RecordScriptPlayActivityCompose::class.java))
-                        },
-                        onEdit = {
-                            MyLiveData.getInstance().with("RecordScriptEdit", RecordScriptBean::class.java)
-                                .postValue(script)
-                            val intent = Intent(context, RecordScriptActivityCompose::class.java)
-                            intent.putExtra("isEdit", true)
-                            context.startActivity(intent)
-                        },
-                        onDelete = {
-                            selectedScript = script
-                            showDeleteDialog = true
-                        },
-                        onCreateDesktop = {
-                            val activity = context.findActivity()
-                            if (activity != null) {
-                                DesktopIconHelper.addShortcut(activity, script)
+                    if (isSelectMode) {
+                        RecordScriptSelectItem(
+                            script = script,
+                            onSelect = { onSelectScript(script) }
+                        )
+                    } else {
+                        RecordScriptItem(
+                            script = script,
+                            onSelect = {
+                                MyLiveData.getInstance().with("RecordScriptPlay", RecordScriptBean::class.java)
+                                    .postValue(script)
+                                context.startActivity(Intent(context, RecordScriptPlayActivityCompose::class.java))
+                            },
+                            onEdit = {
+                                MyLiveData.getInstance().with("RecordScriptEdit", RecordScriptBean::class.java)
+                                    .postValue(script)
+                                val intent = Intent(context, RecordScriptActivityCompose::class.java)
+                                intent.putExtra("isEdit", true)
+                                context.startActivity(intent)
+                            },
+                            onDelete = {
+                                selectedScript = script
+                                showDeleteDialog = true
+                            },
+                            onCreateDesktop = {
+                                val activity = context.findActivity()
+                                if (activity != null) {
+                                    DesktopIconHelper.addShortcut(activity, script)
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -167,6 +196,24 @@ fun RecordScriptListScreen(
                 }
             }
         )
+    }
+}
+
+@Composable
+fun RecordScriptSelectItem(
+    script: RecordScriptBean,
+    onSelect: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onSelect() },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(script.name ?: "未命名", style = MaterialTheme.typography.titleMedium)
+            Text("ID: ${script.id}", style = MaterialTheme.typography.bodySmall, color = androidx.compose.ui.graphics.Color.Gray)
+        }
     }
 }
 

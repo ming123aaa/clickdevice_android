@@ -181,29 +181,6 @@ public class MyService extends AccessibilityService {
 //        createWindow();
     }
 
-//    public void createWindow() {
-//        //悬浮窗类型
-//        int type;
-//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-//            type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//            type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY;
-//        } else {
-//            type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
-//        }
-//
-//        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-//        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-//        lp.format= PixelFormat.TRANSLUCENT;
-//        lp.type = type;
-//        lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
-//                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
-//                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
-//                WindowManager.LayoutParams.FIRST_SYSTEM_WINDOW;
-//        LinearLayout linearLayout = new LinearLayout(this);
-//        linearLayout.setBackgroundColor(0x80000000);
-//        wm.addView(linearLayout,lp);
-//
-//    }
+
 
 }

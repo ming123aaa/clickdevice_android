@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {ScriptDataBean.class, RecordScriptBean.class,ScriptGroupBean.class}, version = 5, exportSchema = false)
+@Database(entities = {ScriptDataBean.class, RecordScriptBean.class,ScriptGroupBean.class, KeyBindingBean.class}, version = 6, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase appDatabase;
 
@@ -18,6 +18,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract RecordScriptDao getRecordScriptDao();
 
     public abstract ScriptGroupDao getScriptGroupDao();
+
+    public abstract KeyBindingDao getKeyBindingDao();
 
     public static Migration migration_1_2 = new Migration(1, 2) {
         @Override
@@ -50,6 +52,13 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    public static Migration migration_5_6 = new Migration(5, 6) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS `key_binding` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `keyName` TEXT, `keyDescription` TEXT, `scriptType` TEXT, `scriptId` INTEGER NOT NULL DEFAULT 0, `scriptName` TEXT, `scriptParams` TEXT, `textColor` INTEGER NOT NULL DEFAULT -16777216, `textSize` INTEGER NOT NULL DEFAULT 16, `windowX` INTEGER NOT NULL DEFAULT 0, `windowY` INTEGER NOT NULL DEFAULT 0, `windowLocked` INTEGER NOT NULL DEFAULT 0, `createTime` TEXT, `updateTime` TEXT)");
+        }
+    };
+
     public static AppDatabase getInstance(Context context) {
         if (appDatabase == null) {
             appDatabase = Room.databaseBuilder(context, AppDatabase.class, "script_info.db")
@@ -57,6 +66,7 @@ public abstract class AppDatabase extends RoomDatabase {
                     .addMigrations(migration_2_3)
                     .addMigrations(migration_3_4)
                     .addMigrations(migration_4_5)
+                    .addMigrations(migration_5_6)
                     .build();
         }
         return appDatabase;

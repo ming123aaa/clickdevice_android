@@ -215,7 +215,9 @@ class RecordScriptPlayActivityCompose : ComponentActivity(), RecordScriptExecuto
     override fun preDispatchGesture(x: Int, y: Int) {
         windowBBinding?.root?.post {
             windowBBinding?.tvWinB?.apply {
-                if (calcPointRange(this, x, y)) {
+                val xc = if (xCoefficient in 0.25f..5.0f) xCoefficient else 1.0f
+                val yc = if (yCoefficient in 0.25f..5.0f) yCoefficient else 1.0f
+                if (calcPointRange(this, x*xc.toInt(), y*yc.toInt())) {
                     playNotTouch()
                 }
             }

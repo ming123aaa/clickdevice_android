@@ -49,6 +49,7 @@ import com.example.clickdevice.bean.toScriptGroupBean
 import com.example.clickdevice.bean.toSimpleScriptGroup
 import com.example.clickdevice.db.AppDatabase
 import com.example.clickdevice.db.ScriptGroupBean
+import com.example.clickdevice.helper.smallWindowManager
 import com.example.clickdevice.ui.theme.ClickDeviceTheme
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
@@ -101,7 +102,7 @@ class ScriptGroupEditActivityCompose : ComponentActivity() {
 
     @SuppressLint("WrongConstant")
     private fun initSmallViewLayout() {
-        wm = applicationContext.getSystemService(WINDOW_SERVICE) as WindowManager
+        wm =  smallWindowManager()
         windowView = LayoutInflater.from(this).inflate(R.layout.window_a, null) as SmallWindowView
         mLayoutParams = WindowManager.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,

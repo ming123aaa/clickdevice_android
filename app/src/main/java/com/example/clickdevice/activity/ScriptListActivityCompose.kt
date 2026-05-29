@@ -34,8 +34,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ScriptListActivityCompose : ComponentActivity() {
+    private var isSelectMode = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        isSelectMode = intent.getBooleanExtra("selectMode", false)
+        
         setContent {
             ClickDeviceTheme {
                 Surface(
@@ -44,7 +48,11 @@ class ScriptListActivityCompose : ComponentActivity() {
                 ) {
                     ScriptListScreen(
                         onBack = { finish() },
-                        onCreateNew = { createNewScript() }
+                        onCreateNew = { createNewScript() },
+                        isSelectMode = isSelectMode,
+                        onSelectScript = { script ->
+                            selectScript(script)
+                        }
                     )
                 }
             }
@@ -56,13 +64,25 @@ class ScriptListActivityCompose : ComponentActivity() {
         intent.putExtra("isNew", true)
         startActivity(intent)
     }
+
+    private fun selectScript(script: ScriptDataBean) {
+        val intent = Intent().apply {
+            putExtra("type", LauncherScriptActivity.TYPE_SCRIPT)
+            putExtra("id", script.id)
+            putExtra("name", script.name)
+        }
+        setResult(RESULT_OK, intent)
+        finish()
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScriptListScreen(
     onBack: () -> Unit,
-    onCreateNew: () -> Unit
+    onCreateNew: () -> Unit,
+    isSelectMode: Boolean = false,
+    onSelectScript: (ScriptDataBean) -> Unit = {}
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -85,15 +105,17 @@ fun ScriptListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("普通脚本列表") },
+                title = { Text(if (isSelectMode) "选择普通脚本" else "普通脚本列表") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "返回")
                     }
                 },
                 actions = {
-                    IconButton(onClick = onCreateNew) {
-                        Icon(Icons.Default.Add, contentDescription = "创建新脚本")
+                    if (!isSelectMode) {
+                        IconButton(onClick = onCreateNew) {
+                            Icon(Icons.Default.Add, contentDescription = "创建新脚本")
+                        }
                     }
                 }
             )
@@ -106,7 +128,7 @@ fun ScriptListScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("暂无脚本，点击右上角 + 创建")
+                Text(if (isSelectMode) "暂无脚本" else "暂无脚本，点击右上角 + 创建")
             }
         } else {
             LazyColumn(
@@ -117,40 +139,44 @@ fun ScriptListScreen(
                 contentPadding = PaddingValues(0.dp)
             ) {
                 items(scripts) { script ->
-                    ScriptItem(
-                        script = script,
-                        onSelect = {
-                            // 选择脚本 -> 执行
-                            MyLiveData.getInstance().with("json", String::class.java).setValue(script.scriptJson)
-                            MyLiveData.getInstance().with("scriptName", String::class.java).setValue(script.name)
-                            MyLiveData.getInstance().with("xCoefficient", Float::class.java).setValue(script.getXCoefficient())
-                            MyLiveData.getInstance().with("yCoefficient", Float::class.java).setValue(script.getYCoefficient())
-                            context.startActivity(Intent(context, ScriptActivityCompose::class.java))
-                        },
-                        onEdit = {
-                            // 编辑脚本
-                            val intent = Intent(context, ScriptEditActivityCompose::class.java)
-                            intent.putExtra("isNew", false)
-                            MyLiveData.getInstance().with("ScriptDataBean", ScriptDataBean::class.java).setValue(script)
-                            context.startActivity(intent)
-                        },
-                        onDelete = {
-                            selectedScript = script
-                            showDeleteDialog = true
-                        },
-                        onCreateDesktop = {
-                            val activity = context.findActivity()
-                            if (activity != null) {
-                                DesktopIconHelper.addShortcut(activity, script)
+                    if (isSelectMode) {
+                        ScriptSelectItem(
+                            script = script,
+                            onSelect = { onSelectScript(script) }
+                        )
+                    } else {
+                        ScriptItem(
+                            script = script,
+                            onSelect = {
+                                MyLiveData.getInstance().with("json", String::class.java).setValue(script.scriptJson)
+                                MyLiveData.getInstance().with("scriptName", String::class.java).setValue(script.name)
+                                MyLiveData.getInstance().with("xCoefficient", Float::class.java).setValue(script.getXCoefficient())
+                                MyLiveData.getInstance().with("yCoefficient", Float::class.java).setValue(script.getYCoefficient())
+                                context.startActivity(Intent(context, ScriptActivityCompose::class.java))
+                            },
+                            onEdit = {
+                                val intent = Intent(context, ScriptEditActivityCompose::class.java)
+                                intent.putExtra("isNew", false)
+                                MyLiveData.getInstance().with("ScriptDataBean", ScriptDataBean::class.java).setValue(script)
+                                context.startActivity(intent)
+                            },
+                            onDelete = {
+                                selectedScript = script
+                                showDeleteDialog = true
+                            },
+                            onCreateDesktop = {
+                                val activity = context.findActivity()
+                                if (activity != null) {
+                                    DesktopIconHelper.addShortcut(activity, script)
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
     }
 
-    // 删除确认对话框
     if (showDeleteDialog && selectedScript != null) {
         val scriptToDelete = selectedScript!!
         AlertDialog(
@@ -175,6 +201,24 @@ fun ScriptListScreen(
                 }
             }
         )
+    }
+}
+
+@Composable
+fun ScriptSelectItem(
+    script: ScriptDataBean,
+    onSelect: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onSelect() },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(script.name ?: "", style = MaterialTheme.typography.titleMedium)
+            Text("ID: ${script.id}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+        }
     }
 }
 

@@ -8,6 +8,7 @@ public class RecordScriptCmd {
     public List<Bean> path;
     public int delayed;
     public int duration;
+    public String time="";
 
     public enum  Type {
         Gesture, Delay
@@ -16,19 +17,20 @@ public class RecordScriptCmd {
     public RecordScriptCmd() {
     }
 
-    public static RecordScriptCmd createGestureCMD(List<Bean> path, int duration) {
+    public static RecordScriptCmd createGestureCMD(List<Bean> path, int duration,String time) {
         RecordScriptCmd recordScriptCmd = new RecordScriptCmd();
         recordScriptCmd.type = Type.Gesture;
         recordScriptCmd.path = path;
         recordScriptCmd.duration = duration;
-
+        recordScriptCmd.time=time;
         return recordScriptCmd;
     }
 
-    public static RecordScriptCmd createDelayCMD(int Delay){
+    public static RecordScriptCmd createDelayCMD(int Delay,String time){
         RecordScriptCmd recordScriptCmd = new RecordScriptCmd();
         recordScriptCmd.type=Type.Delay;
         recordScriptCmd.delayed=Delay;
+        recordScriptCmd.time=time;
         return recordScriptCmd;
     }
 

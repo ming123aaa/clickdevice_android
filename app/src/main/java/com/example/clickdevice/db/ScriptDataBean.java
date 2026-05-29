@@ -4,6 +4,12 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.example.clickdevice.bean.ScriptCmdBean;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.List;
+
 @Entity(tableName = "script")
 public class ScriptDataBean {
     @PrimaryKey(autoGenerate = true)
@@ -23,6 +29,8 @@ public class ScriptDataBean {
 
     public ScriptDataBean() {
     }
+
+
 
     @Ignore
     public ScriptDataBean(String name, String createTime, String updateTime, String scriptJson) {

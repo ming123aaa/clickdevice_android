@@ -37,6 +37,11 @@ public class ScriptExecutorTest {
         }
 
         @Override
+        public boolean isRun() {
+            return true;
+        }
+
+        @Override
         public void delayedCmd(int delayed) throws InterruptedException {
             delayedCallCount++;
             totalCallCount++;

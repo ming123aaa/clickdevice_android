@@ -10,7 +10,7 @@ class RecordScriptExecutor {
     var recordScriptInterface: RecordScriptInterface? = null
 
 
-    fun run(data: MutableList<RecordScriptCmd>) {
+    fun run(data: List<RecordScriptCmd>) {
         try {
             repeat(data.size) {
                 if (recordScriptInterface == null || !recordScriptInterface!!.isRun()) {
@@ -20,14 +20,17 @@ class RecordScriptExecutor {
                     RecordScriptCmd.Type.Delay -> {
                         delay(data[it])
                     }
+
                     RecordScriptCmd.Type.Gesture -> {
-                        gesture(it,data[it])
+                        gesture(it, data[it])
                     }
+
                     else -> {
                     }
                 }
             }
-        }catch (e: Throwable){}
+        } catch (e: Throwable) {
+        }
 
     }
 
@@ -35,13 +38,12 @@ class RecordScriptExecutor {
         delay(recordScriptCmd.delayed.toLong())
     }
 
-    fun delay(time: Long): Boolean {
+    fun sleep(time: Long): Boolean {
         if (time <= 0) {
             return false
         }
-        val adjustedTime = (time * delayCoefficient).toLong()
-        val count = adjustedTime / 10
-        val t = adjustedTime % 10
+        val count = time / 10
+        val t = time % 10
         Thread.sleep(t)
         for (i in 0 until count) {
             if (recordScriptInterface == null || !recordScriptInterface!!.isRun()) {
@@ -52,22 +54,37 @@ class RecordScriptExecutor {
         return false
     }
 
+    fun delay(time: Long): Boolean {
+        if (time <= 0) {
+            return false
+        }
+        val adjustedTime = (time * delayCoefficient).toLong()
+        return sleep(adjustedTime)
+    }
+
     private fun gesture(position: Int, recordScriptCmd: RecordScriptCmd) {
         if (delay(recordScriptCmd.delayed.toLong())) {
             return
         }
+
         recordScriptInterface?.apply {
-            if (recordScriptCmd.path == null || recordScriptCmd.path.size == 0) {
+            if (!isRun()||recordScriptCmd.path == null || recordScriptCmd.path.isEmpty()) {
                 return@apply
             }
 
             val bean = recordScriptCmd.path[0]
             preDispatchGesture(bean.x, bean.y)
-            delay(100)
+            sleep(100)
             val createPath = createPath(recordScriptCmd.path)
-            dispatchGesture(position, createPath, recordScriptCmd.duration)
-            delay(recordScriptCmd.duration.toLong())
-            delay(100)
+            var duration = (recordScriptCmd.duration * delayCoefficient).toInt()
+            if (duration < 10) {
+                duration = 10
+            }
+            try {
+                dispatchGesture(position, createPath, duration)
+                sleep(duration.toLong())
+            }catch (e: Throwable){}
+            sleep(100)
             endDispatchGesture()
         }
 

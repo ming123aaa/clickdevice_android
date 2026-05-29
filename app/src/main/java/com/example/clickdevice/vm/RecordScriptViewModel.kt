@@ -2,6 +2,7 @@ package com.example.clickdevice.vm
 
 import android.content.Context
 import android.os.SystemClock
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import com.example.clickdevice.RecordScriptExecutor
 import com.example.clickdevice.bean.RecordScriptCmd
@@ -15,7 +16,7 @@ import java.util.concurrent.Executors
 class RecordScriptViewModel : ViewModel() {
 
 
-    var data = ArrayList<RecordScriptCmd>()
+    var data = SnapshotStateList<RecordScriptCmd>()
 
     val singleThreadExecutor: ExecutorService = Executors.newSingleThreadExecutor()
 
@@ -28,7 +29,6 @@ class RecordScriptViewModel : ViewModel() {
     var lastTime = 0L
 
 
-
     fun playScript() {
         recordScriptExecutor.run(data)
     }
@@ -37,8 +37,11 @@ class RecordScriptViewModel : ViewModel() {
     fun addRecordScriptCmd(recordScriptCmd: RecordScriptCmd) {
         if (isRecord) {
             data.add(recordScriptCmd)
-
         }
+    }
+
+    fun removeRecordScriptCmd(recordScriptCmd: RecordScriptCmd) {
+        data.remove(recordScriptCmd)
     }
 
     fun postLastTime() {
@@ -49,7 +52,10 @@ class RecordScriptViewModel : ViewModel() {
         if (isRecord) {
             if (lastTime > 0) {
                 val time = SystemClock.uptimeMillis() - lastTime
-                val createDelayCMD = RecordScriptCmd.createDelayCMD(time.toInt())
+                val createDelayCMD = RecordScriptCmd.createDelayCMD(
+                    time.toInt(),
+                    System.currentTimeMillis().toDate()
+                )
                 addRecordScriptCmd(createDelayCMD)
             }
 
@@ -66,27 +72,37 @@ class RecordScriptViewModel : ViewModel() {
         isRecord = false
     }
 
-    suspend fun saveScript(context: Context,name: String, xCoefficient: Float = 1.0f, yCoefficient: Float = 1.0f) {
+    suspend fun saveScript(
+        context: Context,
+        name: String,
+        xCoefficient: Float = 1.0f,
+        yCoefficient: Float = 1.0f
+    ) {
         if (recordScriptBean == null) {
-            recordScriptBean=createRecordScriptCmd(name)
-        }else{
+            recordScriptBean = createRecordScriptCmd(name)
+        } else {
             var currentTimeMillis = System.currentTimeMillis()
-            recordScriptBean!!.name=name
-            recordScriptBean!!.updateTime=currentTimeMillis.toDate()
+            recordScriptBean!!.name = name
+            recordScriptBean!!.updateTime = currentTimeMillis.toDate()
             var gson = Gson()
             var toJson = gson.toJson(data)
-            recordScriptBean!!.scriptJson=toJson
+            recordScriptBean!!.scriptJson = toJson
         }
         recordScriptBean!!.xCoefficient = xCoefficient
         recordScriptBean!!.yCoefficient = yCoefficient
-        if (recordScriptBean!!.id>0){
-            update(context,recordScriptBean!!)
-        }else{
-            insert(context,recordScriptBean!!)
+        if (recordScriptBean!!.id > 0) {
+            update(context, recordScriptBean!!)
+        } else {
+            insert(context, recordScriptBean!!)
         }
     }
 
-    fun saveScriptBlocking(context: Context, name: String, xCoefficient: Float = 1.0f, yCoefficient: Float = 1.0f) {
+    fun saveScriptBlocking(
+        context: Context,
+        name: String,
+        xCoefficient: Float = 1.0f,
+        yCoefficient: Float = 1.0f
+    ) {
         if (recordScriptBean == null) {
             recordScriptBean = createRecordScriptCmd(name)
         } else {
@@ -104,24 +120,24 @@ class RecordScriptViewModel : ViewModel() {
         }
     }
 
-    private fun update(context: Context, recordScript:RecordScriptBean){
+    private fun update(context: Context, recordScript: RecordScriptBean) {
         AppDatabase.getInstance(context).recordScriptDao.updateRecordScriptBean(recordScript)
     }
-    private fun insert(context: Context, recordScript:RecordScriptBean){
+
+    private fun insert(context: Context, recordScript: RecordScriptBean) {
         AppDatabase.getInstance(context).recordScriptDao.insertRecordScriptBean(recordScript)
     }
 
 
-
-    private fun  createRecordScriptCmd(name:String):RecordScriptBean{
+    private fun createRecordScriptCmd(name: String): RecordScriptBean {
         var recordScriptBean1 = RecordScriptBean()
         var currentTimeMillis = System.currentTimeMillis()
-        recordScriptBean1.name=name
-        recordScriptBean1.createTime=currentTimeMillis.toDate()
-        recordScriptBean1.updateTime=currentTimeMillis.toDate()
+        recordScriptBean1.name = name
+        recordScriptBean1.createTime = currentTimeMillis.toDate()
+        recordScriptBean1.updateTime = currentTimeMillis.toDate()
         var gson = Gson()
         var toJson = gson.toJson(data)
-        recordScriptBean1.scriptJson=toJson
+        recordScriptBean1.scriptJson = toJson
         return recordScriptBean1
     }
 

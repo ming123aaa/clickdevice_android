@@ -24,6 +24,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -53,7 +54,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class RecordScriptActivityCompose : ComponentActivity(), RecordScriptExecutor.RecordScriptInterface {
+class RecordScriptActivityCompose : ComponentActivity(),
+    RecordScriptExecutor.RecordScriptInterface {
 
     private var viewModel: RecordScriptViewModel? = null
     private var smallWindowsHelper: SmallWindowsHelper? = null
@@ -66,8 +68,6 @@ class RecordScriptActivityCompose : ComponentActivity(), RecordScriptExecutor.Re
     private var isRun = false
     private val mainHandler = Handler(Looper.getMainLooper())
 
-    var commandCount by mutableStateOf(0)
-        private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,13 +82,15 @@ class RecordScriptActivityCompose : ComponentActivity(), RecordScriptExecutor.Re
                 .observe(this) { bean ->
                     bean?.let {
                         viewModel?.recordScriptBean = it
-                        viewModel?.data = try {
+                        val data: List<RecordScriptCmd> = try {
                             Gson().fromJson(
                                 it.scriptJson,
                                 object : TypeToken<List<RecordScriptCmd>>() {}.type
                             ) ?: ArrayList()
-                        } catch (_: Exception) { ArrayList() }
-                        commandCount = viewModel?.data?.size ?: 0
+                        } catch (_: Exception) {
+                            ArrayList()
+                        }
+                        viewModel?.data?.addAll(data)
                     }
                 }
         }
@@ -101,7 +103,7 @@ class RecordScriptActivityCompose : ComponentActivity(), RecordScriptExecutor.Re
                 ) {
                     RecordScriptEditScreen(
                         isEdit = isEdit,
-                        commandCount = commandCount,
+
                         onBack = { finish() },
                         onOpenRecordWindow = { openRecordWindow() },
                         onPlay = { togglePlayWindow() },
@@ -125,11 +127,10 @@ class RecordScriptActivityCompose : ComponentActivity(), RecordScriptExecutor.Re
                 }
 
                 override fun onUpdate(recordScriptCmd: RecordScriptCmd, path: Path) {
-                    notTouch()
+
                     if (MyService.isStart()) {
                         dispatchGesturePath(path, recordScriptCmd)
-                        viewModel?.addRecordScriptCmd(recordScriptCmd)
-                        commandCount = viewModel?.data?.size ?: 0
+
                     }
                 }
             }
@@ -160,7 +161,7 @@ class RecordScriptActivityCompose : ComponentActivity(), RecordScriptExecutor.Re
 
         smallWindowBinding?.tvHide?.setOnClickListener {
             smallWindowBinding?.layout1?.visibility = View.GONE
-            Toast.makeText(this,"3秒后显示按钮", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "3秒后显示按钮", Toast.LENGTH_SHORT).show()
             mainHandler.postDelayed({
                 smallWindowBinding?.layout1?.visibility = View.VISIBLE
             }, 3000)
@@ -171,7 +172,8 @@ class RecordScriptActivityCompose : ComponentActivity(), RecordScriptExecutor.Re
         playSmallWindowsHelper = SmallWindowsHelper(this)
         val mLayoutParams = playSmallWindowsHelper?.mLayoutParams
         mLayoutParams?.gravity = Gravity.TOP
-        windowBtnBinding = com.example.clickdevice.databinding.WindowBBinding.inflate(layoutInflater)
+        windowBtnBinding =
+            com.example.clickdevice.databinding.WindowBBinding.inflate(layoutInflater)
         windowBtnBinding?.tvWinB?.text = "开始"
         windowBtnBinding?.tvWinB?.setOnTouchClick({
             isRun = true
@@ -198,7 +200,11 @@ class RecordScriptActivityCompose : ComponentActivity(), RecordScriptExecutor.Re
 
     private fun openRecordWindow() {
         if (!MyService.isStart()) {
-            Toast.makeText(this, "请手动开启辅助功能，若已开启请重启应用再试一次。", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this,
+                "请手动开启辅助功能，若已开启请重启应用再试一次。",
+                Toast.LENGTH_LONG
+            ).show()
             return
         }
         showSmallWindows()
@@ -249,18 +255,31 @@ class RecordScriptActivityCompose : ComponentActivity(), RecordScriptExecutor.Re
     }
 
     private fun dispatchGesturePath(path: Path, recordScriptCmd: RecordScriptCmd) {
-        mainHandler.removeCallbacks(runnable1 ?: Runnable {})
-        mainHandler.removeCallbacks(runnable2 ?: Runnable {})
+        if (runnable1 != null || runnable2 != null) {
+            return
+        }
+        notTouch()
         runnable2 = Runnable {
             canTouch()
             viewModel?.postLastTime()
+            runnable2 = null
         }
+
         runnable1 = Runnable {
-            MyService.myService.dispatchGesture(path, recordScriptCmd.duration)
+
+            try {
+                MyService.myService.dispatchGesture(path, recordScriptCmd.duration)
+                viewModel?.addRecordScriptCmd(recordScriptCmd)
+
+            } catch (e: Throwable) {
+                Toast.makeText(this,"无效手势", Toast.LENGTH_SHORT).show()
+            }
+
             mainHandler.postDelayed(
                 runnable2!!,
                 recordScriptCmd.duration.toLong()
             )
+            runnable1 = null
         }
         mainHandler.postDelayed(runnable1!!, 100)
     }
@@ -371,7 +390,6 @@ class RecordScriptActivityCompose : ComponentActivity(), RecordScriptExecutor.Re
 @Composable
 fun RecordScriptEditScreen(
     isEdit: Boolean,
-    commandCount: Int = 0,
     onBack: () -> Unit,
     onOpenRecordWindow: () -> Unit,
     onPlay: () -> Unit,
@@ -386,7 +404,7 @@ fun RecordScriptEditScreen(
     var yCoefficient by remember { mutableFloatStateOf(1.0f) }
     var xCoeffText by remember { mutableStateOf("") }
     var yCoeffText by remember { mutableStateOf("") }
-    var commands by remember { mutableStateOf<List<RecordScriptCmd>>(emptyList()) }
+    val commands = remember { viewModel!!.data }
     val owner = LocalLifecycleOwner.current
 
     LaunchedEffect(Unit) {
@@ -402,11 +420,7 @@ fun RecordScriptEditScreen(
             }
     }
 
-    LaunchedEffect(commandCount) {
-        viewModel?.let { vm ->
-            commands = ArrayList(vm.data)
-        }
-    }
+
 
     Scaffold(
         topBar = {
@@ -518,11 +532,22 @@ fun RecordScriptEditScreen(
             ) {
                 itemsIndexed(commands) { index, cmd ->
                     Card(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = getCmdDescribe(index, cmd),
-                            modifier = Modifier.padding(12.dp),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        Row {
+                            Text(
+                                text = getCmdDescribe(index, cmd),
+                                modifier = Modifier
+                                    .padding(12.dp)
+                                    .weight(1f),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            IconButton(onClick = {
+                                viewModel?.removeRecordScriptCmd(cmd)
+                            }) {
+                                Icon(Icons.Default.Delete, contentDescription = "删除")
+                            }
+
+                        }
+
                     }
                 }
             }
@@ -533,9 +558,9 @@ fun RecordScriptEditScreen(
 private fun getCmdDescribe(index: Int, cmd: RecordScriptCmd): String {
     val prefix = "$index.  "
     return when (cmd.type) {
-        RecordScriptCmd.Type.Gesture -> prefix + "手势执行" + cmd.duration + "ms"
-        RecordScriptCmd.Type.Delay -> prefix + "延时" + cmd.delayed + "ms"
-        else -> prefix + "未知命令"
+        RecordScriptCmd.Type.Gesture -> prefix + "手势执行" + cmd.duration + "ms" + " -${cmd.time}"
+        RecordScriptCmd.Type.Delay -> prefix + "延时" + cmd.delayed + "ms" + " -${cmd.time}"
+        else -> prefix + "未知命令" + " -" + " -${cmd.time}"
     }
 }
 

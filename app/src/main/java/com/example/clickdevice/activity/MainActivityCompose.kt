@@ -35,8 +35,10 @@ import com.example.clickdevice.PowerKeyObserver
 import com.example.clickdevice.R
 import com.example.clickdevice.SmallWindowView
 import com.example.clickdevice.Util
+import com.example.clickdevice.helper.KeyFloatWindowManager
 import com.example.clickdevice.helper.onClick
 import com.example.clickdevice.helper.setOnTouchClick
+import com.example.clickdevice.helper.smallWindowManager
 import com.example.clickdevice.ui.theme.ClickDeviceTheme
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -79,22 +81,23 @@ class MainActivityCompose : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     MainScreen(
-                        isFloatingWindowShow = isShow,
-                        clickCount = clickCount,
-                        clickInterval = clickInterval,
-                        showAccessibilityDialog = showAccessibilityDialog,
-                        onDismissAccessibilityDialog = { showAccessibilityDialog = false },
-                        onOpenAccessibility = {
-                            showAccessibilityDialog = false
-                            openAccessibility()
-                        },
-                        onStartClickDevice = { startClickDevice() },
-                        onOpenScriptList = { startScriptList() },
-                        onOpenRecordScript = { startRecordScript() },
-                        onOpenScriptGroup = { startScriptGroup() },
-                        onCountChange = { clickCount = it },
-                        onIntervalChange = { clickInterval = it }
-                    )
+                isFloatingWindowShow = isShow,
+                clickCount = clickCount,
+                clickInterval = clickInterval,
+                showAccessibilityDialog = showAccessibilityDialog,
+                onDismissAccessibilityDialog = { showAccessibilityDialog = false },
+                onOpenAccessibility = {
+                    showAccessibilityDialog = false
+                    openAccessibility()
+                },
+                onStartClickDevice = { startClickDevice() },
+                onOpenScriptList = { startScriptList() },
+                onOpenRecordScript = { startRecordScript() },
+                onOpenScriptGroup = { startScriptGroup() },
+                onOpenKeyBinding = { startKeyBinding() },
+                onCountChange = { clickCount = it },
+                onIntervalChange = { clickInterval = it }
+            )
                 }
             }
         }
@@ -132,7 +135,7 @@ class MainActivityCompose : ComponentActivity() {
 
     @SuppressLint("WrongConstant")
     private fun initSmallViewLayout() {
-        wm = getSystemService(WINDOW_SERVICE) as WindowManager
+        wm = smallWindowManager()
 
         // 获取屏幕尺寸
         val dm = resources.displayMetrics
@@ -378,6 +381,11 @@ class MainActivityCompose : ComponentActivity() {
         startActivity(Intent(this, ScriptGroupListActivityCompose::class.java))
     }
 
+    private fun startKeyBinding() {
+        hideFloatWindows()
+        startActivity(Intent(this, KeyBindingListActivity::class.java))
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         isRun = false
@@ -404,6 +412,7 @@ fun MainScreen(
     onOpenScriptList: () -> Unit,
     onOpenRecordScript: () -> Unit,
     onOpenScriptGroup: () -> Unit,
+    onOpenKeyBinding: () -> Unit,
     onCountChange: (String) -> Unit,
     onIntervalChange: (String) -> Unit
 ) {
@@ -505,6 +514,15 @@ fun MainScreen(
             ) {
                 Text("自定义脚本")
             }
+
+            Divider()
+
+            Button(
+                onClick = onOpenKeyBinding,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("按键设置")
+            }
         }
     }
 
@@ -540,6 +558,7 @@ fun MainScreenPreview() {
             onOpenScriptList = {},
             onOpenRecordScript = {},
             onOpenScriptGroup = {},
+            onOpenKeyBinding = {},
             onCountChange = {},
             onIntervalChange = {}
         )

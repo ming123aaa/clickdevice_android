@@ -16,9 +16,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,29 +35,36 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -88,6 +94,7 @@ import com.example.clickdevice.SmallWindowView
 import com.example.clickdevice.bean.ScriptCmdBean
 import com.example.clickdevice.db.AppDatabase
 import com.example.clickdevice.db.ScriptDataBean
+import com.example.clickdevice.helper.smallWindowManager
 import com.example.clickdevice.ui.theme.ClickDeviceTheme
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -137,7 +144,7 @@ class ScriptEditActivityCompose : ComponentActivity() {
 
     @SuppressLint("WrongConstant")
     private fun initSmallViewLayout() {
-        wm = applicationContext.getSystemService(WINDOW_SERVICE) as WindowManager
+        wm = smallWindowManager()
 
         windowView = LayoutInflater.from(this).inflate(R.layout.window_a, null) as SmallWindowView
         mLayoutParams = WindowManager.LayoutParams(
@@ -153,7 +160,8 @@ class ScriptEditActivityCompose : ComponentActivity() {
     }
 
     private fun initBtnWindow() {
-        btnWindowView = LayoutInflater.from(this).inflate(R.layout.window_b, null) as SmallWindowView
+        btnWindowView =
+            LayoutInflater.from(this).inflate(R.layout.window_b, null) as SmallWindowView
         btnLayoutParams = WindowManager.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.TYPE_SYSTEM_ALERT, 8, PixelFormat.TRANSLUCENT
@@ -161,8 +169,9 @@ class ScriptEditActivityCompose : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             btnLayoutParams?.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         }
-        btnLayoutParams?.gravity = android.view.Gravity.TOP or android.view.Gravity.CENTER_HORIZONTAL
-        btnWindowView?.enableMove=false
+        btnLayoutParams?.gravity =
+            android.view.Gravity.TOP or android.view.Gravity.CENTER_HORIZONTAL
+        btnWindowView?.enableMove = false
         btnWindowView?.setWm(wm)
         btnWindowView?.setWmParams(btnLayoutParams)
 
@@ -184,7 +193,10 @@ class ScriptEditActivityCompose : ComponentActivity() {
             if (!Settings.canDrawOverlays(this)) {
                 Toast.makeText(this, "can not DrawOverlays", Toast.LENGTH_SHORT).show()
                 startActivityForResult(
-                    Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")),
+                    Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:$packageName")
+                    ),
                     2
                 )
                 return
@@ -262,8 +274,10 @@ fun ScriptEditScreen(
                 scriptName = bean?.name ?: ""
                 xCoefficient = bean?.xCoefficient ?: 1.0f
                 yCoefficient = bean?.yCoefficient ?: 1.0f
-                xCoeffText = if ((bean?.xCoefficient ?: 1.0f) == 1.0f) "" else (bean?.xCoefficient ?: 1.0f).toString()
-                yCoeffText = if ((bean?.yCoefficient ?: 1.0f) == 1.0f) "" else (bean?.yCoefficient ?: 1.0f).toString()
+                xCoeffText = if ((bean?.xCoefficient ?: 1.0f) == 1.0f) "" else (bean?.xCoefficient
+                    ?: 1.0f).toString()
+                yCoeffText = if ((bean?.yCoefficient ?: 1.0f) == 1.0f) "" else (bean?.yCoefficient
+                    ?: 1.0f).toString()
                 val list: List<ScriptCmdBean>? = bean?.scriptJson?.let {
                     Gson().fromJson(it, object : TypeToken<List<ScriptCmdBean>>() {}.type)
                 }
@@ -274,54 +288,73 @@ fun ScriptEditScreen(
     }
 
     // 菜单命令类型
-    val cmdTypes = listOf("点击命令", "延时命令", "滑屏命令", "循环开始", "循环结束", "随机点击", "json数据导入")
+    val cmdTypes = listOf(
+        "点击命令",
+        "延时命令",
+        "滑屏命令",
+        "循环开始",
+        "循环结束",
+        "随机点击",
+        "json数据导入"
+    )
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (isNew) "新建脚本" else "编辑脚本") },
+                title = { Text(if (isNew) "新建脚本" else "编辑脚本", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    TextButton(onClick = onBack) { Text("返回") }
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "返回")
+                    }
                 },
                 actions = {
-                    TextButton(onClick = {
-                        if (scriptName.isBlank()){
-                            Toast.makeText(context,"请输入名称", Toast.LENGTH_SHORT).show()
-                            return@TextButton
-                        }
-                        val validXCoeff = if (xCoefficient in 0.25f..5.0f) xCoefficient else 1.0f
-                        val validYCoeff = if (yCoefficient in 0.25f..5.0f) yCoefficient else 1.0f
-                        if (validXCoeff != xCoefficient || validYCoeff != yCoefficient) {
-                            Toast.makeText(context, "坐标系数超出范围(0.25~5)，已自动设为1", Toast.LENGTH_SHORT).show()
-                        }
-                        coroutineScope.launch {
-                            withContext(Dispatchers.IO) {
-                                val format = "yyyy-MM-dd HH:mm:ss"
-                                val sdf = SimpleDateFormat(format, Locale.getDefault())
-                                val time = sdf.format(Date(System.currentTimeMillis()))
-                                val gson = Gson()
-                                val scriptJson = gson.toJson(cmdList)
-                                val appDatabase = AppDatabase.getInstance(context)
-                                if (isNew) {
-                                    val bean = ScriptDataBean(scriptName, time, time, scriptJson)
-                                    bean.xCoefficient = validXCoeff
-                                    bean.yCoefficient = validYCoeff
-                                    appDatabase.getScriptDao().insertScriptDataBean(bean)
-                                } else {
-                                    val bean = scriptDataBean ?: ScriptDataBean()
-                                    bean.updateTime = time
-                                    bean.name = scriptName
-                                    bean.scriptJson = scriptJson
-                                    bean.xCoefficient = validXCoeff
-                                    bean.yCoefficient = validYCoeff
-                                    appDatabase.getScriptDao().insertScriptDataBean(bean)
+                    FilledTonalButton(
+                        onClick = {
+                            if (scriptName.isBlank()) {
+                                Toast.makeText(context, "请输入名称", Toast.LENGTH_SHORT).show()
+                                return@FilledTonalButton
+                            }
+                            val validXCoeff = if (xCoefficient in 0.25f..5.0f) xCoefficient else 1.0f
+                            val validYCoeff = if (yCoefficient in 0.25f..5.0f) yCoefficient else 1.0f
+                            if (validXCoeff != xCoefficient || validYCoeff != yCoefficient) {
+                                Toast.makeText(
+                                    context,
+                                    "坐标系数超出范围(0.25~5)，已自动设为1",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            coroutineScope.launch {
+                                withContext(Dispatchers.IO) {
+                                    val format = "yyyy-MM-dd HH:mm:ss"
+                                    val sdf = SimpleDateFormat(format, Locale.getDefault())
+                                    val time = sdf.format(Date(System.currentTimeMillis()))
+                                    val gson = Gson()
+                                    val scriptJson = gson.toJson(cmdList)
+                                    val appDatabase = AppDatabase.getInstance(context)
+                                    if (isNew) {
+                                        val bean = ScriptDataBean(scriptName, time, time, scriptJson)
+                                        bean.xCoefficient = validXCoeff
+                                        bean.yCoefficient = validYCoeff
+                                        appDatabase.getScriptDao().insertScriptDataBean(bean)
+                                    } else {
+                                        val bean = scriptDataBean ?: ScriptDataBean()
+                                        bean.updateTime = time
+                                        bean.name = scriptName
+                                        bean.scriptJson = scriptJson
+                                        bean.xCoefficient = validXCoeff
+                                        bean.yCoefficient = validYCoeff
+                                        appDatabase.getScriptDao().insertScriptDataBean(bean)
+                                    }
+                                }
+                                withContext(Dispatchers.Main) {
+                                    activity.finish()
                                 }
                             }
-                            withContext(Dispatchers.Main) {
-                                activity.finish()
-                            }
-                        }
-                    }) {
+                        },
+                        contentPadding = ButtonDefaults.ButtonWithIconContentPadding
+                    ) {
+                        Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text("保存")
                     }
                 }
@@ -333,70 +366,85 @@ fun ScriptEditScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             OutlinedTextField(
                 value = scriptName,
                 onValueChange = { scriptName = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("脚本名称") }
+                label = { Text("脚本名称") },
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true
             )
 
-            Text("坐标系数", style = MaterialTheme.typography.titleSmall)
-            Text(
-                "实际坐标=原始坐标×系数。取值范围0.25~5，超出范围自动设为1",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text("X:", style = MaterialTheme.typography.bodyMedium)
-                OutlinedTextField(
-                    value = xCoeffText,
-                    onValueChange = { value ->
-                        if (value.isEmpty() || value.matches(Regex("^\\d*\\.?\\d*$"))) {
-                            xCoeffText = value
-                            val parsed = value.toFloatOrNull()
-                            if (parsed != null) xCoefficient = parsed
-                            else if (value.isEmpty()) xCoefficient = 1.0f
-                        }
-                    },
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text("1") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    singleLine = true
-                )
-                Text("Y:", style = MaterialTheme.typography.bodyMedium)
-                OutlinedTextField(
-                    value = yCoeffText,
-                    onValueChange = { value ->
-                        if (value.isEmpty() || value.matches(Regex("^\\d*\\.?\\d*$"))) {
-                            yCoeffText = value
-                            val parsed = value.toFloatOrNull()
-                            if (parsed != null) yCoefficient = parsed
-                            else if (value.isEmpty()) yCoefficient = 1.0f
-                        }
-                    },
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text("1") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    singleLine = true
-                )
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text("坐标系数", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                    Text(
+                        "实际坐标=原始坐标x系数，取值范围 0.25~5",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("X", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                        OutlinedTextField(
+                            value = xCoeffText,
+                            onValueChange = { value ->
+                                if (value.isEmpty() || value.matches(Regex("^\\d*\\.?\\d*$"))) {
+                                    xCoeffText = value
+                                    val parsed = value.toFloatOrNull()
+                                    if (parsed != null) xCoefficient = parsed
+                                    else if (value.isEmpty()) xCoefficient = 1.0f
+                                }
+                            },
+                            modifier = Modifier.weight(1f),
+                            placeholder = { Text("1") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true
+                        )
+                        Text("Y", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                        OutlinedTextField(
+                            value = yCoeffText,
+                            onValueChange = { value ->
+                                if (value.isEmpty() || value.matches(Regex("^\\d*\\.?\\d*$"))) {
+                                    yCoeffText = value
+                                    val parsed = value.toFloatOrNull()
+                                    if (parsed != null) yCoefficient = parsed
+                                    else if (value.isEmpty()) yCoefficient = 1.0f
+                                }
+                            },
+                            modifier = Modifier.weight(1f),
+                            placeholder = { Text("1") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true
+                        )
+                    }
+                }
             }
 
-            // 插入命令按钮
-            Button(
+            FilledTonalButton(
                 onClick = {
                     currentInsertIndex = -1
                     editingCmd = null
                     showCmdTypeMenu = true
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text("+ 插入命令")
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("插入命令")
             }
 
             // 命令列表
@@ -412,208 +460,201 @@ fun ScriptEditScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 itemsIndexed(cmdList) { index, cmd ->
-                    val dismissState = rememberDismissState(
-                        confirmValueChange = { value ->
-                            if (value == DismissValue.DismissedToStart || value == DismissValue.DismissedToEnd) {
-                                val newList = cmdList.toMutableList()
-                                newList.removeAt(index)
-                                cmdList = newList
-                                true
-                            } else {
-                                false
-                            }
-                        }
-                    )
-
                     val isDragged = draggedItemIndex == index
                     val offsetY = if (isDragged) dragAccumY else 0f
 
-                    SwipeToDismiss(
-                        state = dismissState,
-                        directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-                        background = {
-                            val direction = dismissState.dismissDirection
-                            val color by animateColorAsState(
-                                targetValue = when (dismissState.targetValue) {
-                                    DismissValue.DismissedToStart -> Color.Red
-                                    DismissValue.DismissedToEnd -> Color.Red
-                                    else -> Color.Transparent
-                                },
-                                label = "swipe_color"
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(color)
-                                    .padding(horizontal = 20.dp),
-                                contentAlignment = when (direction) {
-                                    DismissDirection.StartToEnd -> Alignment.CenterStart
-                                    DismissDirection.EndToStart -> Alignment.CenterEnd
-                                    else -> Alignment.Center
-                                }
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .offset { IntOffset(0, offsetY.toInt()) }
+                            .zIndex(if (isDragged) 1f else 0f)
+                            .pointerInput(Unit) {
+                                detectDragGesturesAfterLongPress(
+                                    onDragStart = {
+                                        draggedItemIndex = index
+                                        dragAccumY = 0f
+                                    },
+                                    onDrag = { change, dragAmount ->
+                                        change.consume()
+                                        dragAccumY += dragAmount.y
+                                        val currentIdx = draggedItemIndex
+                                        if (currentIdx < 0) return@detectDragGesturesAfterLongPress
+                                        val targetIndex =
+                                            (currentIdx + (dragAccumY / totalItemHeightPx).toInt())
+                                                .coerceIn(0, cmdList.size - 1)
+                                        if (targetIndex != currentIdx) {
+                                            val newList = cmdList.toMutableList()
+                                            val item = newList.removeAt(currentIdx)
+                                            newList.add(targetIndex, item)
+                                            cmdList = newList
+                                            dragAccumY -= (targetIndex - currentIdx) * totalItemHeightPx
+                                            draggedItemIndex = targetIndex
+                                        }
+                                    },
+                                    onDragEnd = {
+                                        draggedItemIndex = -1
+                                        dragAccumY = 0f
+                                    },
+                                    onDragCancel = {
+                                        draggedItemIndex = -1
+                                        dragAccumY = 0f
+                                    }
+                                )
+                            },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isDragged)
+                                MaterialTheme.colorScheme.primaryContainer
+                            else
+                                MaterialTheme.colorScheme.surface
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = if (isDragged) 8.dp else 1.dp
+                        )
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
                             ) {
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+                                    modifier = Modifier.size(40.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text(
+                                            "#${index + 1}",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(10.dp))
+                                val iconRes = when (cmd.action) {
+                                    ScriptCmdBean.ACTION_CLICK -> R.drawable.icon_click
+                                    ScriptCmdBean.ACTION_DELAYED -> R.drawable.icon_delay
+                                    ScriptCmdBean.ACTION_GESTURE -> R.drawable.icon_gesture
+                                    ScriptCmdBean.ACTION_FOR -> R.drawable.icon_for
+                                    ScriptCmdBean.ACTION_FOR_END -> R.drawable.icon_for
+                                    ScriptCmdBean.ACTION_RANDOM_CLICK -> R.drawable.icon_random
+                                    else -> R.drawable.ic_launcher_foreground
+                                }
+                                Image(
+                                    painter = painterResource(id = iconRes),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(36.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text(
+                                    text = cmd.content ?: "",
+                                    modifier = Modifier.weight(1f),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    lineHeight = 18.sp
+                                )
                                 Icon(
-                                    Icons.Default.Delete,
-                                    contentDescription = "删除",
-                                    tint = Color.White
+                                    Icons.Default.DragHandle,
+                                    contentDescription = "拖拽排序",
+                                    modifier = Modifier.size(20.dp),
+                                    tint = MaterialTheme.colorScheme.outline
                                 )
                             }
-                        },
-                        dismissContent = {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .offset { IntOffset(0, offsetY.toInt()) }
-                                    .zIndex(if (isDragged) 1f else 0f)
-                                    .pointerInput(Unit) {
-                                        detectDragGesturesAfterLongPress(
-                                            onDragStart = {
-                                                draggedItemIndex = index
-                                                dragAccumY = 0f
-                                            },
-                                            onDrag = { change, dragAmount ->
-                                                change.consume()
-                                                dragAccumY += dragAmount.y
-                                                val currentIdx = draggedItemIndex
-                                                if (currentIdx < 0) return@detectDragGesturesAfterLongPress
-                                                val targetIndex = (currentIdx + (dragAccumY / totalItemHeightPx).toInt())
-                                                    .coerceIn(0, cmdList.size - 1)
-                                                if (targetIndex != currentIdx) {
-                                                    val newList = cmdList.toMutableList()
-                                                    val item = newList.removeAt(currentIdx)
-                                                    newList.add(targetIndex, item)
-                                                    cmdList = newList
-                                                    dragAccumY -= (targetIndex - currentIdx) * totalItemHeightPx
-                                                    draggedItemIndex = targetIndex
-                                                }
-                                            },
-                                            onDragEnd = {
-                                                draggedItemIndex = -1
-                                                dragAccumY = 0f
-                                            },
-                                            onDragCancel = {
-                                                draggedItemIndex = -1
-                                                dragAccumY = 0f
-                                            }
-                                        )
-                                    },
-                                colors = CardDefaults.cardColors(
-                                    containerColor = if (isDragged)
-                                        MaterialTheme.colorScheme.primaryContainer
-                                    else
-                                        MaterialTheme.colorScheme.surfaceVariant
-                                ),
-                                elevation = CardDefaults.cardElevation(
-                                    defaultElevation = if (isDragged) 8.dp else 2.dp
-                                )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Divider(color = MaterialTheme.colorScheme.outlineVariant)
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Column(modifier = Modifier.padding(8.dp)) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Icon(
-                                            Icons.Default.DragHandle,
-                                            contentDescription = "拖拽",
-                                            modifier = Modifier.size(24.dp),
-                                            tint = Color.Gray
-                                        )
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        val iconRes = when (cmd.action) {
-                                            ScriptCmdBean.ACTION_CLICK -> R.drawable.icon_click
-                                            ScriptCmdBean.ACTION_DELAYED -> R.drawable.icon_delay
-                                            ScriptCmdBean.ACTION_GESTURE -> R.drawable.icon_gesture
-                                            ScriptCmdBean.ACTION_FOR -> R.drawable.icon_for
-                                            ScriptCmdBean.ACTION_FOR_END -> R.drawable.icon_for
-                                            ScriptCmdBean.ACTION_RANDOM_CLICK -> R.drawable.icon_random
-                                            else -> R.drawable.ic_launcher_foreground
+                                OutlinedButton(
+                                    onClick = {
+                                        currentInsertIndex = index
+                                        editingCmd = null
+                                        showCmdTypeMenu = true
+                                    },
+                                    shape = RoundedCornerShape(8.dp),
+                                    contentPadding = ButtonDefaults.TextButtonWithIconContentPadding,
+                                    modifier = Modifier.height(32.dp)
+                                ) {
+                                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(2.dp))
+                                    Text("插入 ↑", fontSize = 11.sp)
+                                }
+
+                                OutlinedButton(
+                                    onClick = {
+                                        editingCmd = cmd
+                                        currentInsertIndex = index
+                                        when (cmd.action) {
+                                            ScriptCmdBean.ACTION_CLICK -> showClickDialog = true
+                                            ScriptCmdBean.ACTION_DELAYED -> showDelayDialog = true
+                                            ScriptCmdBean.ACTION_GESTURE -> showGestureDialog = true
+                                            ScriptCmdBean.ACTION_FOR -> showForDialog = true
+                                            ScriptCmdBean.ACTION_RANDOM_CLICK -> showRandomClickDialog = true
                                         }
-                                        Image(
-                                            painter = painterResource(id = iconRes),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(48.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = cmd.content ?: "",
-                                            modifier = Modifier.weight(1f),
-                                            fontSize = 13.sp,
-                                            lineHeight = 18.sp
-                                        )
-                                    }
+                                    },
+                                    shape = RoundedCornerShape(8.dp),
+                                    contentPadding = ButtonDefaults.TextButtonWithIconContentPadding,
+                                    modifier = Modifier.height(32.dp)
+                                ) {
+                                    Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(2.dp))
+                                    Text("编辑", fontSize = 11.sp)
+                                }
 
-                                    Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.weight(1f))
 
-                                    Text(
-                                        text = "#${index + 1}",
-                                        fontSize = 11.sp,
-                                        color = Color.Gray
+                                IconButton(
+                                    onClick = {
+                                        if (index > 0) {
+                                            val newList = cmdList.toMutableList()
+                                            Collections.swap(newList, index, index - 1)
+                                            cmdList = newList
+                                        }
+                                    },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(Icons.Default.Upload, contentDescription = "上移", modifier = Modifier.size(18.dp))
+                                }
+
+                                IconButton(
+                                    onClick = {
+                                        if (index < cmdList.size - 1) {
+                                            val newList = cmdList.toMutableList()
+                                            Collections.swap(newList, index, index + 1)
+                                            cmdList = newList
+                                        }
+                                    },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(Icons.Default.Download, contentDescription = "下移", modifier = Modifier.size(18.dp))
+                                }
+
+                                IconButton(
+                                    onClick = {
+                                        val newList = cmdList.toMutableList()
+                                        newList.removeAt(index)
+                                        cmdList = newList
+                                    },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "删除",
+                                        modifier = Modifier.size(18.dp),
+                                        tint = MaterialTheme.colorScheme.error
                                     )
-
-                                    Spacer(modifier = Modifier.height(4.dp))
-
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                    ) {
-                                        OutlinedButton(
-                                            onClick = {
-                                                editingCmd = cmd
-                                                currentInsertIndex = index
-                                                when (cmd.action) {
-                                                    ScriptCmdBean.ACTION_CLICK -> showClickDialog = true
-                                                    ScriptCmdBean.ACTION_DELAYED -> showDelayDialog = true
-                                                    ScriptCmdBean.ACTION_GESTURE -> showGestureDialog = true
-                                                    ScriptCmdBean.ACTION_FOR -> showForDialog = true
-                                                    ScriptCmdBean.ACTION_RANDOM_CLICK -> showRandomClickDialog = true
-                                                }
-                                            },
-                                            modifier = Modifier.weight(1f)
-                                        ) {
-                                            Text("编辑", fontSize = 12.sp)
-                                        }
-                                        OutlinedButton(
-                                            onClick = {
-                                                currentInsertIndex = index
-                                                editingCmd = null
-                                                showCmdTypeMenu = true
-                                            },
-                                            modifier = Modifier.weight(1f)
-                                        ) {
-                                            Text("前面插入", fontSize = 12.sp)
-                                        }
-                                        OutlinedButton(
-                                            onClick = {
-                                                if (index > 0) {
-                                                    val newList = cmdList.toMutableList()
-                                                    Collections.swap(newList, index, index - 1)
-                                                    cmdList = newList
-                                                }
-                                            },
-                                            modifier = Modifier.weight(0.5f)
-                                        ) {
-                                            Text("↑", fontSize = 12.sp)
-                                        }
-                                        OutlinedButton(
-                                            onClick = {
-                                                if (index < cmdList.size - 1) {
-                                                    val newList = cmdList.toMutableList()
-                                                    Collections.swap(newList, index, index + 1)
-                                                    cmdList = newList
-                                                }
-                                            },
-                                            modifier = Modifier.weight(0.5f)
-                                        ) {
-                                            Text("↓", fontSize = 12.sp)
-                                        }
-                                    }
                                 }
                             }
                         }
-                    )
+                    }
                 }
             }
         }
@@ -623,30 +664,56 @@ fun ScriptEditScreen(
     if (showCmdTypeMenu) {
         AlertDialog(
             onDismissRequest = { showCmdTypeMenu = false },
-            title = { Text("选择命令类型") },
+            title = { Text("选择命令类型", fontWeight = FontWeight.Bold) },
             text = {
-                Column {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     cmdTypes.forEachIndexed { index, name ->
-                        TextButton(onClick = {
-                            showCmdTypeMenu = false
-                            when (index) {
-                                0 -> showClickDialog = true
-                                1 -> showDelayDialog = true
-                                2 -> showGestureDialog = true
-                                3 -> showForDialog = true
-                                4 -> {
-                                    // 循环结束直接添加
-                                    val cmd = ScriptCmdBean.BuildForEndCMD()
-                                    val newList = cmdList.toMutableList()
-                                    val insertAt = if (currentInsertIndex >= 0) currentInsertIndex else newList.size
-                                    newList.add(insertAt, cmd)
-                                    cmdList = newList
+                        Surface(
+                            onClick = {
+                                showCmdTypeMenu = false
+                                when (index) {
+                                    0 -> showClickDialog = true
+                                    1 -> showDelayDialog = true
+                                    2 -> showGestureDialog = true
+                                    3 -> showForDialog = true
+                                    4 -> {
+                                        val cmd = ScriptCmdBean.BuildForEndCMD()
+                                        val newList = cmdList.toMutableList()
+                                        val insertAt =
+                                            if (currentInsertIndex >= 0) currentInsertIndex else newList.size
+                                        newList.add(insertAt, cmd)
+                                        cmdList = newList
+                                    }
+                                    5 -> showRandomClickDialog = true
+                                    6 -> showJsonDialog = true
                                 }
-                                5 -> showRandomClickDialog = true
-                                6 -> showJsonDialog = true
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                val iconRes = when (index) {
+                                    0 -> R.drawable.icon_click
+                                    1 -> R.drawable.icon_delay
+                                    2 -> R.drawable.icon_gesture
+                                    3 -> R.drawable.icon_for
+                                    4 -> R.drawable.icon_for
+                                    5 -> R.drawable.icon_random
+                                    else -> R.drawable.ic_launcher_foreground
+                                }
+                                Image(
+                                    painter = painterResource(id = iconRes),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(name, style = MaterialTheme.typography.bodyLarge)
                             }
-                        }, modifier = Modifier.fillMaxWidth()) {
-                            Text(name)
                         }
                     }
                 }
@@ -786,12 +853,15 @@ fun ScriptEditScreen(
         JsonImportDialog(
             onConfirm = { json ->
                 try {
-                    val list: List<ScriptCmdBean> = Gson().fromJson(json, object : TypeToken<List<ScriptCmdBean>>() {}.type)
+                    val list: List<ScriptCmdBean> =
+                        Gson().fromJson(json, object : TypeToken<List<ScriptCmdBean>>() {}.type)
                     if (list.isNullOrEmpty()) {
-                        Toast.makeText(context, "脚本为空或json格式有问题", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "脚本为空或json格式有问题", Toast.LENGTH_LONG)
+                            .show()
                     } else {
                         val newList = cmdList.toMutableList()
-                        val insertAt = if (currentInsertIndex >= 0) currentInsertIndex else newList.size
+                        val insertAt =
+                            if (currentInsertIndex >= 0) currentInsertIndex else newList.size
                         newList.addAll(insertAt, list)
                         cmdList = newList
                     }
@@ -807,89 +877,6 @@ fun ScriptEditScreen(
 
 // ==================== 命令列表项 ====================
 
-@Composable
-fun CommandItem(
-    cmd: ScriptCmdBean,
-    index: Int,
-    onEdit: () -> Unit,
-    onInsert: () -> Unit,
-    onMoveUp: () -> Unit,
-    onMoveDown: () -> Unit,
-    onDelete: () -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            // 图标 + 内容
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                val iconRes = when (cmd.action) {
-                    ScriptCmdBean.ACTION_CLICK -> R.drawable.icon_click
-                    ScriptCmdBean.ACTION_DELAYED -> R.drawable.icon_delay
-                    ScriptCmdBean.ACTION_GESTURE -> R.drawable.icon_gesture
-                    ScriptCmdBean.ACTION_FOR -> R.drawable.icon_for
-                    ScriptCmdBean.ACTION_FOR_END -> R.drawable.icon_for
-                    ScriptCmdBean.ACTION_RANDOM_CLICK -> R.drawable.icon_random
-                    else -> R.drawable.ic_launcher_foreground
-                }
-                Image(
-                    painter = painterResource(id = iconRes),
-                    contentDescription = null,
-                    modifier = Modifier.size(48.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = cmd.content ?: "",
-                    modifier = Modifier.weight(1f),
-                    fontSize = 13.sp,
-                    lineHeight = 18.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // 序号
-            Text(
-                text = "#${index + 1}",
-                fontSize = 11.sp,
-                color = Color.Gray
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // 操作按钮
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                OutlinedButton(onClick = onEdit, modifier = Modifier.weight(1f)) {
-                    Text("编辑", fontSize = 12.sp)
-                }
-                OutlinedButton(onClick = onInsert, modifier = Modifier.weight(1f)) {
-                    Text("前面插入", fontSize = 12.sp)
-                }
-                OutlinedButton(onClick = onMoveUp, modifier = Modifier.weight(0.5f)) {
-                    Text("↑", fontSize = 12.sp)
-                }
-                OutlinedButton(onClick = onMoveDown, modifier = Modifier.weight(0.5f)) {
-                    Text("↓", fontSize = 12.sp)
-                }
-                OutlinedButton(
-                    onClick = onDelete,
-                    modifier = Modifier.weight(0.5f),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red)
-                ) {
-                    Text("删", fontSize = 12.sp)
-                }
-            }
-        }
-    }
-}
 
 // ==================== 延时 / 循环 对话框 ====================
 
@@ -971,12 +958,18 @@ fun ClickDialog(
                     label = { Text("Y") }, modifier = Modifier.fillMaxWidth(), singleLine = true
                 )
                 OutlinedTextField(
-                    value = duration, onValueChange = { duration = it.filter { c -> c.isDigit() } },
-                    label = { Text("执行时长(ms)") }, modifier = Modifier.fillMaxWidth(), singleLine = true
+                    value = duration,
+                    onValueChange = { duration = it.filter { c -> c.isDigit() } },
+                    label = { Text("执行时长(ms)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
                 OutlinedTextField(
-                    value = delay, onValueChange = { delay = it.filter { c -> c.isDigit() } },
-                    label = { Text("延时时长(ms)") }, modifier = Modifier.fillMaxWidth(), singleLine = true
+                    value = delay,
+                    onValueChange = { delay = it.filter { c -> c.isDigit() } },
+                    label = { Text("延时时长(ms)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
             }
         },
@@ -1017,8 +1010,13 @@ fun GestureDialog(
     LaunchedEffect(Unit) {
         activity.onCoordinatePicked = { pickedX, pickedY ->
             when (pickTarget) {
-                1 -> { x0 = pickedX.toString(); y0 = pickedY.toString() }
-                2 -> { x1 = pickedX.toString(); y1 = pickedY.toString() }
+                1 -> {
+                    x0 = pickedX.toString(); y0 = pickedY.toString()
+                }
+
+                2 -> {
+                    x1 = pickedX.toString(); y1 = pickedY.toString()
+                }
             }
             pickTarget = 0
         }
@@ -1035,12 +1033,18 @@ fun GestureDialog(
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
-                        value = x0, onValueChange = { x0 = it.filter { c -> c.isDigit() || c == '-' } },
-                        label = { Text("X") }, modifier = Modifier.weight(1f), singleLine = true
+                        value = x0,
+                        onValueChange = { x0 = it.filter { c -> c.isDigit() || c == '-' } },
+                        label = { Text("X") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
                     )
                     OutlinedTextField(
-                        value = y0, onValueChange = { y0 = it.filter { c -> c.isDigit() || c == '-' } },
-                        label = { Text("Y") }, modifier = Modifier.weight(1f), singleLine = true
+                        value = y0,
+                        onValueChange = { y0 = it.filter { c -> c.isDigit() || c == '-' } },
+                        label = { Text("Y") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
                     )
                 }
 
@@ -1050,22 +1054,34 @@ fun GestureDialog(
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
-                        value = x1, onValueChange = { x1 = it.filter { c -> c.isDigit() || c == '-' } },
-                        label = { Text("X") }, modifier = Modifier.weight(1f), singleLine = true
+                        value = x1,
+                        onValueChange = { x1 = it.filter { c -> c.isDigit() || c == '-' } },
+                        label = { Text("X") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
                     )
                     OutlinedTextField(
-                        value = y1, onValueChange = { y1 = it.filter { c -> c.isDigit() || c == '-' } },
-                        label = { Text("Y") }, modifier = Modifier.weight(1f), singleLine = true
+                        value = y1,
+                        onValueChange = { y1 = it.filter { c -> c.isDigit() || c == '-' } },
+                        label = { Text("Y") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
                     )
                 }
 
                 OutlinedTextField(
-                    value = duration, onValueChange = { duration = it.filter { c -> c.isDigit() } },
-                    label = { Text("执行时长(ms)") }, modifier = Modifier.fillMaxWidth(), singleLine = true
+                    value = duration,
+                    onValueChange = { duration = it.filter { c -> c.isDigit() } },
+                    label = { Text("执行时长(ms)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
                 OutlinedTextField(
-                    value = delay, onValueChange = { delay = it.filter { c -> c.isDigit() } },
-                    label = { Text("延时时长(ms)") }, modifier = Modifier.fillMaxWidth(), singleLine = true
+                    value = delay,
+                    onValueChange = { delay = it.filter { c -> c.isDigit() } },
+                    label = { Text("延时时长(ms)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
             }
         },
@@ -1102,8 +1118,13 @@ fun RandomClickDialog(
     LaunchedEffect(Unit) {
         activity.onCoordinatePicked = { pickedX, pickedY ->
             when (pickTarget) {
-                1 -> { x0 = pickedX.toString(); y0 = pickedY.toString() }
-                2 -> { x1 = pickedX.toString(); y1 = pickedY.toString() }
+                1 -> {
+                    x0 = pickedX.toString(); y0 = pickedY.toString()
+                }
+
+                2 -> {
+                    x1 = pickedX.toString(); y1 = pickedY.toString()
+                }
             }
             pickTarget = 0
         }
@@ -1120,12 +1141,18 @@ fun RandomClickDialog(
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
-                        value = x0, onValueChange = { x0 = it.filter { c -> c.isDigit() || c == '-' } },
-                        label = { Text("X") }, modifier = Modifier.weight(1f), singleLine = true
+                        value = x0,
+                        onValueChange = { x0 = it.filter { c -> c.isDigit() || c == '-' } },
+                        label = { Text("X") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
                     )
                     OutlinedTextField(
-                        value = y0, onValueChange = { y0 = it.filter { c -> c.isDigit() || c == '-' } },
-                        label = { Text("Y") }, modifier = Modifier.weight(1f), singleLine = true
+                        value = y0,
+                        onValueChange = { y0 = it.filter { c -> c.isDigit() || c == '-' } },
+                        label = { Text("Y") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
                     )
                 }
 
@@ -1135,22 +1162,34 @@ fun RandomClickDialog(
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
-                        value = x1, onValueChange = { x1 = it.filter { c -> c.isDigit() || c == '-' } },
-                        label = { Text("X") }, modifier = Modifier.weight(1f), singleLine = true
+                        value = x1,
+                        onValueChange = { x1 = it.filter { c -> c.isDigit() || c == '-' } },
+                        label = { Text("X") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
                     )
                     OutlinedTextField(
-                        value = y1, onValueChange = { y1 = it.filter { c -> c.isDigit() || c == '-' } },
-                        label = { Text("Y") }, modifier = Modifier.weight(1f), singleLine = true
+                        value = y1,
+                        onValueChange = { y1 = it.filter { c -> c.isDigit() || c == '-' } },
+                        label = { Text("Y") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
                     )
                 }
 
                 OutlinedTextField(
-                    value = duration, onValueChange = { duration = it.filter { c -> c.isDigit() } },
-                    label = { Text("执行时长(ms)") }, modifier = Modifier.fillMaxWidth(), singleLine = true
+                    value = duration,
+                    onValueChange = { duration = it.filter { c -> c.isDigit() } },
+                    label = { Text("执行时长(ms)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
                 OutlinedTextField(
-                    value = delay, onValueChange = { delay = it.filter { c -> c.isDigit() } },
-                    label = { Text("延时时长(ms)") }, modifier = Modifier.fillMaxWidth(), singleLine = true
+                    value = delay,
+                    onValueChange = { delay = it.filter { c -> c.isDigit() } },
+                    label = { Text("延时时长(ms)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
             }
         },

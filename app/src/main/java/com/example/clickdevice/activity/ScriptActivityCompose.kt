@@ -39,9 +39,11 @@ import com.example.clickdevice.MyService
 import com.example.clickdevice.PowerKeyObserver
 import com.example.clickdevice.R
 import com.example.clickdevice.ScriptExecutor
+import com.example.clickdevice.ScriptInterfaceImpl
 import com.example.clickdevice.Util
 import com.example.clickdevice.helper.setOnTouchClick
 import com.example.clickdevice.bean.ScriptCmdBean
+import com.example.clickdevice.helper.smallWindowManager
 import com.example.clickdevice.ui.theme.ClickDeviceTheme
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -49,7 +51,7 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class ScriptActivityCompose : ComponentActivity(), ScriptExecutor.ScriptInterFace {
+class ScriptActivityCompose : ComponentActivity() {
 
     private var isRun = false
     private var isShow = false
@@ -68,7 +70,9 @@ class ScriptActivityCompose : ComponentActivity(), ScriptExecutor.ScriptInterFac
     private var wm: WindowManager? = null
     private var btnLayoutParams: WindowManager.LayoutParams? = null
 
-
+   private var scriptInterface: ScriptInterfaceImpl=ScriptInterfaceImpl({
+       return@ScriptInterfaceImpl  isRun
+   })
 
     var isRunning by mutableStateOf(false)
         private set
@@ -78,7 +82,7 @@ class ScriptActivityCompose : ComponentActivity(), ScriptExecutor.ScriptInterFac
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        scriptExecutor = ScriptExecutor(this)
+        scriptExecutor = ScriptExecutor(scriptInterface)
         initSmallViewLayout()
         initBtnWindow()
         initObserver()
@@ -176,6 +180,9 @@ class ScriptActivityCompose : ComponentActivity(), ScriptExecutor.ScriptInterFac
         isRunning = true
         tvBtnWv?.text = "停止"
         singleThreadExecutor.execute {
+            scriptInterface.delayCoefficient=delayCoefficient.toFloat()
+
+
             var j = 0
             while (isRun && (config.count <= 0 || j < config.count)) {
                 scriptExecutor?.run(scriptData)
@@ -209,7 +216,7 @@ class ScriptActivityCompose : ComponentActivity(), ScriptExecutor.ScriptInterFac
     @SuppressLint("WrongConstant")
     private fun initSmallViewLayout() {
         btnWindowView = LayoutInflater.from(this).inflate(R.layout.window_b, null) as LinearLayout
-        wm = getSystemService(WINDOW_SERVICE) as WindowManager
+        wm = smallWindowManager()
         btnLayoutParams = WindowManager.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.TYPE_SYSTEM_ALERT, 8, PixelFormat.TRANSLUCENT
@@ -292,55 +299,7 @@ class ScriptActivityCompose : ComponentActivity(), ScriptExecutor.ScriptInterFac
         }
     }
 
-    // endregion
-
-    // region ScriptInterFace
-
-    override fun delayedCmd(delayed: Int) {
-        val time = (delayCoefficient * delayed).toInt()
-        var i = 0
-        while (i < time / 10 && isRun) {
-            try { Thread.sleep(10) } catch (e: InterruptedException) { break }
-            i++
-        }
-    }
-
-    override fun clickCMD(x0: Int, y0: Int, duration: Int) {
-        if (!isRun) return
-        val service = myService ?: MyService.myService ?: return
-        myService = service
-        val xc = if (scriptConfig.xCoefficient in 0.25f..5.0f) scriptConfig.xCoefficient else 1.0f
-        val yc = if (scriptConfig.yCoefficient in 0.25f..5.0f) scriptConfig.yCoefficient else 1.0f
-        val sx = (x0 * xc).toInt()
-        val sy = (y0 * yc).toInt()
-        if (duration < 30) {
-            service.dispatchGestureClick(sx.toFloat(), sy.toFloat())
-            try { Thread.sleep(30) } catch (_: Exception) {}
-        } else {
-            val d = if (duration > 30000) 30000 else duration
-            service.dispatchGestureClick(sx.toFloat(), sy.toFloat(), d)
-            try { Thread.sleep(d.toLong()) } catch (_: Exception) {}
-        }
-    }
-
-    override fun gestureCMD(x0: Int, y0: Int, x1: Int, y1: Int, duration: Int) {
-        if (!isRun) return
-        val service = myService ?: MyService.myService ?: return
-        myService = service
-        val xc = if (scriptConfig.xCoefficient in 0.25f..5.0f) scriptConfig.xCoefficient else 1.0f
-        val yc = if (scriptConfig.yCoefficient in 0.25f..5.0f) scriptConfig.yCoefficient else 1.0f
-        val sx0 = (x0 * xc).toInt()
-        val sy0 = (y0 * yc).toInt()
-        val sx1 = (x1 * xc).toInt()
-        val sy1 = (y1 * yc).toInt()
-        val d = when {
-            duration > 30000 -> 30000
-            duration < 100 -> 200
-            else -> duration
-        }
-        service.dispatchGesture(sx0.toFloat(), sy0.toFloat(), sx1.toFloat(), sy1.toFloat(), d)
-        try { Thread.sleep(d.toLong()) } catch (_: Exception) {}
-    }
+ 
 
     // endregion
 

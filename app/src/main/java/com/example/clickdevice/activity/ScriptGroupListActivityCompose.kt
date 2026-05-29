@@ -37,8 +37,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ScriptGroupListActivityCompose : ComponentActivity() {
+    private var isSelectMode = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        isSelectMode = intent.getBooleanExtra("selectMode", false)
+        
         setContent {
             ClickDeviceTheme {
                 Surface(
@@ -49,11 +53,25 @@ class ScriptGroupListActivityCompose : ComponentActivity() {
                         onBack = { finish() },
                         onCreateNew = {
                             ScriptGroupEditActivityCompose.startActivity(this)
+                        },
+                        isSelectMode = isSelectMode,
+                        onSelectScript = { script ->
+                            selectScript(script)
                         }
                     )
                 }
             }
         }
+    }
+
+    private fun selectScript(script: ScriptGroupBean) {
+        val intent = Intent().apply {
+            putExtra("type", LauncherScriptActivity.TYPE_SCRIPT_GROUP)
+            putExtra("id", script.id)
+            putExtra("name", script.name)
+        }
+        setResult(RESULT_OK, intent)
+        finish()
     }
 }
 
@@ -61,7 +79,9 @@ class ScriptGroupListActivityCompose : ComponentActivity() {
 @Composable
 fun ScriptGroupListScreen(
     onBack: () -> Unit,
-    onCreateNew: () -> Unit
+    onCreateNew: () -> Unit,
+    isSelectMode: Boolean = false,
+    onSelectScript: (ScriptGroupBean) -> Unit = {}
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -82,7 +102,7 @@ fun ScriptGroupListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("自定义脚本列表") },
+                title = { Text(if (isSelectMode) "选择自定义脚本" else "自定义脚本列表") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "返回")
@@ -91,8 +111,10 @@ fun ScriptGroupListScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onCreateNew) {
-                Icon(Icons.Default.Add, contentDescription = "创建新脚本组")
+            if (!isSelectMode) {
+                FloatingActionButton(onClick = onCreateNew) {
+                    Icon(Icons.Default.Add, contentDescription = "创建新脚本组")
+                }
             }
         }
     ) { padding ->
@@ -103,7 +125,7 @@ fun ScriptGroupListScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("暂无脚本组，点击右下角创建")
+                Text(if (isSelectMode) "暂无脚本组" else "暂无脚本组，点击右下角创建")
             }
         } else {
             LazyColumn(
@@ -114,63 +136,70 @@ fun ScriptGroupListScreen(
                 contentPadding = PaddingValues(16.dp)
             ) {
                 items(scripts) { script ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                val toScriptGroup = script.toScriptGroup()
-                                MyLiveData.getInstance()
-                                    .with("ScriptGroup", ScriptGroup::class.java)
-                                    .postValue(toScriptGroup)
-                                context.startActivity(
-                                    Intent(context, ScriptGroupPlayActivityCompose::class.java)
-                                )
-                            }
-                    ) {
-                        Column(
+                    if (isSelectMode) {
+                        ScriptGroupSelectItem(
+                            script = script,
+                            onSelect = { onSelectScript(script) }
+                        )
+                    } else {
+                        Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
+                                .clickable {
+                                    val toScriptGroup = script.toScriptGroup()
+                                    MyLiveData.getInstance()
+                                        .with("ScriptGroup", ScriptGroup::class.java)
+                                        .postValue(toScriptGroup)
+                                    context.startActivity(
+                                        Intent(context, ScriptGroupPlayActivityCompose::class.java)
+                                    )
+                                }
                         ) {
-                            Text(
-                                text = "id: ${script.id}",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                            Text(
-                                text = "name: ${script.name ?: "未命名脚本组"}",
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Text(
-                                text = "创建时间: ${script.createTime ?: ""}",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                            Text(
-                                text = "更新时间: ${script.updateTime ?: ""}",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
                             ) {
-                                IconButton(onClick = {
-                                    ScriptGroupEditActivityCompose.startActivity(context, script.id)
-                                }) {
-                                    Icon(Icons.Default.Edit, contentDescription = "编辑")
-                                }
-                                IconButton(onClick = {
-                                    selectedScript = script
-                                    showDeleteDialog = true
-                                }) {
-                                    Icon(Icons.Default.Delete, contentDescription = "删除")
-                                }
-                                IconButton(onClick = {
-                                    val activity = context.findActivity()
-                                    if (activity != null) {
-                                        DesktopIconHelper.addShortcut(activity, script)
+                                Text(
+                                    text = "id: ${script.id}",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                                Text(
+                                    text = "name: ${script.name ?: "未命名脚本组"}",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(
+                                    text = "创建时间: ${script.createTime ?: ""}",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                                Text(
+                                    text = "更新时间: ${script.updateTime ?: ""}",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.End
+                                ) {
+                                    IconButton(onClick = {
+                                        ScriptGroupEditActivityCompose.startActivity(context, script.id)
+                                    }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "编辑")
                                     }
-                                }) {
-                                    Icon(Icons.Default.Launch, contentDescription = "桌面快捷方式")
+                                    IconButton(onClick = {
+                                        selectedScript = script
+                                        showDeleteDialog = true
+                                    }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "删除")
+                                    }
+                                    IconButton(onClick = {
+                                        val activity = context.findActivity()
+                                        if (activity != null) {
+                                            DesktopIconHelper.addShortcut(activity, script)
+                                        }
+                                    }) {
+                                        Icon(Icons.Default.Launch, contentDescription = "桌面快捷方式")
+                                    }
                                 }
                             }
                         }
@@ -204,6 +233,24 @@ fun ScriptGroupListScreen(
                 }
             }
         )
+    }
+}
+
+@Composable
+fun ScriptGroupSelectItem(
+    script: ScriptGroupBean,
+    onSelect: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onSelect() },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(script.name ?: "未命名", style = MaterialTheme.typography.titleMedium)
+            Text("ID: ${script.id}", style = MaterialTheme.typography.bodySmall, color = androidx.compose.ui.graphics.Color.Gray)
+        }
     }
 }
 

@@ -27,6 +27,9 @@ public class ScriptExecutor {
             int size = list.size();
             boolean isJump = false;
             for (int i = 0; i < size; i++) {
+                if (scriptInterFace==null||!scriptInterFace.isRun()){
+                    return;
+                }
                 ScriptCmdBean scriptCmdBean = list.get(i);
                 if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_FOR_END) {
                     isJump = false;
@@ -72,19 +75,19 @@ public class ScriptExecutor {
         }
         if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_DELAYED) {
             scriptInterFace.delayedCmd(scriptCmdBean.getDelayed());
-        }else if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_CLICK) {
+        } else if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_CLICK) {
             scriptInterFace.delayedCmd(scriptCmdBean.getDelayed());
             scriptInterFace.clickCMD(scriptCmdBean.getX0(), scriptCmdBean.getY0(), scriptCmdBean.getDuration());
-        }else if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_GESTURE) {
+        } else if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_GESTURE) {
             scriptInterFace.delayedCmd(scriptCmdBean.getDelayed());
             scriptInterFace.gestureCMD(scriptCmdBean.getX0(), scriptCmdBean.getY0()
                     , scriptCmdBean.getX1(), scriptCmdBean.getY1()
                     , scriptCmdBean.getDuration());
-        }else if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_RANDOM_CLICK){
+        } else if (scriptCmdBean.getAction() == ScriptCmdBean.ACTION_RANDOM_CLICK) {
             scriptInterFace.delayedCmd(scriptCmdBean.getDelayed());
-            int x=Util.randomInt(scriptCmdBean.getX1(),scriptCmdBean.getX0());
-            int y=Util.randomInt(scriptCmdBean.getY1(),scriptCmdBean.getY0());
-            scriptInterFace.clickCMD(x,y, scriptCmdBean.getDuration());
+            int x = Util.randomInt(scriptCmdBean.getX1(), scriptCmdBean.getX0());
+            int y = Util.randomInt(scriptCmdBean.getY1(), scriptCmdBean.getY0());
+            scriptInterFace.clickCMD(x, y, scriptCmdBean.getDuration());
         }
     }
 
@@ -115,6 +118,9 @@ public class ScriptExecutor {
     }
 
     public interface ScriptInterFace {
+
+        boolean isRun();
+
         void delayedCmd(int delayed) throws InterruptedException;
 
         void clickCMD(int x0, int y0, int duration) throws InterruptedException;
