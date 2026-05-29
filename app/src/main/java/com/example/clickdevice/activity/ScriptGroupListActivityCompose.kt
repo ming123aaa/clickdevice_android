@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -192,18 +193,24 @@ fun ScriptGroupListScreen(
                                     }) {
                                         Icon(Icons.Default.Delete, contentDescription = "删除")
                                     }
-                                    IconButton(onClick = {
+
+                                    TextButton(onClick = {
                                         val activity = context.findActivity()
                                         if (activity != null) {
                                             DesktopIconHelper.addShortcut(activity, script)
                                         }
                                     }) {
-                                        Icon(Icons.Default.Launch, contentDescription = "桌面快捷方式")
+                                        Text("创建桌面")
                                     }
+
                                 }
                             }
                         }
                     }
+                }
+
+                item{
+                    Spacer(modifier = Modifier.height(100.dp))
                 }
             }
         }

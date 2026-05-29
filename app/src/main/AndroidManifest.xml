@@ -39,68 +39,60 @@
         </activity>
         <activity
             android:name=".activity.RecordScriptPlayActivityCompose"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:screenOrientation="unspecified"/>
         <activity
             android:name=".activity.ScriptGroupListActivityCompose"
-            android:launchMode="singleInstance"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:screenOrientation="unspecified"/>
         <activity
             android:name=".activity.ScriptGroupEditActivityCompose"
-            android:launchMode="singleInstance"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:screenOrientation="unspecified"/>
         <activity
             android:name=".activity.RecordScriptListActivityCompose"
-            android:launchMode="singleInstance"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:exported="false"
             android:screenOrientation="unspecified" />
         <activity
             android:name=".activity.RecordScriptActivityCompose"
-            
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:exported="false"
-            android:launchMode="singleInstance"
             android:screenOrientation="unspecified" />
         <activity
             android:name=".activity.ScriptEditActivityCompose"
-            android:launchMode="singleInstance"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:screenOrientation="unspecified" />
         <activity
             android:name=".activity.ScriptListActivityCompose"
-            android:launchMode="singleInstance"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:screenOrientation="unspecified" />
         <activity
             android:name=".activity.ScriptActivityCompose"
+            android:launchMode="singleTask"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
-            android:launchMode="singleInstance"
             android:screenOrientation="unspecified" />
         <activity
             android:name=".activity.ScriptGroupPlayActivityCompose"
+            android:launchMode="singleTask"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
-            android:launchMode="singleInstance"
             android:screenOrientation="unspecified" />
         <activity
             android:name=".activity.MainActivityCompose"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:exported="true"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:screenOrientation="unspecified"/>
 
         <activity
             android:name=".activity.KeyBindingListActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:screenOrientation="unspecified"/>
 
         <activity
             android:name=".activity.KeyBindingEditActivity"
-            android:launchMode="singleInstance"
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:screenOrientation="unspecified"/>
 
@@ -108,9 +100,9 @@
 
         <activity
             android:name=".activity.LauncherScriptActivity"
-
             android:configChanges="orientation|fontScale|navigation|keyboardHidden|keyboard|mcc|mnc|locale|smallestScreenSize"
             android:exported="true"
+            android:launchMode="singleTask"
             android:screenOrientation="unspecified">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

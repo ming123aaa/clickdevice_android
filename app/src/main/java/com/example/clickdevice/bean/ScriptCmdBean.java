@@ -40,17 +40,19 @@ public class ScriptCmdBean {
         return "未知命令";
     }
 
+
+
     public static  ScriptCmdBean BuildNoneCMD() {
         ScriptCmdBean scriptCmdBean = new ScriptCmdBean();
-        scriptCmdBean.setContent("无操作");
         scriptCmdBean.setAction(ACTION_NONE);
+        scriptCmdBean.setContent(scriptCmdBean.info());
         return  scriptCmdBean;
     }
     public static ScriptCmdBean BuildDelayedCMD(int delayed) {
         ScriptCmdBean scriptCmdBean = new ScriptCmdBean();
         scriptCmdBean.setAction(ACTION_DELAYED);
         scriptCmdBean.setDelayed(delayed);
-        scriptCmdBean.setContent("延时" + delayed + "ms");
+        scriptCmdBean.setContent(scriptCmdBean.info());
         return scriptCmdBean;
     }
 
@@ -61,14 +63,14 @@ public class ScriptCmdBean {
             frequency = 1;
         }
         scriptCmdBean.setFrequency(frequency);
-        scriptCmdBean.setContent("循环开始For(" + frequency + "){");
+        scriptCmdBean.setContent(scriptCmdBean.info());
         return scriptCmdBean;
     }
 
     public static ScriptCmdBean BuildForEndCMD() {
         ScriptCmdBean scriptCmdBean = new ScriptCmdBean();
         scriptCmdBean.setAction(ACTION_FOR_END);
-        scriptCmdBean.setContent("}循环结束");
+        scriptCmdBean.setContent(scriptCmdBean.info());
         return scriptCmdBean;
     }
 
@@ -79,7 +81,7 @@ public class ScriptCmdBean {
         scriptCmdBean.setY0(y0);
         scriptCmdBean.setDuration(duration);
         scriptCmdBean.setDelayed(delayed);
-        scriptCmdBean.setContent("延时" + delayed + "ms后,点击坐标(" + x0 + "," + y0 + ")执行时长" + duration + "ms");
+        scriptCmdBean.setContent(scriptCmdBean.info());
         return scriptCmdBean;
     }
 
@@ -92,7 +94,7 @@ public class ScriptCmdBean {
         scriptCmdBean.setY1(y1);
         scriptCmdBean.setDuration(duration);
         scriptCmdBean.setDelayed(delayed);
-        scriptCmdBean.setContent("延时" + delayed + "ms后,滑动手势:从坐标(" + x0 + "," + y0 + ")到(" + x1 + "," + y1 + ")执行时长" + duration + "ms");
+        scriptCmdBean.setContent(scriptCmdBean.info());
         return scriptCmdBean;
     }
 
@@ -105,7 +107,7 @@ public class ScriptCmdBean {
         scriptCmdBean.setY1(y1);
         scriptCmdBean.setDuration(duration);
         scriptCmdBean.setDelayed(delayed);
-        scriptCmdBean.setContent("延时" + delayed + "ms后,随机点击:(" + x0 + "," + y0 + ")到(" + x1 + "," + y1 + ")所形成对角线的矩形内点击。执行时长" + duration + "ms");
+        scriptCmdBean.setContent(scriptCmdBean.info());
         return scriptCmdBean;
     }
 
@@ -178,7 +180,30 @@ public class ScriptCmdBean {
     }
 
     public String getContent() {
+
         return content;
+    }
+
+    public String info(){
+         String str="";
+        if (action==ACTION_RANDOM_CLICK){
+            str="延时" + delayed + "ms后,随机点击:(" + x0 + "," + y0 + ")到(" + x1 + "," + y1 + ")所形成对角线的矩形内点击。执行时长" + duration + "ms";
+        }else if (action==ACTION_CLICK){
+            str="延时" + delayed + "ms后,点击坐标(" + x0 + "," + y0 + ")执行时长" + duration + "ms";
+        }else if (action==ACTION_GESTURE){
+            str="延时" + delayed + "ms后,滑动手势:从坐标(" + x0 + "," + y0 + ")到(" + x1 + "," + y1 + ")执行时长" + duration + "ms";
+        }else if (action==ACTION_DELAYED){
+            str="延时" + delayed + "ms";
+        }else if (action==ACTION_FOR){
+            str="循环开始 For(" + frequency + "){";
+        }else if (action==ACTION_FOR_END){
+            str="} 循环结束";
+        }else if (action==ACTION_NONE){
+            str="无操作";
+        }else {
+            str="未知命令,"+content;
+        }
+        return str;
     }
 
     public void setContent(String content) {

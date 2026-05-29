@@ -17,11 +17,13 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -29,14 +31,18 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.clickdevice.R
 import com.example.clickdevice.SmallWindowView
 import com.example.clickdevice.Util
@@ -56,6 +62,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.ArrayList
+import java.util.Collections
 import java.util.TreeMap
 
 class ScriptGroupEditActivityCompose : ComponentActivity() {
@@ -102,7 +109,7 @@ class ScriptGroupEditActivityCompose : ComponentActivity() {
 
     @SuppressLint("WrongConstant")
     private fun initSmallViewLayout() {
-        wm =  smallWindowManager()
+        wm = smallWindowManager()
         windowView = LayoutInflater.from(this).inflate(R.layout.window_a, null) as SmallWindowView
         mLayoutParams = WindowManager.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -117,7 +124,8 @@ class ScriptGroupEditActivityCompose : ComponentActivity() {
     }
 
     private fun initBtnWindow() {
-        btnWindowView = LayoutInflater.from(this).inflate(R.layout.window_b, null) as SmallWindowView
+        btnWindowView =
+            LayoutInflater.from(this).inflate(R.layout.window_b, null) as SmallWindowView
         btnLayoutParams = WindowManager.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.TYPE_SYSTEM_ALERT, 8, PixelFormat.TRANSLUCENT
@@ -126,7 +134,7 @@ class ScriptGroupEditActivityCompose : ComponentActivity() {
             btnLayoutParams?.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         }
         btnLayoutParams?.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-        btnWindowView?.enableMove=false
+        btnWindowView?.enableMove = false
         btnWindowView?.setWm(wm)
         btnWindowView?.setWmParams(btnLayoutParams)
         tvBtnWv = btnWindowView?.findViewById(R.id.tv_win_b)
@@ -147,7 +155,10 @@ class ScriptGroupEditActivityCompose : ComponentActivity() {
             if (!Settings.canDrawOverlays(this)) {
                 Toast.makeText(this, "can not DrawOverlays", Toast.LENGTH_LONG).show()
                 startActivityForResult(
-                    Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")),
+                    Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:$packageName")
+                    ),
                     2
                 )
                 return
@@ -211,7 +222,8 @@ fun ScriptGroupEditNavScreen(
     LaunchedEffect(scriptGroupId) {
         withContext(Dispatchers.IO) {
             if (scriptGroupId > 0) {
-                val bean = AppDatabase.getInstance(context).scriptGroupDao.findBeanById(scriptGroupId)
+                val bean =
+                    AppDatabase.getInstance(context).scriptGroupDao.findBeanById(scriptGroupId)
                 bean?.let {
                     editingScriptBean = it
                     scriptGroup = it.toScriptGroup()
@@ -235,14 +247,24 @@ fun ScriptGroupEditNavScreen(
                         Toast.makeText(context, "请输入脚本组名称", Toast.LENGTH_SHORT).show()
                         return@ScriptGroupEditMainPage
                     }
-                    val validXCoeff = if (scriptGroup.xCoefficient in 0.25f..5.0f) scriptGroup.xCoefficient else 1.0f
-                    val validYCoeff = if (scriptGroup.yCoefficient in 0.25f..5.0f) scriptGroup.yCoefficient else 1.0f
+                    val validXCoeff =
+                        if (scriptGroup.xCoefficient in 0.25f..5.0f) scriptGroup.xCoefficient else 1.0f
+                    val validYCoeff =
+                        if (scriptGroup.yCoefficient in 0.25f..5.0f) scriptGroup.yCoefficient else 1.0f
                     if (validXCoeff != scriptGroup.xCoefficient || validYCoeff != scriptGroup.yCoefficient) {
-                        Toast.makeText(context, "坐标系数超出范围(0.25~5)，已自动设为1", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "坐标系数超出范围(0.25~5)，已自动设为1",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     coroutineScope.launch {
                         withContext(Dispatchers.IO) {
-                            val data = scriptGroup.copy(name = title, xCoefficient = validXCoeff, yCoefficient = validYCoeff)
+                            val data = scriptGroup.copy(
+                                name = title,
+                                xCoefficient = validXCoeff,
+                                yCoefficient = validYCoeff
+                            )
                             val appDatabase = AppDatabase.getInstance(context)
                             val newData = if (editingScriptBean != null) {
                                 data.toScriptGroupBean(editingScriptBean!!)
@@ -265,7 +287,8 @@ fun ScriptGroupEditNavScreen(
                     try {
                         Util.copyText(json, context)
                         Toast.makeText(context, "已复制到剪贴板", Toast.LENGTH_LONG).show()
-                    } catch (_: Exception) {}
+                    } catch (_: Exception) {
+                    }
                 },
                 onImportJson = { json ->
                     try {
@@ -291,6 +314,7 @@ fun ScriptGroupEditNavScreen(
         }
 
         is ScriptGroupPage.ScriptList -> {
+
             ScriptGroupScriptListPage(
                 scriptGroup = scriptGroup,
                 onBack = { currentPage = ScriptGroupPage.Main },
@@ -330,7 +354,8 @@ fun ScriptGroupEditNavScreen(
                         try {
                             Util.copyText(json, context)
                             Toast.makeText(context, "已复制到剪贴板", Toast.LENGTH_LONG).show()
-                        } catch (_: Exception) {}
+                        } catch (_: Exception) {
+                        }
                     },
                     onImportJson = { json ->
                         try {
@@ -384,8 +409,10 @@ fun ScriptGroupEditMainPage(
 
     LaunchedEffect(scriptGroup.xCoefficient, scriptGroup.yCoefficient) {
         if (!coeffLoaded) {
-            xCoeffText = if (scriptGroup.xCoefficient == 1.0f) "" else scriptGroup.xCoefficient.toString()
-            yCoeffText = if (scriptGroup.yCoefficient == 1.0f) "" else scriptGroup.yCoefficient.toString()
+            xCoeffText =
+                if (scriptGroup.xCoefficient == 1.0f) "" else scriptGroup.xCoefficient.toString()
+            yCoeffText =
+                if (scriptGroup.yCoefficient == 1.0f) "" else scriptGroup.yCoefficient.toString()
             coeffLoaded = true
         }
     }
@@ -537,12 +564,32 @@ fun ScriptGroupEditMainPage(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(text = name, style = MaterialTheme.typography.bodyLarge)
-                            Text(
-                                text = cmd.content ?: cmd.actionTypeName,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            Text(text = name, style = MaterialTheme.typography.titleLarge)
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Row( verticalAlignment = Alignment.CenterVertically) {
+                                val iconRes = when (cmd.action) {
+                                    ScriptCmdBean.ACTION_CLICK -> R.drawable.icon_click
+                                    ScriptCmdBean.ACTION_DELAYED -> R.drawable.icon_delay
+                                    ScriptCmdBean.ACTION_GESTURE -> R.drawable.icon_gesture
+                                    ScriptCmdBean.ACTION_FOR -> R.drawable.icon_for
+                                    ScriptCmdBean.ACTION_FOR_END -> R.drawable.icon_for
+                                    ScriptCmdBean.ACTION_RANDOM_CLICK -> R.drawable.icon_random
+                                    else -> R.drawable.ic_launcher_foreground
+                                }
+                                Image(
+                                    painter = painterResource(id = iconRes),
+                                    contentDescription = null,
+
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text(
+                                    text = cmd.info(),
+                                    modifier = Modifier.weight(1f),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+
+                            }
+
                         }
                         IconButton(onClick = {
                             editingCmdName = name
@@ -596,7 +643,7 @@ fun ScriptGroupEditMainPage(
                         label = { Text("命令名称") }
                     )
                     Text(
-                        text = "命令类型: ${editingCmdBean.actionTypeName}",
+                        text = "命令类型: ${editingCmdBean.actionTypeName},${editingCmdBean.info()}",
                         style = MaterialTheme.typography.bodyMedium
                     )
                     TextButton(onClick = { showCmdTypeDialog = true }) {
@@ -678,6 +725,9 @@ fun ScriptGroupScriptListPage(
     onEditScript: (Int) -> Unit,
     onDeleteScript: (Int) -> Unit
 ) {
+    BackHandler {
+        onBack()
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -763,16 +813,19 @@ fun ScriptGroupScriptEditPage(
     onExportJson: () -> Unit,
     onImportJson: (String) -> Unit
 ) {
+    BackHandler {
+        onBack()
+    }
     var scriptName by remember { mutableStateOf(actionScript.name) }
-    var scriptKeys by remember { mutableStateOf(ArrayList(actionScript.script)) }
+    var scriptCMDs by remember { mutableStateOf(actionScript.script) }
     var showInsertKeyDialog by remember { mutableStateOf(false) }
     var showImportDialog by remember { mutableStateOf(false) }
-    var editingKeyIndex by remember { mutableIntStateOf(-1) }
-    var editingKeyValue by remember { mutableStateOf("") }
+    var editingCmdIndex by remember { mutableIntStateOf(-1) }
+    var editingCmdValue by remember { mutableStateOf("") }
     var showCmdSelectDialog by remember { mutableStateOf(false) }
 
     fun updateAndSync() {
-        val updated = ActionScript(name = scriptName, script = scriptKeys)
+        val updated = ActionScript(name = scriptName, script = scriptCMDs)
         onUpdate(updated)
     }
 
@@ -818,7 +871,7 @@ fun ScriptGroupScriptEditPage(
 
             Text("命令列表", style = MaterialTheme.typography.titleMedium)
 
-            if (scriptKeys.isEmpty()) {
+            if (scriptCMDs.isEmpty()) {
                 Text(
                     text = "暂无命令，请在下方添加",
                     style = MaterialTheme.typography.bodySmall,
@@ -830,60 +883,147 @@ fun ScriptGroupScriptEditPage(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                itemsIndexed(scriptKeys) { index, key ->
-                    val cmdMsg = scriptGroup.getScriptCmdBean(key)?.actionTypeName ?: "没有匹配到命令"
+                itemsIndexed(scriptCMDs) { index, actionName ->
+                    val cmdBean = scriptGroup.getScriptCmdBean(actionName)
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                editingKeyIndex = index
-                                editingKeyValue = key
+                                editingCmdIndex = index
+                                editingCmdValue = actionName
                                 showCmdSelectDialog = true
                             }
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp)) {
+
+                            Text(
+                                modifier = Modifier.padding(top = 5.dp),
+                                text = "#${index + 1} 命令: $actionName",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Row ( verticalAlignment = Alignment.CenterVertically){
+                                val iconRes = when (cmdBean?.action) {
+                                    ScriptCmdBean.ACTION_CLICK -> R.drawable.icon_click
+                                    ScriptCmdBean.ACTION_DELAYED -> R.drawable.icon_delay
+                                    ScriptCmdBean.ACTION_GESTURE -> R.drawable.icon_gesture
+                                    ScriptCmdBean.ACTION_FOR -> R.drawable.icon_for
+                                    ScriptCmdBean.ACTION_FOR_END -> R.drawable.icon_for
+                                    ScriptCmdBean.ACTION_RANDOM_CLICK -> R.drawable.icon_random
+                                    else -> R.drawable.ic_launcher_foreground
+                                }
+                                Image(
+                                    painter = painterResource(id = iconRes),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(36.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
                                 Text(
-                                    text = "${index + 1}. $key",
-                                    style = MaterialTheme.typography.bodyMedium
+                                    text = cmdBean?.info()?:"",
+                                    modifier = Modifier.weight(1f),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    lineHeight = 18.sp
                                 )
-                                Text(
-                                    text = cmdMsg,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+
                             }
-                            IconButton(onClick = {
-                                editingKeyIndex = index
-                                editingKeyValue = key
-                                showCmdSelectDialog = true
-                            }) {
-                                Icon(Icons.Default.Edit, contentDescription = "编辑")
-                            }
-                            IconButton(onClick = {
-                                scriptKeys = ArrayList(scriptKeys).apply { removeAt(index) }
-                                updateAndSync()
-                            }) {
-                                Icon(
-                                    Icons.Default.Delete,
-                                    contentDescription = "删除",
-                                    tint = MaterialTheme.colorScheme.error
-                                )
+
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                OutlinedButton(
+                                    onClick = {
+                                        editingCmdIndex = index
+                                        editingCmdValue = actionName
+                                        showInsertKeyDialog = true
+                                    },
+                                    shape = RoundedCornerShape(8.dp),
+                                    contentPadding = ButtonDefaults.TextButtonWithIconContentPadding,
+
+                                ) {
+                                    Icon(
+                                        Icons.Default.Add,
+                                        contentDescription = null,
+                                    )
+                                    Spacer(modifier = Modifier.width(2.dp))
+                                    Text("插入 ↑", fontSize = 12.sp)
+                                }
+                                Spacer(modifier = Modifier.weight(1f))
+                                IconButton(onClick = {
+                                    editingCmdIndex = index
+                                    editingCmdValue = actionName
+                                    showCmdSelectDialog = true
+                                }) {
+                                    Icon(Icons.Default.Edit, contentDescription = "编辑")
+                                }
+
+
+
+                                IconButton(
+                                    onClick = {
+                                        if (index > 0) {
+                                            val newList = scriptCMDs.toMutableList()
+                                            Collections.swap(newList, index, index - 1)
+                                            scriptCMDs = newList
+                                            updateAndSync()
+                                        }
+                                    },
+
+                                ) {
+                                    Icon(
+                                        Icons.Default.Upload,
+                                        contentDescription = "上移",
+
+                                    )
+                                }
+
+                                IconButton(
+                                    onClick = {
+                                        if (index < scriptCMDs.size - 1) {
+                                            val newList = scriptCMDs.toMutableList()
+                                            Collections.swap(newList, index, index + 1)
+                                            scriptCMDs = newList
+                                            updateAndSync()
+                                        }
+                                    },
+
+                                ) {
+                                    Icon(
+                                        Icons.Default.Download,
+                                        contentDescription = "下移",
+
+                                    )
+                                }
+
+
+
+                                IconButton(onClick = {
+                                    scriptCMDs = ArrayList(scriptCMDs).apply { removeAt(index) }
+                                    updateAndSync()
+                                }) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "删除",
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                }
                             }
                         }
+
                     }
                 }
             }
 
             Button(
                 onClick = {
-                    editingKeyIndex = -1
-                    editingKeyValue = ""
+                    editingCmdIndex = -1
+                    editingCmdValue = ""
                     showCmdSelectDialog = true
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -898,17 +1038,34 @@ fun ScriptGroupScriptEditPage(
     if (showCmdSelectDialog) {
         CmdKeySelectDialog(
             scriptGroup = scriptGroup,
-            currentKey = editingKeyValue,
+            currentKey = editingCmdValue,
             onSelect = { key ->
-                if (editingKeyIndex >= 0) {
-                    scriptKeys = ArrayList(scriptKeys).apply { set(editingKeyIndex, key) }
+                if (editingCmdIndex >= 0) {
+                    scriptCMDs = ArrayList(scriptCMDs).apply { set(editingCmdIndex, key) }
                 } else {
-                    scriptKeys = ArrayList(scriptKeys).apply { add(key) }
+                    scriptCMDs = ArrayList(scriptCMDs).apply { add(key) }
                 }
                 updateAndSync()
                 showCmdSelectDialog = false
             },
             onDismiss = { showCmdSelectDialog = false }
+        )
+    }
+
+    if (showInsertKeyDialog) {
+        CmdKeySelectDialog(
+            scriptGroup = scriptGroup,
+            currentKey = editingCmdValue,
+            onSelect = { key ->
+                if (editingCmdIndex >= 0) {
+                    scriptCMDs = ArrayList(scriptCMDs).apply { add(editingCmdIndex, key) }
+                } else {
+                    scriptCMDs = ArrayList(scriptCMDs).apply { add(key) }
+                }
+                updateAndSync()
+                showInsertKeyDialog = false
+            },
+            onDismiss = { showInsertKeyDialog = false }
         )
     }
 
@@ -963,8 +1120,13 @@ fun CmdTypeSelectDialog(
     LaunchedEffect(Unit) {
         activity?.onCoordinatePicked = { pickedX, pickedY ->
             when (pickTarget) {
-                1 -> { clickX = pickedX.toString(); clickY = pickedY.toString() }
-                2 -> { gestureX1 = pickedX.toString(); gestureY1 = pickedY.toString() }
+                1 -> {
+                    clickX = pickedX.toString(); clickY = pickedY.toString()
+                }
+
+                2 -> {
+                    gestureX1 = pickedX.toString(); gestureY1 = pickedY.toString()
+                }
             }
             pickTarget = 0
         }
@@ -1008,6 +1170,7 @@ fun CmdTypeSelectDialog(
                             label = { Text("延时(ms)") }
                         )
                     }
+
                     ScriptCmdBean.ACTION_CLICK -> {
                         Button(onClick = { pickTarget = 1; activity?.alertWindow() }) {
                             Text("坐标获取")
@@ -1039,6 +1202,7 @@ fun CmdTypeSelectDialog(
                             label = { Text("延时(ms)") }
                         )
                     }
+
                     ScriptCmdBean.ACTION_GESTURE, ScriptCmdBean.ACTION_RANDOM_CLICK -> {
                         Text("起点坐标", style = MaterialTheme.typography.bodyMedium)
                         Button(onClick = { pickTarget = 1; activity?.alertWindow() }) {
@@ -1089,6 +1253,7 @@ fun CmdTypeSelectDialog(
                             label = { Text("延时(ms)") }
                         )
                     }
+
                     ScriptCmdBean.ACTION_FOR -> {
                         OutlinedTextField(
                             value = forFrequency,
@@ -1108,6 +1273,7 @@ fun CmdTypeSelectDialog(
                         val delay = delayValue.toIntOrNull() ?: 0
                         ScriptCmdBean.BuildDelayedCMD(delay)
                     }
+
                     ScriptCmdBean.ACTION_CLICK -> {
                         val x = clickX.toIntOrNull() ?: 0
                         val y = clickY.toIntOrNull() ?: 0
@@ -1115,6 +1281,7 @@ fun CmdTypeSelectDialog(
                         val delay = delayValue.toIntOrNull() ?: 0
                         ScriptCmdBean.BuildClickCMD(x, y, dur, delay)
                     }
+
                     ScriptCmdBean.ACTION_GESTURE -> {
                         val x0 = clickX.toIntOrNull() ?: 0
                         val y0 = clickY.toIntOrNull() ?: 0
@@ -1124,10 +1291,12 @@ fun CmdTypeSelectDialog(
                         val delay = delayValue.toIntOrNull() ?: 0
                         ScriptCmdBean.BuildGestureCMD(x0, y0, x1, y1, dur, delay)
                     }
+
                     ScriptCmdBean.ACTION_FOR -> {
                         val freq = forFrequency.toIntOrNull() ?: 1
                         ScriptCmdBean.BuildForCMD(freq)
                     }
+
                     ScriptCmdBean.ACTION_FOR_END -> ScriptCmdBean.BuildForEndCMD()
                     ScriptCmdBean.ACTION_RANDOM_CLICK -> {
                         val x0 = clickX.toIntOrNull() ?: 0
@@ -1138,6 +1307,7 @@ fun CmdTypeSelectDialog(
                         val delay = delayValue.toIntOrNull() ?: 0
                         ScriptCmdBean.BuildRandomClickCMD(x0, y0, x1, y1, dur, delay)
                     }
+
                     else -> ScriptCmdBean.BuildNoneCMD()
                 }
                 onSelect(cmd)
@@ -1178,7 +1348,7 @@ fun CmdKeySelectDialog(
                             Column(modifier = Modifier.padding(12.dp)) {
                                 Text(text = name, style = MaterialTheme.typography.bodyLarge)
                                 Text(
-                                    text = cmd.actionTypeName,
+                                    text = cmd.actionTypeName+","+cmd.info(),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )

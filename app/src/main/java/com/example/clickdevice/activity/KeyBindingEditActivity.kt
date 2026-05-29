@@ -51,9 +51,9 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 class KeyBindingEditActivity : AppCompatActivity() {
-    private lateinit var binding: KeyBindingBean
+    private  var binding: KeyBindingBean by mutableStateOf(KeyBindingBean())
     private var isNew = true
-
+    private var selectedScriptType by mutableStateOf( "")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,8 +68,11 @@ class KeyBindingEditActivity : AppCompatActivity() {
                 GlobalScope.launch(Dispatchers.IO) {
                     val db = AppDatabase.getInstance(this@KeyBindingEditActivity)
                     val bean = db.getKeyBindingDao().findBeanById(id)
-                    binding = bean ?: KeyBindingBean()
-                    
+                    if (bean!=null){
+                        binding = bean
+                        selectedScriptType=bean.scriptType
+                    }
+
                     withContext(Dispatchers.Main) {
                         initUI()
                     }
@@ -95,6 +98,7 @@ class KeyBindingEditActivity : AppCompatActivity() {
                 KeyBindingEditScreen(
                     binding = binding,
                     isNew = isNew,
+                    selectedScriptType=selectedScriptType,
                     onSave = { saveBinding(it) },
                     onBack = { finish() },
                     onSelectScript = { type ->
@@ -122,7 +126,7 @@ class KeyBindingEditActivity : AppCompatActivity() {
             binding.scriptType = data.getStringExtra("type") ?: ""
             binding.scriptId = data.getIntExtra("id", 0)
             binding.scriptName = data.getStringExtra("name") ?: ""
-            
+            selectedScriptType=binding.scriptType
             initUI()
         }
     }
@@ -164,6 +168,7 @@ class KeyBindingEditActivity : AppCompatActivity() {
 @Composable
 fun KeyBindingEditScreen(
     binding: KeyBindingBean,
+    selectedScriptType: String="",
     isNew: Boolean,
     onSave: (KeyBindingBean) -> Unit,
     onBack: () -> Unit,
@@ -174,7 +179,7 @@ fun KeyBindingEditScreen(
     var keyDescription by remember { mutableStateOf(binding.keyDescription ?: "") }
     var textSize by remember { mutableStateOf(binding.textSize.toString()) }
     var selectedColor by remember { mutableStateOf(binding.textColor) }
-    var selectedScriptType by remember { mutableStateOf(binding.scriptType ?: "") }
+
     
     var intervalTime by remember { mutableStateOf("1000") }
     var clickCount by remember { mutableStateOf("0") }
@@ -387,7 +392,7 @@ fun KeyBindingEditScreen(
             SectionCard(title = "脚本设置", icon = Icons.Default.PlayArrow) {
                 Text(
                     "选择脚本类型",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -399,7 +404,7 @@ fun KeyBindingEditScreen(
                         FilterChip(
                             selected = selectedScriptType == type,
                             onClick = {
-                                selectedScriptType = type
+
                                 onSelectScript(type)
                             },
                             label = { Text(name, fontSize = 13.sp) },
@@ -443,11 +448,11 @@ fun KeyBindingEditScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         "选择动作",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Row(
+                    FlowRow (
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -455,8 +460,8 @@ fun KeyBindingEditScreen(
                             FilterChip(
                                 selected = selectedActionName == action.name,
                                 onClick = { selectedActionName = action.name },
-                                label = { Text(action.name) },
-                                modifier = Modifier.weight(1f)
+                                label = { Text(action.name, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp)) },
+                                modifier = Modifier.padding(vertical = 3.dp, horizontal = 6.dp)
                             )
                         }
                     }

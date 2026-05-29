@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -249,6 +250,9 @@ fun KeyBindingListScreen(
                         onToggleEnable = { onToggleEnable(binding) }
                     )
                 }
+                item{
+                    Spacer(modifier = Modifier.height(100.dp))
+                }
             }
         }
     }
@@ -288,7 +292,9 @@ fun KeyBindingItem(
     var isLocked by remember { mutableStateOf(binding.windowLocked) }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable{
+            onEdit()
+        },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)

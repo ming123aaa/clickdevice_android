@@ -29,6 +29,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.KeyboardType
@@ -272,7 +273,7 @@ class RecordScriptActivityCompose : ComponentActivity(),
                 viewModel?.addRecordScriptCmd(recordScriptCmd)
 
             } catch (e: Throwable) {
-                Toast.makeText(this,"无效手势", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "无效手势", Toast.LENGTH_SHORT).show()
             }
 
             mainHandler.postDelayed(
@@ -439,6 +440,7 @@ fun RecordScriptEditScreen(
             )
         }
     ) { padding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -523,6 +525,7 @@ fun RecordScriptEditScreen(
                 "命令列表 (${commands.size}条)",
                 style = MaterialTheme.typography.titleMedium
             )
+
 
             LazyColumn(
                 modifier = Modifier

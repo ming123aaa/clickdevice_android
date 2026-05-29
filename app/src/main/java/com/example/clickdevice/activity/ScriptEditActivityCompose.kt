@@ -551,7 +551,7 @@ fun ScriptEditScreen(
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Text(
-                                    text = cmd.content ?: "",
+                                    text = cmd.info(),
                                     modifier = Modifier.weight(1f),
                                     style = MaterialTheme.typography.bodyMedium,
                                     lineHeight = 18.sp
@@ -581,11 +581,11 @@ fun ScriptEditScreen(
                                     },
                                     shape = RoundedCornerShape(8.dp),
                                     contentPadding = ButtonDefaults.TextButtonWithIconContentPadding,
-                                    modifier = Modifier.height(32.dp)
+
                                 ) {
-                                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Icon(Icons.Default.Add, contentDescription = null)
                                     Spacer(modifier = Modifier.width(2.dp))
-                                    Text("插入 ↑", fontSize = 11.sp)
+                                    Text("插入 ↑", fontSize = 12.sp)
                                 }
 
                                 OutlinedButton(
@@ -602,11 +602,11 @@ fun ScriptEditScreen(
                                     },
                                     shape = RoundedCornerShape(8.dp),
                                     contentPadding = ButtonDefaults.TextButtonWithIconContentPadding,
-                                    modifier = Modifier.height(32.dp)
+
                                 ) {
-                                    Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Icon(Icons.Default.Edit, contentDescription = null)
                                     Spacer(modifier = Modifier.width(2.dp))
-                                    Text("编辑", fontSize = 11.sp)
+                                    Text("编辑", fontSize = 12.sp)
                                 }
 
                                 Spacer(modifier = Modifier.weight(1f))
@@ -619,9 +619,9 @@ fun ScriptEditScreen(
                                             cmdList = newList
                                         }
                                     },
-                                    modifier = Modifier.size(32.dp)
+
                                 ) {
-                                    Icon(Icons.Default.Upload, contentDescription = "上移", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Upload, contentDescription = "上移")
                                 }
 
                                 IconButton(
@@ -632,9 +632,9 @@ fun ScriptEditScreen(
                                             cmdList = newList
                                         }
                                     },
-                                    modifier = Modifier.size(32.dp)
+
                                 ) {
-                                    Icon(Icons.Default.Download, contentDescription = "下移", modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Download, contentDescription = "下移")
                                 }
 
                                 IconButton(
@@ -643,12 +643,12 @@ fun ScriptEditScreen(
                                         newList.removeAt(index)
                                         cmdList = newList
                                     },
-                                    modifier = Modifier.size(32.dp)
+
                                 ) {
                                     Icon(
                                         Icons.Default.Delete,
                                         contentDescription = "删除",
-                                        modifier = Modifier.size(18.dp),
+
                                         tint = MaterialTheme.colorScheme.error
                                     )
                                 }
