@@ -37,6 +37,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.apply
 import androidx.core.content.edit
+import com.example.clickdevice.databinding.WindowKeyBinding
 
 
 class KeyFloatWindowManager(var context: Context) {
@@ -70,6 +71,7 @@ class KeyFloatWindowManager(var context: Context) {
 
     data class FloatWindowInfo(
         val binding: KeyBindingBean,
+        val viewBinding: WindowKeyBinding,
         val windowView: SmallWindowView,
         val textView: TextView,
         val tv_stop: TextView,
@@ -115,6 +117,13 @@ class KeyFloatWindowManager(var context: Context) {
         }
     }
 
+    fun colorBrightness(color: Int): Float{
+        val red = ((color shr 16) and 0xFF) / 255f
+        val green = ((color shr 8) and 0xFF) / 255f
+        val blue = (color and 0xFF) / 255f
+        return 0.299f * red + 0.587f * green + 0.114f * blue
+    }
+
 
     fun showWindow(binding: KeyBindingBean) {
         if (floatWindows.size >= MAX_WINDOWS) {
@@ -128,25 +137,21 @@ class KeyFloatWindowManager(var context: Context) {
 
         val windowView =
             LayoutInflater.from(context).inflate(R.layout.window_key, null) as SmallWindowView
-        val textView = windowView.findViewById<TextView>(R.id.tv_key)
-        val tv_stop = windowView.findViewById<TextView>(R.id.tv_stop)
-        val fl_key = windowView.findViewById<FrameLayout>(R.id.fl_key)
-        textView.text = binding.keyName
-        textView.setTextColor(binding.textColor)
-        textView.textSize = binding.textSize.toFloat()
-        tv_stop.textSize = binding.textSize.toFloat()
+        val viewBinding=WindowKeyBinding.bind(windowView)
 
-    
-
-        fl_key.setOnTouchClick({
-            handleKeyClick(binding.id)
-        }) {
-            if (isRunning && binding.id == runningKeyId) {
-                handleKeyClick(binding.id)
-                return@setOnTouchClick false
-            }
-            return@setOnTouchClick true
+        viewBinding.tvKey.text = binding.keyName
+        viewBinding.tvKey.setTextColor(binding.textColor)
+        if (colorBrightness(binding.textColor)>0.5){
+            viewBinding.flKey.setBackgroundResource(R.drawable.key_button_bg)
+        }else{
+            viewBinding.flKey.setBackgroundResource(R.drawable.key_button_bg_light)
         }
+        viewBinding.tvKey.textSize = binding.textSize.toFloat()
+        viewBinding.tvStop.textSize = binding.textSize.toFloat()
+
+
+
+        setKeyOnClick(viewBinding, binding.id,!binding.windowLocked)
 
         try {
             val smallWindowView = SmallWindowsHelper(context).apply {
@@ -165,9 +170,10 @@ class KeyFloatWindowManager(var context: Context) {
 
             floatWindows[binding.id] = FloatWindowInfo(
                 binding,
+                viewBinding=viewBinding,
                 windowView,
-                textView,
-                tv_stop,
+                viewBinding.tvKey,
+                viewBinding.tvStop,
                 ScriptRunParams.fromJson(binding.scriptParams),
                 smallWindowView
             )
@@ -175,6 +181,26 @@ class KeyFloatWindowManager(var context: Context) {
         } catch (e: Exception) {
             Toast.makeText(context, "无法显示悬浮窗", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun setKeyOnClick(
+        viewBinding: WindowKeyBinding,
+        keyId: Int,
+        isEnableMove: Boolean
+    ) {
+        viewBinding.flKey.post {
+            val max= viewBinding.flKey.width.coerceAtLeast(viewBinding.flKey.height).coerceAtLeast(100)
+            viewBinding.flKey.setOnTouchClick(onClick = {
+                handleKeyClick(keyId)
+            }, onDown = {
+                if (isRunning && keyId == runningKeyId) {
+                    handleKeyClick(keyId)
+                    return@setOnTouchClick false
+                }
+                return@setOnTouchClick true
+            }, maxMovePx = if (isEnableMove) 15 else -1)
+        }
+
     }
 
     fun hideWindow(keyId: Int) {
@@ -194,6 +220,7 @@ class KeyFloatWindowManager(var context: Context) {
     fun setWindowMoveEnable(keyId: Int, isMove: Boolean) {
         if (floatWindows.containsKey(keyId)) {
             floatWindows[keyId]!!.windowView.enableMove = isMove
+            setKeyOnClick(floatWindows[keyId]!!.viewBinding,keyId,isMove)
         }
     }
 
@@ -242,11 +269,12 @@ class KeyFloatWindowManager(var context: Context) {
             return
         }
 
-        val info = floatWindows[keyId]
-        info ?: return
+
         if (isRunning) {
             isRunning = false
         } else {
+            val info = floatWindows[keyId]
+            info ?: return
             if (runningKeyId == -1) {
                 isRunning = true
                 runningKeyId = info.binding.id
