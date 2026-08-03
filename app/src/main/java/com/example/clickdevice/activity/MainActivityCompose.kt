@@ -18,6 +18,23 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.FiberManualRecord
+import androidx.compose.material.icons.filled.Keyboard
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.TouchApp
+import androidx.compose.material.icons.filled.Widgets
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -416,113 +433,263 @@ fun MainScreen(
     onCountChange: (String) -> Unit,
     onIntervalChange: (String) -> Unit
 ) {
+    val context = LocalContext.current
+    val isAccessibilityOn = MyService.isStart()
+
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("ClickDevice") })
+            TopAppBar(
+                title = { Text("ClickDevice", fontWeight = FontWeight.Bold) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                )
+            )
         }
     ) { padding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(padding),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(16.dp)
         ) {
-            Button(
-                onClick = onOpenAccessibility,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("开启(无障碍)辅助功能")
-            }
-
-            val context = LocalContext.current
-
-            Text(
-                text = "通过adb命令授予权限后可自动开启无障碍模式：\nadb shell pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS",
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        Util.copyText(
-                            "adb shell pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS",
-                            context
-                        )
-                        Toast.makeText(context, "已复制命令", Toast.LENGTH_SHORT).show()
+            // 品牌区
+            item {
+                Surface(
+                    shape = RoundedCornerShape(20.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(52.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Filled.TouchApp,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column {
+                            Text(
+                                "ClickDevice",
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Text(
+                                "自动化点击 · 手势模拟 · 脚本录制",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
+                            )
+                        }
                     }
-            )
-
-            Divider()
-
-            Text("连点器", style = MaterialTheme.typography.titleMedium)
-
-            Text(
-                text = "点击下方按钮打开悬浮窗，拖动位置图标选择点击位置，再点击\"开始\"按钮执行连点",
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = clickCount,
-                onValueChange = { onCountChange(it.filter { c -> c.isDigit() }) },
-                label = { Text("点击次数") },
-                placeholder = { Text("0为无限次") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = clickInterval,
-                onValueChange = { onIntervalChange(it.filter { c -> c.isDigit() }) },
-                label = { Text("时间间隔(ms)") },
-                placeholder = { Text("最小10ms") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Button(
-                onClick = onStartClickDevice,
-                modifier = Modifier.fillMaxWidth(),
-                colors = if (isFloatingWindowShow) ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                ) else ButtonDefaults.buttonColors()
-            ) {
-                Text(if (isFloatingWindowShow) "关闭悬浮窗" else "打开连点器")
+                }
             }
 
-            Divider()
-
-            Button(
-                onClick = onOpenScriptList,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("普通脚本")
+            // 无障碍状态卡
+            item {
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(10.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (isAccessibilityOn) Color(0xFF2E7D32)
+                                    else MaterialTheme.colorScheme.error
+                                )
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("无障碍服务", style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                if (isAccessibilityOn) "已开启，连点功能可用"
+                                else "未开启，点击右侧按钮开启",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        if (!isAccessibilityOn) {
+                            FilledTonalButton(onClick = onOpenAccessibility) {
+                                Text("开启")
+                            }
+                        }
+                    }
+                }
             }
 
-            Button(
-                onClick = onOpenRecordScript,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("录制脚本")
+            // ADB 授权提示
+            item {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            Util.copyText(
+                                "adb shell pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS",
+                                context
+                            )
+                            Toast.makeText(context, "已复制命令", Toast.LENGTH_SHORT).show()
+                        }
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Filled.Code,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "adb shell pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 2,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            "点击复制",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
             }
 
-            Button(
-                onClick = onOpenScriptGroup,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("自定义脚本")
+            // 连点器控制卡
+            item {
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("连点器", style = MaterialTheme.typography.titleMedium)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            "打开悬浮窗，拖动位置图标选择点击位置，再点击\"开始\"执行连点",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = clickCount,
+                                onValueChange = { onCountChange(it.filter { c -> c.isDigit() }) },
+                                label = { Text("点击次数") },
+                                placeholder = { Text("0=无限") },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                singleLine = true,
+                                modifier = Modifier.weight(1f)
+                            )
+                            OutlinedTextField(
+                                value = clickInterval,
+                                onValueChange = { onIntervalChange(it.filter { c -> c.isDigit() }) },
+                                label = { Text("间隔(ms)") },
+                                placeholder = { Text("≥10") },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                singleLine = true,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = onStartClickDevice,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp),
+                            shape = RoundedCornerShape(14.dp),
+                            colors = if (isFloatingWindowShow) ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError
+                            ) else ButtonDefaults.buttonColors()
+                        ) {
+                            Icon(
+                                if (isFloatingWindowShow) Icons.Filled.Stop else Icons.Filled.PlayArrow,
+                                contentDescription = null,
+                                modifier = Modifier.size(22.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                if (isFloatingWindowShow) "关闭悬浮窗" else "打开连点器",
+                                style = MaterialTheme.typography.titleSmall
+                            )
+                        }
+                    }
+                }
             }
 
-            Divider()
-
-            Button(
-                onClick = onOpenKeyBinding,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("按键设置")
+            // 功能入口
+            item {
+                Text("功能", style = MaterialTheme.typography.titleMedium)
             }
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    FeatureCard(
+                        title = "普通脚本",
+                        subtitle = "点击 · 手势 · 循环",
+                        icon = Icons.Filled.List,
+                        onClick = onOpenScriptList,
+                        modifier = Modifier.weight(1f)
+                    )
+                    FeatureCard(
+                        title = "录制脚本",
+                        subtitle = "录制操作回放",
+                        icon = Icons.Filled.FiberManualRecord,
+                        onClick = onOpenRecordScript,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    FeatureCard(
+                        title = "自定义脚本",
+                        subtitle = "脚本组合流程",
+                        icon = Icons.Filled.Widgets,
+                        onClick = onOpenScriptGroup,
+                        modifier = Modifier.weight(1f)
+                    )
+                    FeatureCard(
+                        title = "按键设置",
+                        subtitle = "悬浮窗快捷按钮",
+                        icon = Icons.Filled.Keyboard,
+                        onClick = onOpenKeyBinding,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+            item { Spacer(modifier = Modifier.height(8.dp)) }
         }
     }
 
@@ -542,6 +709,48 @@ fun MainScreen(
                 }
             }
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FeatureCard(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.primaryContainer,
+                modifier = Modifier.size(44.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(title, style = MaterialTheme.typography.titleSmall)
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 

@@ -11,6 +11,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.List
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.AddToHomeScreen
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -135,8 +142,8 @@ fun ScriptListScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
-                verticalArrangement = Arrangement.spacedBy(0.dp),
-                contentPadding = PaddingValues(0.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(16.dp)
             ) {
                 items(scripts) { script ->
                     if (isSelectMode) {
@@ -213,14 +220,40 @@ fun ScriptSelectItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onSelect() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(script.name ?: "", style = MaterialTheme.typography.titleMedium)
-            Text("ID: ${script.id}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                shape = RoundedCornerShape(10.dp),
+                color = MaterialTheme.colorScheme.primaryContainer,
+                modifier = Modifier.size(40.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        Icons.Default.List,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text(script.name ?: "", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "ID: ${script.id}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
+
 
 @Composable
 fun ScriptItem(
@@ -230,119 +263,105 @@ fun ScriptItem(
     onDelete: () -> Unit,
     onCreateDesktop: () -> Unit
 ) {
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 0.dp)
+            .clickable { onSelect() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        // 创建桌面图标（右上角）
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            Text(
-                text = "创建桌面图标",
-                color = Color(0xFFAA0000),
-                fontSize = 12.sp,
-                modifier = Modifier
-                    .clickable { onCreateDesktop() }
-                    .padding(4.dp)
-            )
-        }
-
-        // 脚本信息
-        Row(modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)) {
-            Text(
-                text = "id:",
-                modifier = Modifier.width(70.dp),
-                fontSize = 13.sp
-            )
-            Text(
-                text = script.stringId,
-                fontSize = 13.sp
-            )
-        }
-
-        Row(modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)) {
-            Text(
-                text = "name:",
-                modifier = Modifier.width(70.dp),
-                fontSize = 13.sp
-            )
-            Text(
-                text = script.name ?: "",
-                fontSize = 13.sp
-            )
-        }
-
-        Row(modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)) {
-            Text(
-                text = "创建时间：",
-                modifier = Modifier.width(70.dp),
-                fontSize = 13.sp
-            )
-            Text(
-                text = script.createTime ?: "",
-                fontSize = 13.sp
-            )
-        }
-
-        Row(modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)) {
-            Text(
-                text = "更新时间：",
-                modifier = Modifier.width(70.dp),
-                fontSize = 13.sp
-            )
-            Text(
-                text = script.updateTime ?: "",
-                fontSize = 13.sp
-            )
-        }
-
-        // 操作按钮：删除、编辑、选择
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(0.dp)
-        ) {
-            OutlinedButton(
-                onClick = onDelete,
-                modifier = Modifier.weight(1f).height(30.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFAA0000)),
-                border = BorderStroke(1.dp, Color.Gray),
-                contentPadding = PaddingValues(0.dp)
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("删除", fontSize = 13.sp)
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    modifier = Modifier.size(42.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            Icons.Default.Description,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(script.name ?: "未命名", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        script.updateTime ?: "",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(onClick = onCreateDesktop) {
+                    Icon(
+                        Icons.Default.AddToHomeScreen,
+                        contentDescription = "创建桌面图标",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
-            OutlinedButton(
-                onClick = onEdit,
-                modifier = Modifier.weight(1f).height(30.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF00AA00)),
-                border = BorderStroke(1.dp, Color.Gray),
-                contentPadding = PaddingValues(0.dp)
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Divider(color = MaterialTheme.colorScheme.outlineVariant)
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("编辑", fontSize = 13.sp)
-            }
-            OutlinedButton(
-                onClick = onSelect,
-                modifier = Modifier.weight(1f).height(30.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF0044AA)),
-                border = BorderStroke(1.dp, Color.Gray),
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text("选择", fontSize = 13.sp)
+                FilledTonalButton(
+                    onClick = onSelect,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(vertical = 10.dp)
+                ) {
+                    Icon(
+                        Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("运行", style = MaterialTheme.typography.labelLarge)
+                }
+                OutlinedButton(
+                    onClick = onEdit,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(vertical = 10.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("编辑", style = MaterialTheme.typography.labelLarge)
+                }
+                OutlinedButton(
+                    onClick = onDelete,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    ),
+                    contentPadding = PaddingValues(vertical = 10.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("删除", style = MaterialTheme.typography.labelLarge)
+                }
             }
         }
-
-        // 分割线
-       Divider(
-            modifier = Modifier.padding(top = 4.dp),
-            thickness = 1.dp,
-            color = Color(0xFFCCCCCC)
-        )
     }
 }
 
