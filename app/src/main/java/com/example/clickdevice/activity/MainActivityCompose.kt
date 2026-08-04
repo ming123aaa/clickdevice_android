@@ -73,7 +73,8 @@ class MainActivityCompose : ComponentActivity() {
     private var wm: WindowManager? = null
     private var mLayoutParams: WindowManager.LayoutParams? = null
     private var btnLayoutParams: WindowManager.LayoutParams? = null
-    private var isShow = false
+    private var isShow by mutableStateOf(false)
+
 
     // 主线程 Handler，用于更新 UI
     private val mainHandler = Handler(Looper.getMainLooper())
